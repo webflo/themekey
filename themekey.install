@@ -1,0 +1,58 @@
+<?php
+// $Id$
+
+function themekey_schema() {
+  $schema = array();
+  $schema['themekey_paths'] = array(
+    'fields' => array(
+      'id'            => array('type' => 'serial', 'unsigned' => TRUE, 'not null' => TRUE),
+      'path'          => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => ''),
+      'fit'           => array('type' => 'int', 'not null' => TRUE, 'default' => 0),
+      'weight'        => array('type' => 'int', 'not null' => TRUE, 'default' => 0),
+      'wildcards'     => array('type' => 'text', 'not null' => TRUE, 'size' => 'big', 'serialize' => TRUE),
+      'conditions'    => array('type' => 'text', 'not null' => TRUE, 'size' => 'big', 'serialize' => TRUE),
+      'custom'        => array('type' => 'int', 'not null' => TRUE, 'default' => 0),
+      'theme'         => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => ''),
+      'callbacks'     => array('type' => 'text', 'not null' => TRUE, 'size' => 'big', 'serialize' => TRUE)
+    ),
+    'primary key' => array('id'),
+    'indexes' => array(
+      'path'        => array('path'),
+      'fit'         => array('fit'),
+      'weight'      => array('weight'),
+      'custom'      => array('custom')
+    )
+  );
+  $schema['themekey_properties'] = array(
+    'fields' => array(
+      'id'            => array('type' => 'serial', 'unsigned' => TRUE, 'not null' => TRUE),
+      'property'      => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => ''),
+      'value'         => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => ''),
+      'weight'        => array('type' => 'int', 'not null' => TRUE, 'default' => 0),
+      'conditions'    => array('type' => 'text', 'not null' => TRUE, 'size' => 'big', 'serialize' => TRUE),
+      'theme'         => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => ''),
+      'callbacks'     => array('type' => 'text', 'not null' => TRUE, 'size' => 'big', 'serialize' => TRUE)
+    ),
+    'primary key' => array('id'),
+    'indexes' => array(
+      'property'  => array('property'),
+      'weight'    => array('weight')
+    )
+  );
+
+  return $schema;
+}
+
+function themekey_install() {
+  drupal_install_schema('themekey');
+}
+
+function themekey_uninstall() {
+  // Drop tables
+  drupal_uninstall_schema('themekey');
+  // Remove variables
+  db_query("DELETE FROM {variable} WHERE name LIKE 'themekey_%'");
+  cache_clear_all('variables', 'cache');
+}
+
+?>
