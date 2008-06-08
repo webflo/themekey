@@ -24,15 +24,15 @@ function themekey_ui_perm() {
  */
 function themekey_ui_menu() {
   $items = array();
-  $items['admin/settings/themekey/ui'] = array(
-    'title' => 'UI Settings',
+  $items['admin/settings/themekey/settings/ui'] = array(
+    'title' => 'User Interface',
     'access callback' => 'user_access',
     'access arguments' => array('administer themekey settings'),
     'file' => 'themekey_ui_admin.inc',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('_themekey_ui_settings_form'),
     'type' => MENU_LOCAL_TASK,
-    'weight' => 6
+    'weight' => 1
   );
 
   return $items;

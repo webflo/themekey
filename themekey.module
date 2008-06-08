@@ -21,7 +21,7 @@ function themekey_theme() {
  * Implementation of hook_perm().
  */
 function themekey_perm() {
-  return array('administer themes assignments', 'administer themekey settings');
+  return array('administer theme assignments', 'administer themekey settings');
 }
 
 /**
@@ -33,7 +33,7 @@ function themekey_menu() {
     'title' => 'ThemeKey',
     'description' => 'Map themes to Drupal paths or object properties.',
     'access callback' => 'user_access',
-    'access arguments' => array('administer themes assignments'),
+    'access arguments' => array('administer theme assignments'),
     'file' => 'themekey_admin.inc',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('_themekey_paths_form')
@@ -46,7 +46,7 @@ function themekey_menu() {
   $items['admin/settings/themekey/properties'] = array(
     'title' => 'Properties',
     'access callback' => 'user_access',
-    'access arguments' => array('administer themes assignments'),
+    'access arguments' => array('administer theme assignments'),
     'file' => 'themekey_admin.inc',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('_themekey_properties_form'),
@@ -62,6 +62,11 @@ function themekey_menu() {
     'page arguments' => array('_themekey_settings_form'),
     'type' => MENU_LOCAL_TASK,
     'weight' => 5
+  );
+  $items['admin/settings/themekey/settings/general'] = array(
+    'title' => 'General',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => 0
   );
 
   return $items;

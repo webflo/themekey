@@ -13,11 +13,16 @@ function _themekey_paths_form() {
     '#type' => 'fieldset',
     '#title' => t('Paths'),
     '#collapsible' => FALSE,
-    '#collapsed' => FALSE
-  );
-  
-  $form['paths']['help'] = array(
-    '#value' => '... help text ...',
+    '#collapsed' => FALSE,
+    '#description' => t('Here you can map themes to Drupal paths or path aliases. To add a new map entry to the table,
+                         enter the path into the \'Path\' field and select a theme from the \'Theme\' dropdown. For example:
+                         Path = \'node/add\' and Theme = \'Bluemarine\' switches the theme of the \'Create content\' page to
+                         Bluemarine. You may also use wildcard characters in the path and/or specify \'Conditions\' to match.<br />
+                         Wildcard characters are \'#\' for numeric parts and \'%\' for all characters. To match conditions
+                         against a certain part, use an identifier with the wildcard. For example: Path =
+                         \'comment/reply/#xyz\' matches all paths with \'comment/reply\' and a numeric third argument.
+                         You can then specify conditions for every wildcard argument using the following syntax:
+                         \'id=value;id2=value2;...\', e.g. \'xyz=123\'.')
   );
   
   $form['paths']['table'] = array(
@@ -117,11 +122,13 @@ function _themekey_properties_form() {
     '#type' => 'fieldset',
     '#title' => t('Properties'),
     '#collapsible' => FALSE,
-    '#collapsed' => FALSE
-  );
-  
-  $form['properties']['help'] = array(
-    '#value' => '... help text ...',
+    '#collapsed' => FALSE,
+    '#description' => t('Here you can map themes to object properties, e.g. to node properties such as the NodeID (nid).
+                         To add a new map entry to the table, select a property from the \'Property\' dropdown and enter
+                         the value which you want to assign the theme to. For example: Property = \'nid\', Value = \'123\'
+                         and Theme = \'Bluemarine\' switches the theme of node 123 to Bluemarine. You may also specify
+                         \'Additional Conditions\' so that the theme only applies when all conditions are matched. \'Additional
+                         Conditions\' must be provided using the following syntax: \'property=value;property2=value2;...\'')
   );
   
   $form['properties']['table'] = array(
@@ -199,7 +206,9 @@ function _themekey_properties_form() {
     );
   }
   else {
-    drupal_set_message(t('Please visit the settings tab first and enable at least one property for selection'), 'error');
+    $message = t('Please visit the <a href="@url">ThemeKey settings</a> tab first and enable at least one
+                  property for selection', array('@url' => url('admin/settings/themekey/settings')));
+    drupal_set_message($message, 'error');
   }
 
   return _themekey_admin_form($form, '_themekey_properties');
@@ -246,7 +255,7 @@ function _themekey_settings_form() {
   //
   $form['settings'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Settings'),
+    '#title' => t('General Settings'),
     '#collapsible' => FALSE,
     '#collapsed' => FALSE
   );
