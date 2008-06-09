@@ -74,6 +74,7 @@ function _themekey_match_paths($path) {
     }
     //
     if (!$item['theme']) {
+      // TODO: add language property
       $item['theme'] = _themekey_match_properties($parameters);
     }
 

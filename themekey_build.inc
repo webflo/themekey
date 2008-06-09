@@ -51,16 +51,12 @@ function _themekey_scan_modules() {
   $modules = array();
   $files = file_scan_directory(drupal_get_path('module', 'themekey') .'/modules', '\themekey.[a-z]+.inc$');
   foreach ($files as $file) {
-    $modules[] = $file->name;
+    list( , $module) = explode('.', $file->name);
+    if (module_exists($module)) {
+      $modules[] = $file->name;
+    }
   }
-  //
-  if (!module_exists('comment')) {
-    $modules = array_diff($modules, array('themekey.comment'));
-  }
-  if (!module_exists('taxonomy')) {
-    $modules = array_diff($modules, array('themekey.taxonomy'));
-  }
-
+  
   variable_set('themekey_modules', $modules);
 }
 
@@ -69,7 +65,7 @@ function _themekey_scan_modules() {
  */
 function _themekey_invoke_modules($hook) {
   $return = array();
-  foreach (variable_get('themekey_modules', array('themekey_node')) as $module) {
+  foreach (variable_get('themekey_modules', array('themekey.node')) as $module) {
     $function = str_replace('.', '_', $module) .'_'. $hook;
     if (function_exists($function)) {
       $return = array_merge_recursive($return, $function());
