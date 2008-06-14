@@ -37,10 +37,23 @@ function _themekey_rebuild() {
   variable_set('themekey_maps', $maps);
   
   //
+  $oldpaths = array();
+  $result = db_query('SELECT id, path FROM {themekey_paths} WHERE custom = 0');
+  while ($item = db_fetch_array($result)) {
+    $oldpaths[$item['id']] = $item['path'];
+  }
+  //
   $paths = module_invoke_all('themekey_paths');
   drupal_alter('themekey_paths', $paths);
   foreach ($paths as $item) {
     _themekey_path_set($item, FALSE);
+    if (isset($item['id'])) {
+      unset($oldpaths[$item['id']]);
+    }
+  }
+  //
+  foreach (array_keys($oldpaths) as $id) {
+    _themekey_path_del($id);
   }
 }
 
