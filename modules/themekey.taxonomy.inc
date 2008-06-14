@@ -29,18 +29,18 @@ function themekey_taxonomy_themekey_properties() {
 function themekey_taxonomy_themekey_paths() {
   $paths = array();
   $paths[] = array('path' => 'taxonomy/term/#tid');
-  $paths[] = array('path' => 'forum/#tid');
   
   // Add support for 'forum' paths
   if (module_exists('forum')) {
     $paths[] = array('path' => 'forum/#vid');
   }
-  
-  // Add support for 'Taxonomy Menu' paths
+  // Add support for 'taxonomy_menu' paths
   if (module_exists('taxonomy_menu')) {
-    $path_prefix = variable_get('taxonomy_menu_display_page', 'category');
-    $paths[] = array('path' => $path_prefix .'/#vid');
-    $paths[] = array('path' => $path_prefix .'/#vid/#tid');
+    $prefix = variable_get('taxonomy_menu_display_page', 'category');
+    $paths[] = array('path' => $prefix .'/#vid/#tid');
+    for ($i=1; $i<=MENU_MAX_PARTS-3; $i++) {
+      $paths[] = array('path' => $prefix .'/#vid/'. implode('/', array_fill(0, $i, '#')) .'/#tid');
+    }
   }
   
   return $paths;
