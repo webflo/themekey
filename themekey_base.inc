@@ -47,7 +47,7 @@ function _themekey_get_path_ancestors($parts) {
 }
 
 /**
- * Function theme_themekey_table().
+ * Function _themekey_match_paths().
  */
 function _themekey_match_paths($path) {
   $parts = explode('/', $path, MENU_MAX_PARTS);
@@ -74,7 +74,6 @@ function _themekey_match_paths($path) {
     }
     //
     if (!$item['theme']) {
-      // TODO: add language property
       $item['theme'] = _themekey_match_properties($parameters);
     }
 
@@ -85,7 +84,7 @@ function _themekey_match_paths($path) {
 }
 
 /**
- * Function theme_themekey_table().
+ * Function _themekey_match_conditions().
  */
 function _themekey_match_conditions($conditions, $parameters) {
   if (count($conditions)) {
@@ -103,7 +102,7 @@ function _themekey_match_conditions($conditions, $parameters) {
 /* Property-based */
 
 /**
- * Function theme_themekey_table().
+ * Function _themekey_match_properties().
  */
 function _themekey_match_properties($object) {
   $properties = variable_get('themekey_properties', array());
@@ -144,7 +143,7 @@ function _themekey_match_properties($object) {
 }
 
 /**
- * Function theme_themekey_table().
+ * Function _themekey_property_field().
  */
 function _themekey_property_field($object, $property, $path) {
   $value = (array)$object;

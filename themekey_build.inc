@@ -149,6 +149,13 @@ function _themekey_path_clear() {
 }
 
 /**
+ * Function themekey_num_paths().
+ */
+function themekey_num_paths() {
+  return db_result(db_query('SELECT COUNT(id) FROM {themekey_paths} WHERE custom = 1'));
+}
+
+/**
  * Function _themekey_prepare_path().
  * (based on _menu_router_build() in includes/menu.inc)
  */
@@ -188,7 +195,7 @@ function _themekey_node_discover() {
 
   $properties = array();
   $ignore = array(// Generic node properties
-                  'title', 'teaser', 'teaser_js', 'teaser_include', 'body', 'format', 'log', 'submit', 'preview',
+                  'teaser', 'teaser_js', 'teaser_include', 'body', 'format', 'log', 'submit', 'preview',
                   'form_id', 'path', 'vid', 'validated',
                   // Book module properties
                   'book/router_path', 'book/module', 'book/parent_depth_limit', 'book/weight', 'book/pick-book',

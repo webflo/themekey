@@ -50,6 +50,11 @@ function themekey_ui_form_alter(&$form, $form_state, $form_id) {
       _themekey_ui_nodeform($form, $form_state);
     }
   }
+  // Path aliases
+  if ($form_id == 'path_admin_form' && variable_get('themekey_ui_pathalias', 0)) {
+    require_once(drupal_get_path('module', 'themekey_ui') .'/themekey_ui_admin.inc');
+    _themekey_ui_pathalias($form, $form_state);
+  }
   // Views
   if ($form_id == 'views_ui_edit_display_form' && $form_state['#section'] == 'page-path'
     && variable_get('themekey_ui_views', 0) && user_access('administer views')) {
