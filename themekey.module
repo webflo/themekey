@@ -2,9 +2,6 @@
 // $Id$
 
 require_once(drupal_get_path('module', 'themekey') .'/themekey_base.inc');
-foreach (variable_get('themekey_modules', array('themekey.node')) as $module) {
-  require_once(drupal_get_path('module', 'themekey') .'/modules/'. $module .'.inc');
-}
 
 /**
  * Implementation of hook_theme()
@@ -78,6 +75,14 @@ function themekey_menu() {
 function themekey_themekey_properties() {
   require_once(drupal_get_path('module', 'themekey') .'/themekey_build.inc');
   return _themekey_invoke_modules('themekey_properties');
+}
+
+/**
+ * Implementation of hook_themekey_global().
+ */
+function themekey_themekey_global() {
+  require_once(drupal_get_path('module', 'themekey') .'/themekey_build.inc');
+  return _themekey_invoke_modules('themekey_global');
 }
 
 /**

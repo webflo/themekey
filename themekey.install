@@ -54,5 +54,3 @@ function themekey_uninstall() {
   db_query("DELETE FROM {variable} WHERE name LIKE 'themekey_%'");
   cache_clear_all('variables', 'cache');
 }
-
-?>

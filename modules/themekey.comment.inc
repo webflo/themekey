@@ -2,25 +2,25 @@
 // $Id$
 
 function themekey_comment_themekey_properties() {
+  // Attributes for properties
+  $attributes = array();
+  $attributes['comment:cid'] = array('description' => t('Comment: ID'));
+  
   // Mapping functions
   $maps = array();
-  $maps[] = array('src'       => 'cid',
-                  'dst'       => 'nid',
+  $maps[] = array('src'       => 'comment:cid',
+                  'dst'       => 'node:nid',
                   'callback'  => 'themekey_comment_cid2nid');
-
-  // Attributes for properties ;)
-  $attributes = array();
-  $attributes['cid'] = array('description' => t('Comment: ID'));
   
-  return array('maps' => $maps, 'attributes' => $attributes);
+  return array('attributes' => $attributes, 'maps' => $maps);
 }
 
 function themekey_comment_themekey_paths() {
   $paths = array();
-  $paths[] = array('path' => 'comment/reply/#nid');
-  $paths[] = array('path' => 'comment/reply/#nid/#cid');
-  $paths[] = array('path' => 'comment/edit/#cid');
-  $paths[] = array('path' => 'comment/delete/#cid');
+  $paths[] = array('path' => 'comment/reply/#node:nid');
+  $paths[] = array('path' => 'comment/reply/#node:nid/#comment:cid');
+  $paths[] = array('path' => 'comment/edit/#comment:cid');
+  $paths[] = array('path' => 'comment/delete/#comment:cid');
   
   return $paths;
 }

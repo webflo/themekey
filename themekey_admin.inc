@@ -144,6 +144,7 @@ function _themekey_properties_form() {
     foreach ($properties as $property) {
       $config[$property] = $property;
     }
+    ksort($config);
     $properties = _themekey_load_properties(THEMEKEY_PAGER_LENGTH, FALSE);
     foreach ($properties as $property) {
       $form['properties']['table'][$property['id']]['property'] = array(
@@ -290,6 +291,7 @@ function _themekey_settings_form() {
   $properties = _themekey_properties_discover($nodediscover);
   foreach ($properties as $property => $path) {
     $properties[$property] = array('path' => $path,
+                                   'property' => $property,
                                    'enabled' => isset($config[$property]),
                                    'weight' => isset($config[$property]) ? $config[$property]['weight']: 0);
   }
@@ -330,7 +332,7 @@ function _themekey_settings_form() {
       '#description' => t('By default node themes are stored as nid property values. If you are working with path aliases it might be
                            better to store them as paths. You should not change this settings once you have existing items.')
     );
-    if (themekey_num_paths() > 0) {
+    if (_themekey_num_paths() > 0) {
       $warning  = '<br /><strong class="error">';
       $warning .= t('WARNING: Do not change this settings or you will get duplicate (mixed) assignment to paths and properties.');
       $warning .= '</strong>';
@@ -338,7 +340,7 @@ function _themekey_settings_form() {
     }
   }
   //
-  if (count($form['settings']['additional'])) {
+  if (isset($form['settings']['additional']) && count($form['settings']['additional'])) {
     $form['settings']['additional'] += array(
       '#type' => 'fieldset',
       '#title' => t('Additional Settings'),

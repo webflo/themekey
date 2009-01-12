@@ -24,35 +24,36 @@ function _themekey_theme_options($default = TRUE) {
  * Function _themekey_rebuild().
  */
 function _themekey_rebuild() {
+  // Create a list of modules in the /modules subfolder (internal modules)
   _themekey_scan_modules();
-  
-  //
+  // Get property definitions (from internal and other modules)
   $properties = module_invoke_all('themekey_properties');
-  //
+  // Attributes
   $attributes = isset($properties['attributes']) ? $properties['attributes'] : array();
+  drupal_alter('themekey_attributes', $attributes);
   variable_set('themekey_attributes', $attributes);
-  //
+  // Property maps
   $maps = isset($properties['maps']) ? $properties['maps'] : array();
   drupal_alter('themekey_maps', $maps);
   variable_set('themekey_maps', $maps);
   
-  //
-  $oldpaths = array();
+  // Find all previous registered paths
+  $obsolete_paths = array();
   $result = db_query('SELECT id, path FROM {themekey_paths} WHERE custom = 0');
   while ($item = db_fetch_array($result)) {
-    $oldpaths[$item['id']] = $item['path'];
+    $obsolete_paths[$item['id']] = $item['path'];
   }
-  //
+  // Get (and register) paths from themekey modules
   $paths = module_invoke_all('themekey_paths');
   drupal_alter('themekey_paths', $paths);
   foreach ($paths as $item) {
     _themekey_path_set($item, FALSE);
     if (isset($item['id'])) {
-      unset($oldpaths[$item['id']]);
+      unset($obsolete_paths[$item['id']]);
     }
   }
-  //
-  foreach (array_keys($oldpaths) as $id) {
+  // Unregister obsolete paths
+  foreach (array_keys($obsolete_paths) as $id) {
     _themekey_path_del($id);
   }
 }
@@ -74,18 +75,14 @@ function _themekey_scan_modules() {
 }
 
 /**
- * Function _themekey_invoke_modules().
+ * Function _themekey_include_modules().
  */
-function _themekey_invoke_modules($hook) {
-  $return = array();
+function _themekey_include_modules() {
   foreach (variable_get('themekey_modules', array('themekey.node')) as $module) {
-    $function = str_replace('.', '_', $module) .'_'. $hook;
-    if (function_exists($function)) {
-      $return = array_merge_recursive($return, $function());
+    if (is_readable(drupal_get_path('module', 'themekey') .'/modules/'. $module .'.inc')) {
+      require_once(drupal_get_path('module', 'themekey') .'/modules/'. $module .'.inc');
     }
   }
-
-  return $return;
 }
 
 /* Path-based */
@@ -151,7 +148,7 @@ function _themekey_path_clear() {
 /**
  * Function themekey_num_paths().
  */
-function themekey_num_paths() {
+function _themekey_num_paths() {
   return db_result(db_query('SELECT COUNT(id) FROM {themekey_paths} WHERE custom = 1'));
 }
 
@@ -167,7 +164,7 @@ function _themekey_prepare_path(&$path) {
   $parts = explode('/', $path, MENU_MAX_PARTS);
   $slashes = count($parts) - 1;
   foreach ($parts as $index => $part) {
-    if (preg_match('/^(\%|\#)([a-z0-9_]*)$/', $part, $matches)) {
+    if (preg_match('/^(\%|\#)([a-z0-9_:]*)$/', $part, $matches)) {
       $parts[$index] = $matches[1];
       if (!empty($matches[2])) {
         $wildcards[$index] = $matches[2];
@@ -195,14 +192,14 @@ function _themekey_node_discover() {
 
   $properties = array();
   $ignore = array(// Generic node properties
-                  'teaser', 'teaser_js', 'teaser_include', 'body', 'format', 'log', 'submit', 'preview',
-                  'form_id', 'path', 'vid', 'validated',
-                  // Book module properties
+                  'teaser', 'teaser_js', 'teaser_include', 'body', 'format', 'log', 'submit', 'preview', 'form_id',
+                  'path', 'vid', 'validated', 'comment', 'name', 'revision', 'status', 'date',
+                  // Book properties
                   'book/router_path', 'book/module', 'book/parent_depth_limit', 'book/weight', 'book/pick-book',
-                  'book/menu_name', 'book/has_children', 'book/original_bid',
+                  'book/menu_name', 'book/original_bid',
                   // Menu properties
                   'menu/module', 'menu/parent_depth_limit', 'menu/weight', 'menu/customized', 'menu/expanded',
-                  'menu/has_children', 'menu/hidden'
+                  'menu/hidden'
                  );
   //
   $nodes = array();
@@ -222,7 +219,7 @@ function _themekey_node_discover() {
     _themekey_node_discover_properties($node, $properties);
     $properties = array_diff($properties, $ignore);
   }
-
+  
   return $properties;
 }
 
@@ -238,8 +235,9 @@ function _themekey_node_discover_properties($node, &$properties, $parents = arra
         array_pop($parents);
       }
       else {
-        $element = (count($parents) ? (implode('/', $parents) .'/') : '') . $property;
-        $properties[$property] = $element;
+        $element = (count($parents) ? implode(':', $parents) : 'node') .':'. $property;
+        $element_path = (count($parents) ? implode('/', $parents) .'/' : '') . $property;
+        $properties[$element] = $element_path;
       }
     }
   }
@@ -250,10 +248,13 @@ function _themekey_node_discover_properties($node, &$properties, $parents = arra
  */
 function _themekey_properties_discover($nodediscover = FALSE) {
   $properties = array();
+  
   // Module-exposed properties
   $attributes = variable_get('themekey_attributes', array());
-  foreach (array_keys($attributes) as $property) {
-    $properties[$property] = $property;
+  foreach ($attributes as $property => $details) {
+    if (isset($details['path'])) {
+      $properties[$property] = $details['path'];
+    }
   }
   // URL argument properties
   $result = db_query('SELECT wildcards FROM {themekey_paths} WHERE custom = 0');
@@ -281,8 +282,13 @@ function _themekey_properties_explode_conditions($conditions) {
     $parts = array_filter(explode(';', $conditions));
     $conditions = array();
     foreach ($parts as $part) {
-      list($key, $value) = explode('=', $part);
-      $conditions[] = array('property' => trim($key), 'value' => trim($value));
+      if (preg_match('/(.*)([<>=!]+)(.*)/', $part, $matches)) {
+        $conditions[] = array(
+          'property' => trim($matches[1]),
+          'operator' => trim($matches[2]),
+          'value' => trim($matches[3])
+        );
+      }
     }
   }
 
@@ -295,10 +301,10 @@ function _themekey_properties_explode_conditions($conditions) {
 function _themekey_properties_implode_conditions($conditions) {
   $string = array();
   foreach ($conditions as $condition) {
-    $string[] = $condition['property'] .'='. $condition['value'];
+    $string[] = $condition['property'] . $condition['operator'] . $condition['value'];
   }
   $string = implode('; ', $string);
-
+  
   return $string;
 }
 
@@ -331,6 +337,7 @@ function _themekey_properties_set(&$item) {
   //
   $attributes = variable_get('themekey_attributes', array());
   if (isset($attributes[$item['property']]['multiple']) && $attributes[$item['property']]['multiple']) {
+    _themekey_include_modules();
     $weightfn = $attributes[$item['property']]['weight'];
     $item['weight'] = function_exists($weightfn) ? $weightfn($item) : 0;
   }
@@ -367,7 +374,12 @@ function _themekey_properties_clear() {
  */
 function _themekey_properties_cmp($a, $b) {
   if ($a['weight'] == $b['weight']) {
-    return ($a['path'] < $b['path']) ? -1 : 1;
+    if (isset($a['property']) && isset($b['property'])) {
+      return ($a['property'] < $b['property']) ? -1 : 1;
+    }
+    else {
+      return ($a['path'] < $b['path']) ? -1 : 1;
+    }
   }
 
   return ($a['weight'] < $b['weight']) ? -1 : 1;
@@ -379,6 +391,7 @@ function _themekey_properties_cmp($a, $b) {
 function _themekey_properties_resort($key) {
   $attributes = variable_get('themekey_attributes', array());
   if (isset($attributes[$key]['multiple']) && $attributes[$key]['multiple']) {
+    _themekey_include_modules();
     $weightfn = $attributes[$key]['weight'];
     $result = db_query('SELECT * FROM {themekey_properties} WHERE property = \'%s\'', $key);
     while ($item = db_fetch_array($result)) {

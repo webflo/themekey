@@ -4,22 +4,29 @@
 function themekey_node_themekey_properties() {
   // Attributes for properties
   $attributes = array();
-  $attributes['nid'] = array('description' => t('Node: ID'));
+  $attributes['node:changed'] = array('description' => t('Node: Changed date'));
+  $attributes['node:created'] = array('description' => t('Node: Created date'));
+  $attributes['node:language'] = array('description' => t('Node: Language'));
+  $attributes['node:nid'] = array('description' => t('Node: ID'));
+  $attributes['node:promote'] = array('description' => t('Node: Promoted'));
+  $attributes['node:sticky'] = array('description' => t('Node: Sticky'));
+  $attributes['node:type'] = array('description' => t('Node: Type'));
+  $attributes['node:uid'] = array('description' => t('Node: User ID'));
 
   return array('attributes' => $attributes);
 }
 
 function themekey_node_themekey_paths() {
   $paths = array();
-  $paths[] = array('path'       => 'node/#nid',
+  $paths[] = array('path'       => 'node/#node:nid',
                    'callbacks'  => array('_themekey_node_callback'));
   
   return $paths;
 }
 
-function _themekey_node_callback(&$item, $params) {
-  $node = node_load($params['nid']);
-  if ($theme = _themekey_match_properties($node)) {
+function _themekey_node_callback(&$item, $parameters) {
+  $node = node_load($parameters['node:nid']);
+  if ($theme = _themekey_match_properties($parameters, $node)) {
     $item['theme'] = $theme;
   }
 }
