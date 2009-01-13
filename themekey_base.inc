@@ -1,6 +1,24 @@
 <?php
 // $Id$
 
+/**
+ * Function _themekey_invoke_modules().
+ */
+function _themekey_invoke_modules($hook) {
+  $return = array();
+  foreach (variable_get('themekey_modules', array('themekey.node')) as $module) {
+    if (is_readable(drupal_get_path('module', 'themekey') .'/modules/'. $module .'.inc')) {
+      require_once(drupal_get_path('module', 'themekey') .'/modules/'. $module .'.inc');
+    }
+    $function = str_replace('.', '_', $module) .'_'. $hook;
+    if (function_exists($function)) {
+      $return = array_merge_recursive($return, $function());
+    }
+  }
+
+  return $return;
+}
+
 /* Path-based */
 
 /**
@@ -47,16 +65,18 @@ function _themekey_get_path_ancestors($parts) {
 }
 
 /**
- * Function theme_themekey_table().
+ * Function _themekey_match_paths().
  */
 function _themekey_match_paths($path) {
+  //
   $parts = explode('/', $path, MENU_MAX_PARTS);
   list($ancestors, $placeholders) = _themekey_get_path_ancestors($parts);
   //
   $result = db_query('SELECT * FROM {themekey_paths} WHERE path IN ('. implode (',', $placeholders) .') ORDER BY fit DESC, weight DESC, custom DESC', $ancestors);
   while ($item = db_fetch_array($result)) {
-    $parameters = array();
+    $parameters = module_invoke_all('themekey_global');
     $conditions = unserialize($item['conditions']);
+    //
     $wildcards = unserialize($item['wildcards']);
     foreach ($wildcards as $index => $wildcard) {
       $parameters[$wildcard] = arg($index, $path);
@@ -76,38 +96,60 @@ function _themekey_match_paths($path) {
     if (!$item['theme']) {
       $item['theme'] = _themekey_match_properties($parameters);
     }
-
+    
     return $item['theme'];
   }
 
   return NULL;
 }
 
-/**
- * Function theme_themekey_table().
- */
-function _themekey_match_conditions($conditions, $parameters) {
-  if (count($conditions)) {
-    foreach ($conditions as $condition) {
-      list ($key, $value) = explode('=', $condition);
-      if (isset($parameters[$key]) && $parameters[$key] != $value) {
-        return FALSE;
-      }
-    }
-  }
-
-  return TRUE;
-}
-
 /* Property-based */
 
 /**
- * Function theme_themekey_table().
+ * Function _themkey_prepare_object().
  */
-function _themekey_match_properties($object) {
+function _themkey_prepare_object($object) {
+  $parameters = array('#raw' => $object);
   $properties = variable_get('themekey_properties', array());
   foreach ($properties as $property => $details) {
-    $value = _themekey_property_field($object, $property, $details['path']);
+    if (($value = _themekey_property_field($object, $details['path'])) != NULL) {
+      $parameters[$property] = $value;
+    }
+  }
+  
+  return $parameters;
+}
+
+/**
+ * Function _themekey_property_field().
+ */
+function _themekey_property_field($value, $path) {
+  //
+  $parts = explode('/', $path);
+  foreach ($parts as $part) {
+    if (is_array($value) && isset($value[$part])) {
+      $value = (array)$value[$part];
+    }
+    else {
+      return NULL;
+    }
+  }
+  
+  return is_array($value) ? array_keys($value) : $value;
+}
+
+/**
+ * Function _themekey_match_properties().
+ */
+function _themekey_match_properties($parameters, $object = NULL) {
+  //
+  if (isset($object)) {
+    $parameters = _themkey_prepare_object(array_merge($parameters, (array)drupal_clone($object)));
+  }
+  //
+  $properties = variable_get('themekey_properties', array());
+  foreach (array_keys($properties) as $property) {
+    $value = _themekey_property_value($parameters, $property);
     if (!empty($value) || count($value)) {
       $query = 'SELECT * FROM {themekey_properties} WHERE property = \''. $property .'\' AND value ';
       $query .= is_array($value) ? ('IN ('. db_placeholders($value, 'varchar') .') ORDER BY weight') : '= \'%s\'';
@@ -115,26 +157,17 @@ function _themekey_match_properties($object) {
       while ($item = db_fetch_array($result)) {
         //
         $item['conditions'] = unserialize($item['conditions']);
-        if (count($item['conditions'])) {
-          foreach ($item['conditions'] as $condition) {
-            if (isset($properties[$condition['property']]['path'])) {
-              $value = _themekey_property_field($object, $condition['property'], $properties[$condition['property']]['path']);
-              $value = is_array($value) ? $value : array($value);
-              if (in_array($condition['value'], $value)) {
-                return NULL;
-              }
+        if (_themekey_match_conditions($item['conditions'], $parameters)) {
+          //
+          $callbacks = unserialize($item['callbacks']);
+          if (is_array($callbacks) && count($callbacks)) {
+            foreach ($callbacks as $callback) {
+              $callback($item, $parameters);
             }
           }
+          //
+          return $item['theme'];
         }
-        //
-        $callbacks = unserialize($item['callbacks']);
-        if (count($callbacks)) {
-          foreach ($callbacks as $callback) {
-            $callback($item, $parameters);
-          }
-        }
-        //
-        return $item['theme'];
       }
     }
   }
@@ -143,44 +176,88 @@ function _themekey_match_properties($object) {
 }
 
 /**
- * Function theme_themekey_table().
+ * Function _themekey_match_conditions().
  */
-function _themekey_property_field($object, $property, $path) {
-  $value = (array)$object;
-  //
-  $parts = isset($value[$property]) ? array($property) : explode('/', $path);
-  foreach ($parts as $part) {
-    $value = (array)$value;
-    if (is_array($value) && isset($value[$part])) {
-      $value = $value[$part];
-    }
-    else {
-      // Find mapped properties
-      $value = (array)$object;
-      $nidmap = array('src' => FALSE, 'dst' => FALSE);
-      $maps = variable_get('themekey_maps', array());
-      foreach ($maps as $pos => $map) {
-        if (isset($value[$map['src']]) && $map['dst'] == 'nid') {
-          $nidmap['src'] = $pos;
-        }
-        if ($map['src'] == 'nid' && $map['dst'] == $property) {
-          $nidmap['dst'] = $pos;
-        }
-        if (isset($value[$map['src']]) && $map['dst'] == $property) {
-          $map_func = $map['callback'];
-          return $map_func($value[$map['src']], $object);
+function _themekey_match_conditions($conditions, $parameters) {
+  if (is_array($conditions) && count($conditions)) {
+    foreach ($conditions as $condition) {
+      //
+      $value = _themekey_property_value($parameters, $condition['property']);
+      if (is_array($value)) {
+        //
+        if (!in_array($condition['value'], $value)) {
+          return FALSE;
         }
       }
-      // Support mapping via node id (src -> nid -> dst)
-      if ($nidmap['src'] !== FALSE && $nidmap['dst'] !== FALSE) {
-        $src_func = $maps[$nidmap['src']]['callback'];
-        $dst_func = $maps[$nidmap['dst']]['callback'];
-        return $dst_func($src_func($value[$maps[$nidmap['src']]['src']], $object), $object);
+      else {
+        // Default operator is 'equal'
+        if (!isset($condition['operator'])) {
+          $condition['operator'] = '=';
+        }
+        // Supported operators for condition check:
+        // smaller ('<'), greater ('>'), equal ('='), not equal ('!')
+        if ($condition['operator'] == '<' && $value >= $condition['value']) {
+          return FALSE;
+        }
+        else if ($condition['operator'] == '>' && $value <= $condition['value']) {
+          return FALSE;
+        }
+        else if ($condition['operator'] == '=' && $value != $condition['value']) {
+          return FALSE;
+        }
+        else if ($condition['operator'] == '!' && $value == $condition['value']) {
+          return FALSE;
+        }
       }
-
-      return NULL;
     }
   }
 
-  return $value;
+  return TRUE;
+}
+
+/**
+ * Function _themekey_property_value().
+ */
+function _themekey_property_value($parameters, $property) {
+  // Property value is available directly
+  if (isset($parameters[$property])) {
+    return $parameters[$property];
+  }
+  
+  // Try to get property value utilizing mapped properties
+  $nidmap = array('src' => FALSE, 'dst' => FALSE);
+  $uidmap = array('src' => FALSE, 'dst' => FALSE);
+  $maps = variable_get('themekey_maps', array());
+  foreach ($maps as $pos => $map) {
+    if (isset($parameters[$map['src']]) && $map['dst'] == 'node:nid') {
+      $nidmap['src'] = $pos;
+    }
+    if (isset($parameters[$map['src']]) && $map['dst'] == 'user:uid') {
+      $uidmap['src'] = $pos;
+    }
+    if ($map['src'] == 'node:nid' && $map['dst'] == $property) {
+      $nidmap['dst'] = $pos;
+    }
+    if ($map['src'] == 'user:uid' && $map['dst'] == $property) {
+      $uidmap['dst'] = $pos;
+    }
+    if (isset($parameters[$map['src']]) && $map['dst'] == $property) {
+      $map_func = $map['callback'];
+      return $map_func($parameters[$map['src']], $parameters);
+    }
+  }
+  // Support mapping via node id (src -> node:nid -> dst)
+  if ($nidmap['src'] !== FALSE && $nidmap['dst'] !== FALSE) {
+    $src_func = $maps[$nidmap['src']]['callback'];
+    $dst_func = $maps[$nidmap['dst']]['callback'];
+    return $dst_func($src_func($parameters[$maps[$nidmap['src']]['src']], $parameters), $parameters);
+  }
+  // Support mapping via user id (src -> user:uid -> dst)
+  if ($uidmap['src'] !== FALSE && $uidmap['dst'] !== FALSE) {
+    $src_func = $maps[$uidmap['src']]['callback'];
+    $dst_func = $maps[$uidmap['dst']]['callback'];
+    return $dst_func($src_func($parameters[$maps[$uidmap['src']]['src']], $parameters), $parameters);
+  }
+
+  return NULL;
 }

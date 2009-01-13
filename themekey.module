@@ -2,9 +2,6 @@
 // $Id$
 
 require_once(drupal_get_path('module', 'themekey') .'/themekey_base.inc');
-foreach (variable_get('themekey_modules', array('themekey.node')) as $module) {
-  require_once(drupal_get_path('module', 'themekey') .'/modules/'. $module .'.inc');
-}
 
 /**
  * Implementation of hook_theme()
@@ -76,13 +73,23 @@ function themekey_menu() {
  * Implementation of hook_themekey_properties().
  */
 function themekey_themekey_properties() {
+  require_once(drupal_get_path('module', 'themekey') .'/themekey_build.inc');
   return _themekey_invoke_modules('themekey_properties');
+}
+
+/**
+ * Implementation of hook_themekey_global().
+ */
+function themekey_themekey_global() {
+  require_once(drupal_get_path('module', 'themekey') .'/themekey_build.inc');
+  return _themekey_invoke_modules('themekey_global');
 }
 
 /**
  * Implementation of hook_themekey_paths().
  */
 function themekey_themekey_paths() {
+  require_once(drupal_get_path('module', 'themekey') .'/themekey_build.inc');
   return _themekey_invoke_modules('themekey_paths');
 }
 
@@ -93,16 +100,20 @@ function themekey_init() {
   global $custom_theme;
 
   $theme = NULL;
-  // Internal Drupal path
+  // Try to get theme for the normal Drupal path
   $theme = _themekey_match_paths($_GET['q']);
-  // Aliased Drupal path
   if (!$theme) {
+    // Derive path from request_uri
     $offset = (variable_get('clean_url', 0) ? 0 : 3) + strlen(base_path());
     $alias_uri = substr(request_uri(), $offset);
-    // TODO: locale rewrite
+    // For $alias_uri != $_GET['q'] the page was requested using an
+    // aliased path, otherwise get the path alias internally
+    if (($alias_uri == $_GET['q']) && module_exists('path')) {
+      $alias_uri = drupal_get_path_alias($_GET['q']);
+    }
+    // Try to get the theme for the aliased Drupal path
     $theme = _themekey_match_paths($alias_uri);
   }
-  
   // We have a matching theme, apply it
   if ($theme && $theme != 'default') {
     $custom_theme = $theme;

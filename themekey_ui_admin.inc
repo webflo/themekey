@@ -14,13 +14,21 @@ function _themekey_ui_settings_form() {
     '#collapsed' => FALSE
   );
   
+  if (module_exists('path')) {
+    $form['themekey_ui']['themekey_ui_pathalias'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Show theme option in the \'URL aliases\' administration'),
+      '#default_value' => variable_get('themekey_ui_pathalias', 0),
+      '#description' => t('Assign themes to paths/path aliases from the \'URL aliases\' administration pages.')
+    );
+  }
   //
   $nodeform = variable_get('themekey_ui_nodeform', 0);
   $form['themekey_ui']['themekey_ui_nodeform'] = array(
     '#type' => 'checkbox',
     '#title' => t('Show theme option in create/edit node forms'),
     '#default_value' => $nodeform,
-    '#description' => t('Assign themes directly from create/edit node forms. This will show a \'Theme\' section on create/edit node pages.')
+    '#description' => t('Assign themes from create/edit node forms. This will show a \'Theme\' section on create/edit node pages.')
   );
   if ($nodeform) {
     $form['themekey_ui']['content_type'] = array(
@@ -43,19 +51,10 @@ function _themekey_ui_settings_form() {
       $form['themekey_ui']['content_type']['table'][$type]['title'] = array('#value' => $title);
       $form['themekey_ui']['content_type']['table'][$type]['themekey_ui_nodeform|'.$type] = array(
         '#type' => 'checkbox',
-        '#default_value' => variable_get('themekey_ui_nodeform|'. $type, 0),
+        '#default_value' => variable_get('themekey_ui_nodeform|'. $type, 1),
       );
     }
   }
-  //
-  $views_exists = module_exists('views_ui');
-  $form['themekey_ui']['themekey_ui_views'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Enable \'Views\'-Support'),
-    '#default_value' => $views_exists ? variable_get('themekey_ui_views', 0) : FALSE,
-    '#description' => t('Show \'Theme\' option in settings for page views.'),
-    '#disabled' => !$views_exists
-  );
   
   $form['buttons']['submit'] = array(
     '#type' => 'submit',
@@ -95,9 +94,10 @@ function _themekey_ui_nodeform(&$form, &$form_state) {
     '#collapsible' => TRUE,
     '#collapsed' => TRUE
   );
+  $theme = variable_get('themekey_nodeaspath', 0) ? themekey_ui_get_path_theme('node/'. $form['#node']->nid) : themekey_ui_get_node_theme($form['#node']->nid);
   $form['nodeform_theme']['theme'] = array(
     '#type' => 'select',
-    '#default_value' => themekey_ui_get_node_theme($form['#node']->nid),
+    '#default_value' => $theme,
     '#options' => _themekey_theme_options(),
     '#description' => t('Theme to be assigned to current path/node'),
   );
@@ -113,46 +113,51 @@ function _themekey_ui_nodeform(&$form, &$form_state) {
  */
 function _themekey_ui_nodeform_submit($form, &$form_state) {
   if (!isset($form_state['values']['theme'])) {
-    themekey_ui_del_node_theme($form['#node']->nid);
+    if (variable_get('themekey_nodeaspath', 0))
+      themekey_ui_del_path_theme('node/'. $form['#node']->nid);
+    else
+      themekey_ui_del_node_theme($form['#node']->nid);
   }
   else {
-    themekey_ui_set_node_theme($form['#node']->nid, $form_state['values']['theme']);
+    if (variable_get('themekey_nodeaspath', 0))
+      themekey_ui_set_path_theme('node/'. $form['#node']->nid, $form_state['values']['theme']);
+    else
+      themekey_ui_set_node_theme($form['#node']->nid, $form_state['values']['theme']);
   }
 }
 
 /**
- * Function _themekey_ui_views().
+ * Function _themekey_ui_pathalias().
  */
-function _themekey_ui_views(&$form, &$form_state) {
-  $views_form['views_theme'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Theme'),
-    '#collapsible' => FALSE,
-    '#collapsed' => FALSE
-  );
-  $views_form['views_theme']['theme'] = array(
+function _themekey_ui_pathalias(&$form, &$form_state) {
+  if (!isset($form['#alias'])) {
+    return;
+  }
+
+  $pathalias_form['pathalias_theme']['theme'] = array(
     '#type' => 'select',
-    '#default_value' => themekey_ui_get_path_theme($form['path']['#default_value']),
+    '#title' => t('Theme'),
+    '#default_value' => themekey_ui_get_path_theme($form['#alias']['src']),
     '#options' => _themekey_theme_options(),
-    '#description' => t('Theme to be assigned to current views page'),
+    '#description' => t('Theme to be assigned to current path'),
   );
-  $views_form['views_theme']['themekey_submit'] = array(
+  $pathalias_form['pathalias_theme']['themekey_submit'] = array(
     '#type' => 'value',
-    '#value' => '_themekey_ui_views_submit'
+    '#value' => '_themekey_ui_pathalias_submit'
   );
-  array_splice($form, 4, 0, $views_form);
-  $form['#submit'][] = 'themekey_ui_form_submit';
+  array_splice($form, 4, 0, $pathalias_form);
+  array_unshift($form['#submit'], 'themekey_ui_form_submit');
 }
 
 /**
- * Function _themekey_ui_views_submit().
+ * Function _themekey_ui_pathalias_submit().
  */
-function _themekey_ui_views_submit($form, &$form_state) {
+function _themekey_ui_pathalias_submit($form, &$form_state) {
   if (!isset($form_state['values']['theme'])) {
-    themekey_ui_del_path_theme($form_state['values']['path']);
+    themekey_ui_del_path_theme($form['#alias']['src']);
   }
   else {
-    themekey_ui_set_path_theme($form_state['values']['path'], $form_state['values']['theme']);
+    themekey_ui_set_path_theme($form['#alias']['src'], $form_state['values']['theme']);
   }
 }
 

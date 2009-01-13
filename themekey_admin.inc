@@ -3,7 +3,7 @@
 
 require_once(drupal_get_path('module', 'themekey') .'/themekey_build.inc');
 
-define('THEMEKEY_PAGER_LENGTH', 15);
+define('THEMEKEY_PAGER_LENGTH', 25);
 
 /**
  * Function _themekey_paths_form().
@@ -24,13 +24,13 @@ function _themekey_paths_form() {
                          You can then specify conditions for every wildcard argument using the following syntax:
                          \'id=value;id2=value2;...\', e.g. \'xyz=123\'.')
   );
-  
+
   $form['paths']['table'] = array(
     '#theme' => 'themekey_table',
     '#header' => array(t('Path'), t('Conditions'), t('Theme')),
     '#tree' => TRUE
   );
-  
+
   $themes = _themekey_theme_options();
   $paths = _themekey_load_paths(THEMEKEY_PAGER_LENGTH);
   foreach ($paths as $path) {
@@ -52,11 +52,11 @@ function _themekey_paths_form() {
       '#options' => $themes
     );
   }
-  
+
   if (count($paths)) {
     $form['paths']['pager'] = array('#value' => theme('pager', array(), THEMEKEY_PAGER_LENGTH));
   }
-  
+
   $form['paths']['addtable'] = array(
     '#theme' => 'themekey_table',
     '#header' => array(t('Path'), t('Conditions'), t('Theme')),
@@ -79,7 +79,7 @@ function _themekey_paths_form() {
     '#default_value' => 'default',
     '#options' => $themes
   );
-  
+
   return _themekey_admin_form($form, '_themekey_paths');
 }
 
@@ -130,7 +130,7 @@ function _themekey_properties_form() {
                          \'Additional Conditions\' so that the theme only applies when all conditions are matched. \'Additional
                          Conditions\' must be provided using the following syntax: \'property=value;property2=value2;...\'')
   );
-  
+
   $form['properties']['table'] = array(
     '#theme' => 'themekey_table',
     '#header' => array(t('Property'), t('Value'), t('Additional Conditions'), t('Theme')),
@@ -144,6 +144,7 @@ function _themekey_properties_form() {
     foreach ($properties as $property) {
       $config[$property] = $property;
     }
+    ksort($config);
     $properties = _themekey_load_properties(THEMEKEY_PAGER_LENGTH, FALSE);
     foreach ($properties as $property) {
       $form['properties']['table'][$property['id']]['property'] = array(
@@ -233,7 +234,7 @@ function _themekey_properties_submit($form, &$form_state) {
   if (!empty($form_state['values']['addtable']['add']['value'])) {
     _themekey_properties_set($form_state['values']['addtable']['add']);
   }
-  
+
   drupal_set_message(t('The configuration options have been saved.'));
 }
 
@@ -251,7 +252,7 @@ function _themekey_properties_reset($form, &$form_state) {
 function _themekey_settings_form() {
   //
   _themekey_rebuild();
-  
+
   //
   $form['settings'] = array(
     '#type' => 'fieldset',
@@ -290,6 +291,7 @@ function _themekey_settings_form() {
   $properties = _themekey_properties_discover($nodediscover);
   foreach ($properties as $property => $path) {
     $properties[$property] = array('path' => $path,
+                                   'property' => $property,
                                    'enabled' => isset($config[$property]),
                                    'weight' => isset($config[$property]) ? $config[$property]['weight']: 0);
   }
@@ -315,6 +317,35 @@ function _themekey_settings_form() {
     $form['settings']['properties']['table'][$property]['path'] = array(
       '#type' => 'hidden',
       '#value' => $details['path']
+    );
+  }
+  //
+  if (isset($properties['nid']) && $properties['nid']['enabled']) {
+    $form['settings']['additional']['themekey_nodeaspath'] = array(
+      '#type' => 'select',
+      '#title' => t('Node theme preference'),
+      '#options' => array(
+        0 => t('Property-based'),
+        1 => t('Path-based')
+      ),
+      '#default_value' => variable_get('themekey_nodeaspath', 0),
+      '#description' => t('By default node themes are stored as nid property values. If you are working with path aliases it might be
+                           better to store them as paths. You should not change this settings once you have existing items.')
+    );
+    if (_themekey_num_paths() > 0) {
+      $warning  = '<br /><strong class="error">';
+      $warning .= t('WARNING: Do not change this settings or you will get duplicate (mixed) assignment to paths and properties.');
+      $warning .= '</strong>';
+      $form['settings']['additional']['themekey_nodeaspath']['#description'] .= $warning;
+    }
+  }
+  //
+  if (isset($form['settings']['additional']) && count($form['settings']['additional'])) {
+    $form['settings']['additional'] += array(
+      '#type' => 'fieldset',
+      '#title' => t('Additional Settings'),
+      '#collapsible' => TRUE,
+      '#collapsed' => FALSE
     );
   }
 
@@ -348,7 +379,7 @@ function _themekey_settings_submit($form, &$form_state) {
       variable_set($key, $value);
     }
   }
-  
+
   drupal_set_message(t('The configuration options have been saved.'));
   if (count($properties) > 10) {
     drupal_set_message(t('Attention! Do not enable too many properties as this may slow down page loads.'), 'error');
