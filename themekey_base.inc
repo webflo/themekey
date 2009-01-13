@@ -190,6 +190,10 @@ function _themekey_match_conditions($conditions, $parameters) {
         }
       }
       else {
+        // Default operator is 'equal'
+        if (!isset($condition['operator'])) {
+          $condition['operator'] = '=';
+        }
         // Supported operators for condition check:
         // smaller ('<'), greater ('>'), equal ('='), not equal ('!')
         if ($condition['operator'] == '<' && $value >= $condition['value']) {
