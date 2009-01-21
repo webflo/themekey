@@ -357,7 +357,7 @@ function _themekey_properties_del($id) {
  */
 function _themekey_properties_delall($properties) {
   $properties = is_array($properties) ? $properties : array($properties);
-  foreach($properties as $property) {
+  foreach ($properties as $property) {
     db_query('DELETE FROM {themekey_properties} WHERE property = \'%s\'', $property);
   }
 }

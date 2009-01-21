@@ -49,7 +49,7 @@ function _themekey_ui_settings_form() {
     );
     foreach (node_get_types('names') as $type => $title) {
       $form['themekey_ui']['content_type']['table'][$type]['title'] = array('#value' => $title);
-      $form['themekey_ui']['content_type']['table'][$type]['themekey_ui_nodeform|'.$type] = array(
+      $form['themekey_ui']['content_type']['table'][$type]['themekey_ui_nodeform|'. $type] = array(
         '#type' => 'checkbox',
         '#default_value' => variable_get('themekey_ui_nodeform|'. $type, 1),
       );

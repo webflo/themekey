@@ -50,7 +50,7 @@ HOOK_themekey_paths()
   Paths
     Key:    none (indexed)
     Value:  array()
-            - path      => Router path to regsiter (required)
+            - path      => Router path to register (required)
             - callbacks => Load (and/or match) callback (required)
               (the callback function can set the 'theme' element in $item directly)
               Callback arguments:

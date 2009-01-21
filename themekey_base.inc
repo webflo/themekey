@@ -72,7 +72,7 @@ function _themekey_match_paths($path) {
   $parts = explode('/', $path, MENU_MAX_PARTS);
   list($ancestors, $placeholders) = _themekey_get_path_ancestors($parts);
   //
-  $result = db_query('SELECT * FROM {themekey_paths} WHERE path IN ('. implode (',', $placeholders) .') ORDER BY fit DESC, weight DESC, custom DESC', $ancestors);
+  $result = db_query('SELECT * FROM {themekey_paths} WHERE path IN ('. implode(',', $placeholders) .') ORDER BY fit DESC, weight DESC, custom DESC', $ancestors);
   while ($item = db_fetch_array($result)) {
     $parameters = module_invoke_all('themekey_global');
     $conditions = unserialize($item['conditions']);
