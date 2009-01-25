@@ -7,17 +7,26 @@ Drupal: 6.x
 *****************************************************************************
 DESCRIPTION:
 
-The themekey module is ...
+ThemeKey is meant to be a generic theme switching module. It
+allows you to switch the theme for different paths and based
+on object properties (e.g. node field values). It can also be
+easily extended to support additional paths or properties as
+exposed by other modules.
+
+Documentation for users and developers is very sparse at the
+moment. I hope to complete the docs in the next few weeks.
+Thanks for your patience :)
 
 *****************************************************************************
 INSTALLATION:
 
-1. Place whole themekey folder into your Drupal modules/ directory.
+1. Place whole themekey folder into your Drupal modules/ or better
+   sites/x/modules/ directory.
 
 2. Enable the themekey module by navigating to
      administer > modules
 
-3. Bring up themekey configuration screen by navigating to
+3. Bring up themekey configuration screens by navigating to
      administer > settings > themekey
 
 *****************************************************************************
@@ -56,4 +65,5 @@ HOOK_themekey_paths()
               Callback arguments:
               - $item:    array of elements associated with the path/callback
               - $params:  array of parameters available for load callback
+              
 *****************************************************************************
