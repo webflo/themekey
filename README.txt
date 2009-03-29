@@ -30,6 +30,16 @@ INSTALLATION:
      administer > settings > themekey
 
 *****************************************************************************
+THEMEKEY UI:
+
+How to use ThemeKey UI on node forms ...
+
+- Go to admin/settings/themekey/settings/ui to make theme options available
+  on node forms, and check off the content types you want to enable the
+  options for
+- Go to admin/settings/themekey/settings and enable the 'node:nid' property
+
+*****************************************************************************
 FOR DEVELOPERS:
 
 HOOK_themekey_properties()
