@@ -7,15 +7,15 @@ require_once(drupal_get_path('module', 'themekey') .'/themekey_build.inc');
  * Function themekey_ui_get_node_theme().
  */
 function themekey_ui_get_node_theme($nid) {
-  return db_result(db_query('SELECT theme FROM {themekey_properties} WHERE property = \'nid\' AND value = \'%s\'', $nid));
+  return db_result(db_query('SELECT theme FROM {themekey_properties} WHERE property = \'node:nid\' AND value = \'%s\'', $nid));
 }
 
 /**
  * Function themekey_ui_set_node_theme().
  */
 function themekey_ui_set_node_theme($nid, $theme = 'default') {
-  $item = array('property' => 'nid', 'value' => $nid, 'theme' => $theme);
-  if ($id = db_result(db_query('SELECT id FROM {themekey_properties} WHERE property = \'nid\' AND value = \'%s\'', $nid))) {
+  $item = array('property' => 'node:nid', 'value' => $nid, 'theme' => $theme);
+  if ($id = db_result(db_query('SELECT id FROM {themekey_properties} WHERE property = \'node:nid\' AND value = \'%s\'', $nid))) {
     $item['id'] = $id;
   }
   _themekey_properties_set($item);
@@ -25,7 +25,7 @@ function themekey_ui_set_node_theme($nid, $theme = 'default') {
  * Function themekey_ui_del_node_theme().
  */
 function themekey_ui_del_node_theme($nid) {
-  db_query('DELETE FROM {themekey_properties} WHERE property = \'nid\' AND value = \'%s\'', $nid);
+  db_query('DELETE FROM {themekey_properties} WHERE property = \'node:nid\' AND value = \'%s\'', $nid);
 }
 
 /**

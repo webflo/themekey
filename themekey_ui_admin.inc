@@ -84,17 +84,16 @@ function _themekey_ui_settings_submit($form, &$form_state) {
  * Function _themekey_ui_nodeform().
  */
 function _themekey_ui_nodeform(&$form, &$form_state) {
-  if (!isset($form['#node']->nid)) {
-    return;
-  }
-  
   $form['nodeform_theme'] = array(
     '#type' => 'fieldset',
     '#title' => t('Theme'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE
   );
-  $theme = variable_get('themekey_nodeaspath', 0) ? themekey_ui_get_path_theme('node/'. $form['#node']->nid) : themekey_ui_get_node_theme($form['#node']->nid);
+  $theme = 'default';
+  if (isset($form['#node']->nid)) {
+    $theme = variable_get('themekey_nodeaspath', 0) ? themekey_ui_get_path_theme('node/'. $form['#node']->nid) : themekey_ui_get_node_theme($form['#node']->nid);
+  }
   $form['nodeform_theme']['theme'] = array(
     '#type' => 'select',
     '#default_value' => $theme,
@@ -109,20 +108,31 @@ function _themekey_ui_nodeform(&$form, &$form_state) {
 }
 
 /**
- * Function _themekey_ui_nodeform_submit().
+ * Function _themekey_ui_nodeapi().
  */
-function _themekey_ui_nodeform_submit($form, &$form_state) {
-  if (!isset($form_state['values']['theme'])) {
-    if (variable_get('themekey_nodeaspath', 0))
-      themekey_ui_del_path_theme('node/'. $form['#node']->nid);
-    else
-      themekey_ui_del_node_theme($form['#node']->nid);
-  }
-  else {
-    if (variable_get('themekey_nodeaspath', 0))
-      themekey_ui_set_path_theme('node/'. $form['#node']->nid, $form_state['values']['theme']);
-    else
-      themekey_ui_set_node_theme($form['#node']->nid, $form_state['values']['theme']);
+function _themekey_ui_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
+  switch ($op) {
+    case 'insert':
+    case 'update':
+      if (isset($node->theme) && $node->theme != 'default') {
+        if (variable_get('themekey_nodeaspath', 0))
+          themekey_ui_set_path_theme('node/'. $node->nid, $node->theme);
+        else
+          themekey_ui_set_node_theme($node->nid, $node->theme);
+      }
+      else {
+        if (variable_get('themekey_nodeaspath', 0))
+          themekey_ui_del_path_theme('node/'. $node->nid);
+        else
+          themekey_ui_del_node_theme($node->nid);
+      }
+      break;
+    case 'delete':
+      if (variable_get('themekey_nodeaspath', 0))
+        themekey_ui_del_path_theme('node/'. $node->nid);
+      else
+        themekey_ui_del_node_theme($node->nid);
+      break;
   }
 }
 

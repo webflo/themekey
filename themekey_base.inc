@@ -68,13 +68,18 @@ function _themekey_get_path_ancestors($parts) {
  * Function _themekey_match_paths().
  */
 function _themekey_match_paths($path) {
+  static $global_parameters = NULL;
+  //
+  if (!isset($global_parameters)) {
+    $global_parameters = module_invoke_all('themekey_global');
+  }
   //
   $parts = explode('/', $path, MENU_MAX_PARTS);
   list($ancestors, $placeholders) = _themekey_get_path_ancestors($parts);
   //
   $result = db_query('SELECT * FROM {themekey_paths} WHERE path IN ('. implode(',', $placeholders) .') ORDER BY fit DESC, weight DESC, custom DESC', $ancestors);
   while ($item = db_fetch_array($result)) {
-    $parameters = module_invoke_all('themekey_global');
+    $parameters = $global_parameters;
     $conditions = unserialize($item['conditions']);
     //
     $wildcards = unserialize($item['wildcards']);
@@ -99,8 +104,8 @@ function _themekey_match_paths($path) {
     
     return $item['theme'];
   }
-
-  return NULL;
+  
+  return _themekey_match_properties($global_parameters);
 }
 
 /* Property-based */
