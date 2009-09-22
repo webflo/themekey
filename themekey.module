@@ -99,33 +99,36 @@ function themekey_themekey_paths() {
 function themekey_init() {
   global $custom_theme;
 
-  $theme = NULL;
-  // Try to get theme for the normal Drupal path
-  $theme = _themekey_match_paths($_GET['q']);
-  if (!$theme) {
-    // Derive path from request_uri
-    $offset = (variable_get('clean_url', 0) ? 0 : 3) + strlen(base_path());
-    $alias_uri = substr(request_uri(), $offset);
-    // For $alias_uri != $_GET['q'] the page was requested using an
-    // aliased path, otherwise get the path alias internally
-    if (($alias_uri == $_GET['q']) && module_exists('path')) {
-      $alias_uri = drupal_get_path_alias($_GET['q']);
+  // don't change theme when administer blocks
+  if (strpos($_GET['q'], 'admin/build/block') !== 0) {
+    $theme = NULL;
+    // Try to get theme for the normal Drupal path
+    $theme = _themekey_match_paths($_GET['q']);
+    if (!$theme) {
+      // Derive path from request_uri
+      $offset = (variable_get('clean_url', 0) ? 0 : 3) + strlen(base_path());
+      $alias_uri = substr(request_uri(), $offset);
+      // For $alias_uri != $_GET['q'] the page was requested using an
+      // aliased path, otherwise get the path alias internally
+      if (($alias_uri == $_GET['q']) && module_exists('path')) {
+        $alias_uri = drupal_get_path_alias($_GET['q']);
+      }
+      // Try to get the theme for the aliased Drupal path
+      $theme = _themekey_match_paths($alias_uri);
     }
-    // Try to get the theme for the aliased Drupal path
-    $theme = _themekey_match_paths($alias_uri);
-  }
-  // If no theme has been triggered but a theme
-  // is in the user's session, use that theme.
-  if (!$theme && isset($_SESSION['themekey_theme'])
-      && (!$custom_theme || $custom_theme == variable_get('theme_default', 'bluemarine'))) {
-    $custom_theme = $_SESSION['themekey_theme'];
-  }
-  // We have a theme, apply it
-  if ($theme && $theme != 'default') {
-    if (variable_get('themekey_theme_maintain', 0)) {
-      $_SESSION['themekey_theme'] = $theme;
+    // If no theme has been triggered but a theme
+    // is in the user's session, use that theme.
+    if (!$theme && isset($_SESSION['themekey_theme'])
+        && (!$custom_theme || $custom_theme == variable_get('theme_default', 'bluemarine'))) {
+      $custom_theme = $_SESSION['themekey_theme'];
     }
-    $custom_theme = $theme;
-    init_theme();
+    // We have a theme, apply it
+    if ($theme && $theme != 'default') {
+      if (variable_get('themekey_theme_maintain', 0)) {
+        $_SESSION['themekey_theme'] = $theme;
+      }
+      $custom_theme = $theme;
+      init_theme();
+    }
   }
 }
