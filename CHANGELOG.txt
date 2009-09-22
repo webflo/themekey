@@ -2,6 +2,7 @@
 
 ThemeKey 6.x-1.2, 2009-xx-xx
 ----------------------------------------------
+[       ] mkalkbrenner: mention ThemeKey Properties at README.txt
 [#570642] mkalkbrenner: ThemeKey breaks core block configuration
 [       ] mkalkbrenner: added CHANGELOG.txt
 

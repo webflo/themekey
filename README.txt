@@ -1,11 +1,17 @@
-*****************************************************************************
-                              T H E M E K E Y
-*****************************************************************************
-Name: themekey module
-Author: Thilo Wawrzik <drupal at profix898 dot de>
+// $Id$
+
+ThemeKey
+========
+
+Name: themekey
+Authors: Thilo Wawrzik <drupal at profix898 dot de>
+         Markus Kalkbrenner | Cocomore AG
 Drupal: 6.x
-*****************************************************************************
-DESCRIPTION:
+Sponsor: Cocomore AG - http://www.cocomore.com
+
+
+Description
+===========
 
 ThemeKey is meant to be a generic theme switching module. It
 allows you to switch the theme for different paths and based
@@ -17,8 +23,9 @@ Documentation for users and developers is very sparse at the
 moment. I hope to complete the docs in the next few weeks.
 Thanks for your patience :)
 
-*****************************************************************************
-INSTALLATION:
+
+Installation
+============
 
 1. Place whole themekey folder into your Drupal modules/ or better
    sites/x/modules/ directory.
@@ -29,8 +36,9 @@ INSTALLATION:
 3. Bring up themekey configuration screens by navigating to
      administer > settings > themekey
 
-*****************************************************************************
-THEMEKEY UI:
+
+ThemeKey UI
+===========
 
 How to use ThemeKey UI on node forms ...
 
@@ -39,8 +47,16 @@ How to use ThemeKey UI on node forms ...
   options for
 - Go to admin/settings/themekey/settings and enable the 'node:nid' property
 
-*****************************************************************************
-FOR DEVELOPERS:
+
+ThemeKey Properties
+===================
+
+"ThemeKey Properties" adds additional properties to ThemeKey module.
+Download it from http://drupal.org/project/themekey_properties
+
+
+For Developers
+==============
 
 HOOK_themekey_properties()
   Attributes
@@ -75,5 +91,3 @@ HOOK_themekey_paths()
               Callback arguments:
               - $item:    array of elements associated with the path/callback
               - $params:  array of parameters available for load callback
-              
-*****************************************************************************
