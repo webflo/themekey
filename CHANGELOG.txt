@@ -1,0 +1,6 @@
+// $Id$
+
+ThemeKey 6.x-1.2, 2009-xx-xx
+----------------------------------------------
+[] mkalkbrenner: added CHANGELOG.txt
+
