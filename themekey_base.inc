@@ -28,11 +28,11 @@ function _themekey_invoke_modules($hook) {
 function _themekey_get_path_ancestors($parts) {
   $placeholders = array();
   $ancestors = array();
-  
+
   $number_parts = count($parts);
   $length =  $number_parts - 1;
   $end = (1 << $number_parts) - 1;
-  
+
   $masks = variable_get('menu_masks', array());
   foreach ($masks as $i) {
     if ($i > $end) {
@@ -60,7 +60,7 @@ function _themekey_get_path_ancestors($parts) {
       $ancestors[] = str_replace('#', '%', $current);
     }
   }
-  
+
   return array($ancestors, $placeholders);
 }
 
@@ -68,13 +68,18 @@ function _themekey_get_path_ancestors($parts) {
  * Function _themekey_match_paths().
  */
 function _themekey_match_paths($path) {
+  static $global_parameters = NULL;
+  //
+  if (!isset($global_parameters)) {
+    $global_parameters = module_invoke_all('themekey_global');
+  }
   //
   $parts = explode('/', $path, MENU_MAX_PARTS);
   list($ancestors, $placeholders) = _themekey_get_path_ancestors($parts);
   //
-  $result = db_query('SELECT * FROM {themekey_paths} WHERE path IN ('. implode (',', $placeholders) .') ORDER BY fit DESC, weight DESC, custom DESC', $ancestors);
+  $result = db_query('SELECT * FROM {themekey_paths} WHERE path IN ('. implode(',', $placeholders) .') ORDER BY fit DESC, weight DESC, custom DESC', $ancestors);
   while ($item = db_fetch_array($result)) {
-    $parameters = module_invoke_all('themekey_global');
+    $parameters = $global_parameters;
     $conditions = unserialize($item['conditions']);
     //
     $wildcards = unserialize($item['wildcards']);
@@ -96,19 +101,19 @@ function _themekey_match_paths($path) {
     if (!$item['theme']) {
       $item['theme'] = _themekey_match_properties($parameters);
     }
-    
+
     return $item['theme'];
   }
 
-  return NULL;
+  return _themekey_match_properties($global_parameters);
 }
 
 /* Property-based */
 
 /**
- * Function _themkey_prepare_object().
+ * Function _themekey_prepare_object().
  */
-function _themkey_prepare_object($object) {
+function _themekey_prepare_object($object) {
   $parameters = array('#raw' => $object);
   $properties = variable_get('themekey_properties', array());
   foreach ($properties as $property => $details) {
@@ -116,7 +121,7 @@ function _themkey_prepare_object($object) {
       $parameters[$property] = $value;
     }
   }
-  
+
   return $parameters;
 }
 
@@ -134,7 +139,7 @@ function _themekey_property_field($value, $path) {
       return NULL;
     }
   }
-  
+
   return is_array($value) ? array_keys($value) : $value;
 }
 
@@ -144,7 +149,7 @@ function _themekey_property_field($value, $path) {
 function _themekey_match_properties($parameters, $object = NULL) {
   //
   if (isset($object)) {
-    $parameters = _themkey_prepare_object(array_merge($parameters, (array)drupal_clone($object)));
+    $parameters = _themekey_prepare_object(array_merge($parameters, (array)drupal_clone($object)));
   }
   //
   $properties = variable_get('themekey_properties', array());
@@ -171,7 +176,7 @@ function _themekey_match_properties($parameters, $object = NULL) {
       }
     }
   }
-  
+
   return NULL;
 }
 
@@ -223,7 +228,7 @@ function _themekey_property_value($parameters, $property) {
   if (isset($parameters[$property])) {
     return $parameters[$property];
   }
-  
+
   // Try to get property value utilizing mapped properties
   $nidmap = array('src' => FALSE, 'dst' => FALSE);
   $uidmap = array('src' => FALSE, 'dst' => FALSE);

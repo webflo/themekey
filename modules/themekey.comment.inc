@@ -5,13 +5,13 @@ function themekey_comment_themekey_properties() {
   // Attributes for properties
   $attributes = array();
   $attributes['comment:cid'] = array('description' => t('Comment: ID'));
-  
+
   // Mapping functions
   $maps = array();
   $maps[] = array('src'       => 'comment:cid',
                   'dst'       => 'node:nid',
                   'callback'  => 'themekey_comment_cid2nid');
-  
+
   return array('attributes' => $attributes, 'maps' => $maps);
 }
 
@@ -21,7 +21,7 @@ function themekey_comment_themekey_paths() {
   $paths[] = array('path' => 'comment/reply/#node:nid/#comment:cid');
   $paths[] = array('path' => 'comment/edit/#comment:cid');
   $paths[] = array('path' => 'comment/delete/#comment:cid');
-  
+
   return $paths;
 }
 

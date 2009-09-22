@@ -31,7 +31,7 @@ function themekey_taxonomy_themekey_properties() {
 function themekey_taxonomy_themekey_paths() {
   $paths = array();
   $paths[] = array('path' => 'taxonomy/term/#taxonomy:tid');
-  
+
   // Add support for 'forum' paths
   if (module_exists('forum')) {
     $paths[] = array('path' => 'forum/#taxonomy:vid');
@@ -44,7 +44,7 @@ function themekey_taxonomy_themekey_paths() {
       $paths[] = array('path' => $prefix .'/#taxonomy:vid/'. implode('/', array_fill(0, $i, '#')) .'/#taxonomy:tid');
     }
   }
-  
+
   return $paths;
 }
 
@@ -62,7 +62,7 @@ function themekey_taxonomy_tid2vid($tids) {
   foreach ($tids as $tid) {
     $vid[] = db_result(db_query('SELECT vid FROM {term_data} WHERE tid = %d', $tid));
   }
-  
+
   return count($vid) ? $vid : FALSE;
 }
 
@@ -79,7 +79,7 @@ function themekey_taxonomy_nid2vid($nid, $object = NULL) {
       $vid[] = $term->vid;
     }
   }
-  
+
   return count($vid) ? $vid : FALSE;
 }
 
@@ -87,12 +87,12 @@ function themekey_taxonomy_nid2tid($nid, $object = NULL) {
   if (is_array($object) && isset($object['#raw']['taxonomy'])) {
     return array_keys($object['#raw']['taxonomy']);
   }
-  
+
   $tid = array();
   $result = db_query('SELECT tid FROM {term_node} WHERE nid = %d', $nid);
   while ($term = db_fetch_object($result)) {
     $tid[] = $term->tid;
   }
-  
+
   return count($tid) ? $tid : FALSE;
 }

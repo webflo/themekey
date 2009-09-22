@@ -20,13 +20,14 @@ function themekey_node_themekey_paths() {
   $paths = array();
   $paths[] = array('path'       => 'node/#node:nid',
                    'callbacks'  => array('_themekey_node_callback'));
-  
+
   return $paths;
 }
 
 function _themekey_node_callback(&$item, $parameters) {
-  $node = node_load($parameters['node:nid']);
-  if ($theme = _themekey_match_properties($parameters, $node)) {
-    $item['theme'] = $theme;
+  if ($node = node_load($parameters['node:nid'])) {
+    if ($theme = _themekey_match_properties($parameters, $node)) {
+      $item['theme'] = $theme;
+    }
   }
 }

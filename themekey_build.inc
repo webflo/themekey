@@ -36,7 +36,7 @@ function _themekey_rebuild() {
   $maps = isset($properties['maps']) ? $properties['maps'] : array();
   drupal_alter('themekey_maps', $maps);
   variable_set('themekey_maps', $maps);
-  
+
   // Find all previous registered paths
   $obsolete_paths = array();
   $result = db_query('SELECT id, path FROM {themekey_paths} WHERE custom = 0');
@@ -70,7 +70,7 @@ function _themekey_scan_modules() {
       $modules[] = $file->name;
     }
   }
-  
+
   variable_set('themekey_modules', $modules);
 }
 
@@ -219,7 +219,7 @@ function _themekey_node_discover() {
     _themekey_node_discover_properties($node, $properties);
     $properties = array_diff($properties, $ignore);
   }
-  
+
   return $properties;
 }
 
@@ -248,7 +248,7 @@ function _themekey_node_discover_properties($node, &$properties, $parents = arra
  */
 function _themekey_properties_discover($nodediscover = FALSE) {
   $properties = array();
-  
+
   // Module-exposed properties
   $attributes = variable_get('themekey_attributes', array());
   foreach ($attributes as $property => $details) {
@@ -270,7 +270,7 @@ function _themekey_properties_discover($nodediscover = FALSE) {
   if ($nodediscover) {
     $properties = array_merge($properties, _themekey_node_discover());
   }
-  
+
   return $properties;
 }
 
@@ -304,7 +304,7 @@ function _themekey_properties_implode_conditions($conditions) {
     $string[] = $condition['property'] . $condition['operator'] . $condition['value'];
   }
   $string = implode('; ', $string);
-  
+
   return $string;
 }
 
@@ -341,7 +341,7 @@ function _themekey_properties_set(&$item) {
     $weightfn = $attributes[$item['property']]['weight'];
     $item['weight'] = function_exists($weightfn) ? $weightfn($item) : 0;
   }
-  
+
   drupal_write_record('themekey_properties', $item, isset($item['id']) ? 'id' : array());
 }
 
@@ -357,7 +357,7 @@ function _themekey_properties_del($id) {
  */
 function _themekey_properties_delall($properties) {
   $properties = is_array($properties) ? $properties : array($properties);
-  foreach($properties as $property) {
+  foreach ($properties as $property) {
     db_query('DELETE FROM {themekey_properties} WHERE property = \'%s\'', $property);
   }
 }

@@ -22,7 +22,8 @@ function _themekey_paths_form() {
                          against a certain part, use an identifier with the wildcard. For example: Path =
                          \'comment/reply/#xyz\' matches all paths with \'comment/reply\' and a numeric third argument.
                          You can then specify conditions for every wildcard argument using the following syntax:
-                         \'id=value;id2=value2;...\', e.g. \'xyz=123\'.')
+                         \'id=value;id2=value2;...\', e.g. \'xyz=123\'. Supported operators are \'=\' (equal), \'!\' (not equal),
+                         \'<\' (smaller) and \'>\' (greater).')
   );
 
   $form['paths']['table'] = array(
@@ -128,7 +129,8 @@ function _themekey_properties_form() {
                          the value which you want to assign the theme to. For example: Property = \'nid\', Value = \'123\'
                          and Theme = \'Bluemarine\' switches the theme of node 123 to Bluemarine. You may also specify
                          \'Additional Conditions\' so that the theme only applies when all conditions are matched. \'Additional
-                         Conditions\' must be provided using the following syntax: \'property=value;property2=value2;...\'')
+                         Conditions\' must be provided using the following syntax: \'property=value;property2=value2;...\'.
+                         Supported operators are \'=\' (equal), \'!\' (not equal), \'<\' (smaller) and \'>\' (greater).')
   );
 
   $form['properties']['table'] = array(
@@ -265,6 +267,13 @@ function _themekey_settings_form() {
     '#title' => t('Provide all themes for selection'),
     '#default_value' => variable_get('themekey_allthemes', 1),
     '#description' => t('Make all installed themes available for selection, not enabled ones only.')
+  );
+  $form['settings']['themekey_theme_maintain'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Retain the theme until a new theme is set'),
+    '#default_value' => variable_get('themekey_theme_maintain', 0),
+    '#description' => t('Select this option to have users stay in the same theme until they
+                         browse to a new page with an explicit theme set.')
   );
   $nodediscover = variable_get('themekey_nodediscover', 0);
   $form['settings']['themekey_nodediscover'] = array(

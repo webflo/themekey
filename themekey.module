@@ -114,8 +114,17 @@ function themekey_init() {
     // Try to get the theme for the aliased Drupal path
     $theme = _themekey_match_paths($alias_uri);
   }
-  // We have a matching theme, apply it
+  // If no theme has been triggered but a theme
+  // is in the user's session, use that theme.
+  if (!$theme && isset($_SESSION['themekey_theme'])
+      && (!$custom_theme || $custom_theme == variable_get('theme_default', 'bluemarine'))) {
+    $custom_theme = $_SESSION['themekey_theme'];
+  }
+  // We have a theme, apply it
   if ($theme && $theme != 'default') {
+    if (variable_get('themekey_theme_maintain', 0)) {
+      $_SESSION['themekey_theme'] = $theme;
+    }
     $custom_theme = $theme;
     init_theme();
   }
