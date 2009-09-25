@@ -98,6 +98,9 @@ function themekey_taxonomy_nid2tid($nid, $object = NULL) {
 
 function themekey_taxonomy_nid2tid_and_parents($nid, $object = NULL) {
   $node_tids = themekey_taxonomy_nid2tid($nid, $object);
+  if (!is_array($node_tids)) {
+    return FALSE;
+  }
   $tids = $node_tids;
   foreach ($node_tids as $tid) {
     $parent_terms = taxonomy_get_parents_all($tid);
