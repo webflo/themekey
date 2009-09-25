@@ -29,8 +29,6 @@ function _themekey_get_path_ancestors($parts) {
   $placeholders = array();
   $ancestors = array();
 
-  // FIXME comment/reply/47/11 is not turned into required ancestor comment/reply/#/#
-
   $number_parts = count($parts);
   $length =  $number_parts - 1;
   $end = (1 << $number_parts) - 1;
