@@ -2,6 +2,7 @@
 
 ThemeKey 6.x-1.2, 2009-xx-xx
 ----------------------------------------------
+[#584982] sinasalek, mkalkbrenner: Does not respect hierarchy of terms - added new property taxonomy:tid_and_childs
 [#434242] mkalkbrenner, cspitzlay: Non-array properties do not work correctly
 [#570642] mkalkbrenner: ThemeKey breaks core block configuration
 [       ] mkalkbrenner: mention ThemeKey Properties at README.txt

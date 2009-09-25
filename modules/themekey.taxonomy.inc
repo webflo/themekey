@@ -12,6 +12,10 @@ function themekey_taxonomy_themekey_properties() {
                                       'path' => 'taxonomy',
                                       'weight' => 'themekey_taxonomy_tid_weight',
                                       'description' => t('Taxonomy: Term'));
+  $attributes['taxonomy:tid_and_childs'] = array('multiple' => TRUE,
+                                      'path' => 'taxonomy',
+                                      'weight' => 'themekey_taxonomy_tid_weight',
+                                      'description' => t('Taxonomy: Term and its childs'));
 
   // Mapping functions
   $maps = array();
@@ -24,6 +28,9 @@ function themekey_taxonomy_themekey_properties() {
   $maps[] = array('src'       => 'node:nid',
                   'dst'       => 'taxonomy:tid',
                   'callback'  => 'themekey_taxonomy_nid2tid');
+  $maps[] = array('src'       => 'node:nid',
+                  'dst'       => 'taxonomy:tid_and_childs',
+                  'callback'  => 'themekey_taxonomy_nid2tid_and_parents');
 
   return array('attributes' => $attributes, 'maps' => $maps);
 }
@@ -58,6 +65,7 @@ function themekey_taxonomy_tid_weight($item) {
 
 function themekey_taxonomy_tid2vid($tids) {
   $vid = array();
+  // TODO use taxonomy API instead SQL
   $tids = is_array($tids) ? $tids : array($tids);
   foreach ($tids as $tid) {
     $vid[] = db_result(db_query('SELECT vid FROM {term_data} WHERE tid = %d', $tid));
@@ -86,4 +94,17 @@ function themekey_taxonomy_nid2tid($nid, $object = NULL) {
   }
 
   return count($tid) ? $tid : FALSE;
+}
+
+function themekey_taxonomy_nid2tid_and_parents($nid, $object = NULL) {
+  $node_tids = themekey_taxonomy_nid2tid($nid, $object);
+  $tids = $node_tids;
+  foreach ($node_tids as $tid) {
+    $parent_terms = taxonomy_get_parents_all($tid);
+    foreach ($parent_terms as $parent_term) {
+      $tids[] = $parent_term->tid;
+    }
+  }
+
+  return count($tids) ? array_unique($tids) : FALSE;
 }
