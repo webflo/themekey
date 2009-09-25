@@ -84,3 +84,21 @@ function themekey_update_6001() {
 
   return $ret;
 }
+
+/**
+ * Implementation of hook_update_N().
+ */
+function themekey_update_6100() {
+
+  $properties = variable_get('themekey_properties', array());
+
+  foreach ($properties as $key => &$property) {
+    if (array_key_exists('path', $property) && $key === $property['path']) {
+      $property['path'] = FALSE;
+    }
+  }
+
+  variable_set('themekey_properties', $properties);
+
+  return array();
+}

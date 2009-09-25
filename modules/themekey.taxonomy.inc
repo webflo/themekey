@@ -68,27 +68,18 @@ function themekey_taxonomy_tid2vid($tids) {
 
 function themekey_taxonomy_nid2vid($nid, $object = NULL) {
   $vid = array();
-  if (is_array($object) && isset($object['#raw']['taxonomy'])) {
-    foreach ($object['#raw']['taxonomy'] as $term) {
-      $vid[] = $term->vid;
-    }
-  }
-  else {
-    $result = db_query('SELECT td.vid FROM {term_data} td INNER JOIN {term_node} tn ON td.tid = tn.tid WHERE tn.nid = %d', $nid);
-    while ($term = db_fetch_object($result)) {
-      $vid[] = $term->vid;
-    }
+  // TODO use taxonomy API instead SQL
+  $result = db_query('SELECT td.vid FROM {term_data} td INNER JOIN {term_node} tn ON td.tid = tn.tid WHERE tn.nid = %d', $nid);
+  while ($term = db_fetch_object($result)) {
+    $vid[] = $term->vid;
   }
 
   return count($vid) ? $vid : FALSE;
 }
 
 function themekey_taxonomy_nid2tid($nid, $object = NULL) {
-  if (is_array($object) && isset($object['#raw']['taxonomy'])) {
-    return array_keys($object['#raw']['taxonomy']);
-  }
-
   $tid = array();
+  // TODO use taxonomy API instead SQL
   $result = db_query('SELECT tid FROM {term_node} WHERE nid = %d', $nid);
   while ($term = db_fetch_object($result)) {
     $tid[] = $term->tid;

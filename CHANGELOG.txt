@@ -2,7 +2,8 @@
 
 ThemeKey 6.x-1.2, 2009-xx-xx
 ----------------------------------------------
-[       ] mkalkbrenner: mention ThemeKey Properties at README.txt
+[#434242] mkalkbrenner, cspitzlay: Non-array properties do not work correctly
 [#570642] mkalkbrenner: ThemeKey breaks core block configuration
+[       ] mkalkbrenner: mention ThemeKey Properties at README.txt
 [       ] mkalkbrenner: added CHANGELOG.txt
 

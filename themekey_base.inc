@@ -29,6 +29,8 @@ function _themekey_get_path_ancestors($parts) {
   $placeholders = array();
   $ancestors = array();
 
+  // FIXME comment/reply/47/11 is not turned into required ancestor comment/reply/#/#
+
   $number_parts = count($parts);
   $length =  $number_parts - 1;
   $end = (1 << $number_parts) - 1;
@@ -69,7 +71,9 @@ function _themekey_get_path_ancestors($parts) {
  */
 function _themekey_match_paths($path) {
   static $global_parameters = NULL;
-  //
+
+  // TODO only check path if there configured paths but not if only properties used
+
   if (!isset($global_parameters)) {
     $global_parameters = module_invoke_all('themekey_global');
   }
@@ -113,44 +117,39 @@ function _themekey_match_paths($path) {
 /**
  * Function _themekey_prepare_object().
  */
-function _themekey_prepare_object($object) {
-  $parameters = array('#raw' => $object);
+function _themekey_prepare_object($object, $parameters) {
+  $object_array = (array)drupal_clone($object);
   $properties = variable_get('themekey_properties', array());
   foreach ($properties as $property => $details) {
-    if (($value = _themekey_property_field($object, $details['path'])) != NULL) {
+    if (($value = _themekey_get_object_property($object_array, $details['path'])) != NULL) {
       $parameters[$property] = $value;
     }
   }
-
   return $parameters;
 }
 
 /**
- * Function _themekey_property_field().
+ * Function _themekey_get_object_property().
  */
-function _themekey_property_field($value, $path) {
+function _themekey_get_object_property($object_array, $path) {
   //
   $parts = explode('/', $path);
   foreach ($parts as $part) {
-    if (is_array($value) && isset($value[$part])) {
-      $value = (array)$value[$part];
+    if (is_array($object_array) && isset($object_array[$part])) {
+      $object_array = $object_array[$part];
     }
     else {
       return NULL;
     }
   }
 
-  return is_array($value) ? array_keys($value) : $value;
+  return is_array($object_array) ? array_keys($object_array) : $object_array;
 }
 
 /**
  * Function _themekey_match_properties().
  */
-function _themekey_match_properties($parameters, $object = NULL) {
-  //
-  if (isset($object)) {
-    $parameters = _themekey_prepare_object(array_merge($parameters, (array)drupal_clone($object)));
-  }
+function _themekey_match_properties($parameters) {
   //
   $properties = variable_get('themekey_properties', array());
   foreach (array_keys($properties) as $property) {

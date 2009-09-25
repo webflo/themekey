@@ -255,6 +255,9 @@ function _themekey_properties_discover($nodediscover = FALSE) {
     if (isset($details['path'])) {
       $properties[$property] = $details['path'];
     }
+    else {
+      $properties[$property] = FALSE;
+    }
   }
   // URL argument properties
   $result = db_query('SELECT wildcards FROM {themekey_paths} WHERE custom = 0');
