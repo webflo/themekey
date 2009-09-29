@@ -56,10 +56,12 @@ function themekey_taxonomy_themekey_paths() {
 }
 
 function themekey_taxonomy_vid_weight($item) {
+  // TODO use taxonomy API instead SQL
   return db_result(db_query('SELECT weight FROM {vocabulary} WHERE vid = %d', $item['value']));
 }
 
 function themekey_taxonomy_tid_weight($item) {
+  // TODO use taxonomy API instead SQL
   return db_result(db_query('SELECT weight FROM {term_data} WHERE tid = %d', $item['value']));
 }
 
