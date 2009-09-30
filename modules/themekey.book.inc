@@ -34,7 +34,6 @@ function themekey_book_nid2bid($nid, $object = NULL) {
 function themekey_book_nid2has_children($nid, $object = NULL) {
   if ($node = node_load($nid)) {
     if (!empty($node->book['has_children'])) {
-      var_dump($node->book['has_children']);
       return $node->book['has_children'];
     }
   }
