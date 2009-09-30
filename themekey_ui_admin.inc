@@ -100,6 +100,11 @@ function _themekey_ui_nodeform(&$form, &$form_state) {
     '#options' => _themekey_theme_options(),
     '#description' => t('Theme to be assigned to current path/node'),
   );
+
+  if (!_themekey_check_theme_enabled($theme, TRUE)) {
+    $form['nodeform_theme']['theme']['#attributes'] = array('class' => 'error');
+  }
+
   $form['#submit'][] = 'themekey_ui_form_submit';
 }
 

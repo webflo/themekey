@@ -52,6 +52,10 @@ function _themekey_paths_form() {
       '#default_value' => $path['theme'],
       '#options' => $themes
     );
+
+    if (!_themekey_check_theme_enabled($path['theme'], TRUE)) {
+      $form['paths']['table'][$path['id']]['theme']['#attributes'] = array('class' => 'error');
+    }
   }
 
   if (count($paths)) {
@@ -170,8 +174,12 @@ function _themekey_properties_form() {
       $form['properties']['table'][$property['id']]['theme'] = array(
         '#type' => 'select',
         '#default_value' => $property['theme'],
-        '#options' => $themes
+        '#options' => $themes,
       );
+
+      if (!_themekey_check_theme_enabled($property['theme'], TRUE)) {
+        $form['properties']['table'][$property['id']]['theme']['#attributes'] = array('class' => 'error');
+      }
     }
 
     if (count($properties)) {

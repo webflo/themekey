@@ -104,6 +104,10 @@ function _themekey_match_paths($path) {
       $item['theme'] = _themekey_match_properties($parameters);
     }
 
+    if (!_themekey_check_theme_enabled($item['theme'])) {
+      continue;
+    }
+
     return $item['theme'];
   }
 
@@ -160,6 +164,9 @@ function _themekey_match_properties($parameters) {
         //
         $item['conditions'] = unserialize($item['conditions']);
         if (_themekey_match_conditions($item['conditions'], $parameters)) {
+          if (!_themekey_check_theme_enabled($item['theme'])) {
+            continue;
+          }
           //
           $callbacks = unserialize($item['callbacks']);
           if (is_array($callbacks) && count($callbacks)) {
@@ -262,4 +269,46 @@ function _themekey_property_value($parameters, $property) {
   }
 
   return NULL;
+}
+
+
+function _themekey_check_theme_enabled($theme, $settings_page = FALSE) {
+  static $themes_enabled = array();
+  static $warned = FALSE;
+  static $displayed_error = FALSE;
+
+  if ('default' == $theme) {
+    return TRUE;
+  }
+
+  if (empty($themes_enabled)) {
+    if ($result = db_query("SELECT name FROM {system} WHERE type = 'theme' AND status = 1;")) {
+      while ($row = db_fetch_array($result)) {
+        $themes_enabled[] = $row['name'];
+      }
+    }
+  }
+
+  if (in_array($theme, $themes_enabled)) {
+    return TRUE;
+  }
+
+  if ($settings_page) {
+    if (!$displayed_error) {
+      drupal_set_message(t("Your current configuration of theme rules uses at least one theme that is not enabled. Nevertheless this configuration is stored but affected rules won't be applied until the targeted theme will be enabled at !build_themes.",
+        array('!build_themes' => l('admin/build/themes', 'admin/build/themes'))), 'error');
+      $displayed_error = TRUE;
+    }
+  }
+  else {
+    global $user;
+
+    if (!$warned && 1 == $user->uid) {
+      drupal_set_message(t('A matching ThemeKey rule to select theme %theme was not applied because this theme is disabled. You can enable this theme at !build_themes or remove this ThemeKey rule at !themekey_paths or !themekey_properties or edit current node if the theme was selected using ThemeKey UI.',
+        array('%theme' => $theme, '!build_themes' => l('admin/build/themes', 'admin/build/themes'), '!themekey_paths' => l('admin/settings/themekey', 'admin/settings/themekey'), '!themekey_properties' => l('admin/settings/themekey/properties', 'admin/settings/themekey/properties'))), 'warning');
+      $warned = TRUE;
+    }
+  }
+
+  return FALSE;
 }
