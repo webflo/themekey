@@ -51,7 +51,6 @@ function themekey_schema() {
  */
 function themekey_install() {
   drupal_install_schema('themekey');
-  db_query("UPDATE {system} SET weight = -10 WHERE name = 'themekey'");
 }
 
 /**
@@ -100,5 +99,14 @@ function themekey_update_6100() {
 
   variable_set('themekey_properties', $properties);
 
+  return array();
+}
+
+
+/**
+ * Implementation of hook_update_N().
+ */
+function themekey_update_6101() {
+  db_query("UPDATE {system} SET weight = 0 WHERE name = 'themekey'");
   return array();
 }

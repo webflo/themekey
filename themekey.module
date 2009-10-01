@@ -99,8 +99,9 @@ function themekey_themekey_paths() {
 function themekey_init() {
   global $custom_theme;
 
+  // don't change theme when another module already set a $custom_theme like system.module does (administration theme)
   // don't change theme when administer blocks
-  if (strpos($_GET['q'], 'admin/build/block') !== 0) {
+  if (!$custom_theme && strpos($_GET['q'], 'admin/build/block') !== 0) {
     $theme = NULL;
     // Try to get theme for the normal Drupal path
     $theme = _themekey_match_paths($_GET['q']);
@@ -119,7 +120,7 @@ function themekey_init() {
     // If no theme has been triggered but a theme
     // is in the user's session, use that theme.
     if (!$theme && isset($_SESSION['themekey_theme'])
-        && (!$custom_theme || $custom_theme == variable_get('theme_default', 'bluemarine'))) {
+        && (!$custom_theme || $custom_theme == variable_get('theme_default', 'garland'))) {
       $custom_theme = $_SESSION['themekey_theme'];
     }
     // We have a theme, apply it
@@ -128,7 +129,6 @@ function themekey_init() {
         $_SESSION['themekey_theme'] = $theme;
       }
       $custom_theme = $theme;
-      init_theme();
     }
   }
 }
