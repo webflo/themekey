@@ -1,6 +1,6 @@
 // $Id$
 
-ThemeKey 6.x-1.2-beta1, 2009-xx-xx
+ThemeKey 6.x-1.2-beta1, 2009-10-01
 ----------------------------------
 [#482766] mkalkbrenner: Themekey overriding administration theme on node edit
 [#558044] mkalkbrenner: ThemeKey does not respect theme enabled/disabled
