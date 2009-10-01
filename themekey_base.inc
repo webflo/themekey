@@ -277,7 +277,7 @@ function _themekey_check_theme_enabled($theme, $settings_page = FALSE) {
   static $warned = FALSE;
   static $displayed_error = FALSE;
 
-  if ('default' == $theme) {
+  if (!$theme || 'default' == $theme) {
     return TRUE;
   }
 
