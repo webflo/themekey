@@ -40,11 +40,11 @@ function themekey_taxonomy_themekey_paths() {
   $paths[] = array('path' => 'taxonomy/term/#taxonomy:tid');
 
   // Add support for 'forum' paths
-  if (module_exists('forum')) {
+  if (module_exists('forum') && variable_get('themekey_module_forum_triggers_taxonomy_vid', 0)) {
     $paths[] = array('path' => 'forum/#taxonomy:vid');
   }
   // Add support for 'taxonomy_menu' paths
-  if (module_exists('taxonomy_menu')) {
+  if (module_exists('taxonomy_menu') && variable_get('themekey_module_taxonomy_menu_triggers_taxonomy_tid', 0)) {
     $prefix = variable_get('taxonomy_menu_display_page', 'category');
     $paths[] = array('path' => $prefix .'/#taxonomy:vid/#taxonomy:tid');
     for ($i=1; $i<=MENU_MAX_PARTS-3; $i++) {
@@ -56,18 +56,18 @@ function themekey_taxonomy_themekey_paths() {
 }
 
 function themekey_taxonomy_vid_weight($item) {
-  // TODO use taxonomy API instead SQL
+  // TODO use taxonomy API instead of SQL
   return db_result(db_query('SELECT weight FROM {vocabulary} WHERE vid = %d', $item['value']));
 }
 
 function themekey_taxonomy_tid_weight($item) {
-  // TODO use taxonomy API instead SQL
+  // TODO use taxonomy API instead of SQL
   return db_result(db_query('SELECT weight FROM {term_data} WHERE tid = %d', $item['value']));
 }
 
 function themekey_taxonomy_tid2vid($tids) {
   $vid = array();
-  // TODO use taxonomy API instead SQL
+  // TODO use taxonomy API instead of SQL
   $tids = is_array($tids) ? $tids : array($tids);
   foreach ($tids as $tid) {
     $vid[] = db_result(db_query('SELECT vid FROM {term_data} WHERE tid = %d', $tid));
@@ -78,7 +78,7 @@ function themekey_taxonomy_tid2vid($tids) {
 
 function themekey_taxonomy_nid2vid($nid, $object = NULL) {
   $vid = array();
-  // TODO use taxonomy API instead SQL
+  // TODO use taxonomy API instead of SQL
   $result = db_query('SELECT td.vid FROM {term_data} td INNER JOIN {term_node} tn ON td.tid = tn.tid WHERE tn.nid = %d', $nid);
   while ($term = db_fetch_object($result)) {
     $vid[] = $term->vid;
@@ -89,7 +89,7 @@ function themekey_taxonomy_nid2vid($nid, $object = NULL) {
 
 function themekey_taxonomy_nid2tid($nid, $object = NULL) {
   $tid = array();
-  // TODO use taxonomy API instead SQL
+  // TODO use taxonomy API instead of SQL
   $result = db_query('SELECT tid FROM {term_node} WHERE nid = %d', $nid);
   while ($term = db_fetch_object($result)) {
     $tid[] = $term->tid;

@@ -298,6 +298,22 @@ function _themekey_settings_form() {
     '#default_value' => $nodediscover,
     '#description' => t('Allows you to assign themes to node properties (e.g. type, status, uid, ...).')
   );
+  if (module_exists('forum')) {
+    $form['settings']['themekey_module_forum_triggers_taxonomy_vid'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Forum pages trigger property taxonomy:vid'),
+      '#default_value' => variable_get('themekey_module_forum_triggers_taxonomy_vid', 0),
+      '#description' => t('Property taxonomy:vid is set when a single node is shown (p.e. /node/17). If this option is selected, forum pages like /forum/28 will set taxonomy:vid as well.')
+    );
+  }
+  if (module_exists('taxonomy_menu')) {
+    $form['settings']['themekey_module_taxonomy_menu_triggers_taxonomy_tid'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Module <em>Taxonomy Menu</em> triggers property taxonomy:tid'),
+      '#default_value' => variable_get('themekey_module_taxonomy_menu_triggers_taxonomy_tid', 0),
+      '#description' => t('Property taxonomy:tid is set when a single node is shown (p.e. /node/17). If this option is selected, pages created by module Taxonomy Menu like /category/31 will set taxonomy:tid as well.')
+    );
+  }
 
   $form['settings']['properties'] = array(
     '#type' => 'fieldset',
@@ -375,6 +391,12 @@ function _themekey_settings_form() {
   }
 
   return _themekey_admin_form($form, '_themekey_settings', FALSE);
+}
+
+function _themekey_settings_form_validate($form, &$form_state) {
+  if (!empty($form_state['values']['themekey_module_taxonomy_menu_triggers_taxonomy_tid']) && !empty($form_state['values']['table']['taxonomy:tid_and_childs']['enabled'])) {
+    form_set_error('themekey_module_taxonomy_menu_triggers_taxonomy_tid', t('Module <em>Taxonomy Menu</em> causes unpredictable results for property <em>taxonomy:tid_and_childs</em>. So these two features could not be used in combination.'));#
+  }
 }
 
 /**

@@ -110,3 +110,19 @@ function themekey_update_6101() {
   db_query("UPDATE {system} SET weight = 0 WHERE name = 'themekey'");
   return array();
 }
+
+
+/**
+ * Implementation of hook_update_N().
+ */
+function themekey_update_6102() {
+  if (module_exists('forum')) {
+    variable_set('themekey_module_forum_triggers_taxonomy_vid', 1);
+  }
+
+  if (module_exists('taxonomy_menu')) {
+    variable_set('themekey_module_taxonomy_menu_triggers_taxonomy_tid', 1);
+  }
+
+  return array();
+}

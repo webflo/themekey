@@ -1,5 +1,10 @@
 // $Id$
 
+ThemeKey 6.x-1.2-beta1, 2009-xx-xx
+----------------------------------
+[#607394] mkalkbrenner: Property "taxonomy:tid_and_childs" incompatible with module "Taxonomy Menu"
+
+
 ThemeKey 6.x-1.2-beta1, 2009-10-01
 ----------------------------------
 [#482766] mkalkbrenner: Themekey overriding administration theme on node edit
