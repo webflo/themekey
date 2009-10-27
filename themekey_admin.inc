@@ -27,7 +27,7 @@ against a certain part, use an identifier with the wildcard. For example: Path =
 \'comment/reply/#xyz\' matches all paths with \'comment/reply\' and a numeric third argument.
 You can then specify conditions for every wildcard argument using the following syntax:
 \'id=value;id2=value2;...\', e.g. \'xyz=123\'. Supported operators are \'=\' (equal), \'!\' (not equal),
-\'<\' (smaller) and \'>\' (greater).'),
+\'<\' (smaller), \'>\' (greater) and \'~\' (regex match).'),
   );
 
   $form['paths']['table'] = array(
@@ -142,7 +142,7 @@ the value which you want to assign the theme to. For example: Property = \'nid\'
 and Theme = \'Bluemarine\' switches the theme of node 123 to Bluemarine. You may also specify
 \'Additional Conditions\' so that the theme only applies when all conditions are matched. \'Additional
 Conditions\' must be provided using the following syntax: \'property=value;property2=value2;...\'.
-Supported operators are \'=\' (equal), \'!\' (not equal), \'<\' (smaller) and \'>\' (greater).'),
+Supported operators are \'=\' (equal), \'!\' (not equal), \'<\' (smaller), \'>\' (greater) and \'~\' (regex match).'),
   );
 
   $form['properties']['table'] = array(

@@ -285,7 +285,7 @@ function _themekey_properties_explode_conditions($conditions) {
     $parts = array_filter(explode(';', $conditions));
     $conditions = array();
     foreach ($parts as $part) {
-      if (preg_match('/(.*)([<>=!]+)(.*)/', $part, $matches)) {
+      if (preg_match('/(.*?)([<>=!~])(.*)/', $part, $matches)) {
         $conditions[] = array(
           'property' => trim($matches[1]),
           'operator' => trim($matches[2]),

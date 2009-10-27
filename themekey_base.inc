@@ -190,21 +190,38 @@ function _themekey_match_properties($parameters) {
 function _themekey_match_conditions($conditions, $parameters) {
   if (is_array($conditions) && count($conditions)) {
     foreach ($conditions as $condition) {
-      //
+      // Default operator is 'equal'
+      if (!isset($condition['operator'])) {
+        $condition['operator'] = '=';
+      }
+
       $value = _themekey_property_value($parameters, $condition['property']);
+
       if (is_array($value)) {
-        //
-        if (!in_array($condition['value'], $value)) {
-          return FALSE;
+        foreach ($value as $single_value) {
+          // Supported operators for condition check:
+          // smaller ('<'), greater ('>'), equal ('='), not equal ('!'), regex match ('~')
+          if ($condition['operator'] == '<' && $single_value < $condition['value']) {
+            return TRUE;
+          }
+          else if ($condition['operator'] == '>' && $single_value > $condition['value']) {
+            return TRUE;
+          }
+          else if ($condition['operator'] == '=' && $single_value == $condition['value']) {
+            return TRUE;
+          }
+          else if ($condition['operator'] == '!' && $single_value != $condition['value']) {
+            return TRUE;
+          }
+          else if ($condition['operator'] == '~' && preg_match($condition['value'], $single_value)) {
+            return TRUE;
+          }
         }
+        return FALSE;
       }
       else {
-        // Default operator is 'equal'
-        if (!isset($condition['operator'])) {
-          $condition['operator'] = '=';
-        }
         // Supported operators for condition check:
-        // smaller ('<'), greater ('>'), equal ('='), not equal ('!')
+        // smaller ('<'), greater ('>'), equal ('='), not equal ('!'), regex match ('~')
         if ($condition['operator'] == '<' && $value >= $condition['value']) {
           return FALSE;
         }
@@ -215,6 +232,9 @@ function _themekey_match_conditions($conditions, $parameters) {
           return FALSE;
         }
         else if ($condition['operator'] == '!' && $value == $condition['value']) {
+          return FALSE;
+        }
+        else if ($condition['operator'] == '~' && !preg_match($condition['value'], $value)) {
           return FALSE;
         }
       }
