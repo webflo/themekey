@@ -22,6 +22,9 @@ function themekey_taxonomy_themekey_properties() {
   $maps[] = array('src'       => 'taxonomy:tid',
                   'dst'       => 'taxonomy:vid',
                   'callback'  => 'themekey_taxonomy_tid2vid');
+  $maps[] = array('src'       => 'taxonomy:tid',
+                  'dst'       => 'taxonomy:tid_and_childs',
+                  'callback'  => 'themekey_taxonomy_tid2tid_and_parents');
   $maps[] = array('src'       => 'node:nid',
                   'dst'       => 'taxonomy:vid',
                   'callback'  => 'themekey_taxonomy_nid2vid');
@@ -45,6 +48,7 @@ function themekey_taxonomy_themekey_paths() {
   }
   // Add support for 'taxonomy_menu' paths
   if (module_exists('taxonomy_menu') && variable_get('themekey_module_taxonomy_menu_triggers_taxonomy_tid', 0)) {
+    // FIXME integration of taxonomy_menu is outdated: http://drupal.org/node/616946
     $prefix = variable_get('taxonomy_menu_display_page', 'category');
     $paths[] = array('path' => $prefix .'/#taxonomy:vid/#taxonomy:tid');
     for ($i=1; $i<=MENU_MAX_PARTS-3; $i++) {
@@ -109,6 +113,17 @@ function themekey_taxonomy_nid2tid_and_parents($nid, $object = NULL) {
     foreach ($parent_terms as $parent_term) {
       $tids[] = $parent_term->tid;
     }
+  }
+
+  return count($tids) ? array_unique($tids) : FALSE;
+}
+
+function themekey_taxonomy_tid2tid_and_parents($tid) {
+  // note that taxonomy_get_parents_all() returns the term itself
+  $parent_terms = taxonomy_get_parents_all($tid);
+  $tids = array();
+  foreach ($parent_terms as $parent_term) {
+    $tids[] = $parent_term->tid;
   }
 
   return count($tids) ? array_unique($tids) : FALSE;

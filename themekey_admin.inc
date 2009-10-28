@@ -394,9 +394,6 @@ function _themekey_settings_form() {
 }
 
 function _themekey_settings_form_validate($form, &$form_state) {
-  if (!empty($form_state['values']['themekey_module_taxonomy_menu_triggers_taxonomy_tid']) && !empty($form_state['values']['table']['taxonomy:tid_and_childs']['enabled'])) {
-    form_set_error('themekey_module_taxonomy_menu_triggers_taxonomy_tid', t('Module <em>Taxonomy Menu</em> causes unpredictable results for property <em>taxonomy:tid_and_childs</em>. So these two features could not be used in combination.'));#
-  }
 }
 
 /**
