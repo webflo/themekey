@@ -2,7 +2,7 @@
 
 ThemeKey 6.x-1.2-beta2, 2009-10-30
 ----------------------------------
-[#616946] mkalkbrenner: Temporally deactivated Taxonomy Menu integration because code is outdated 
+[#616946] mkalkbrenner: Temporally deactivated Taxonomy Menu custom path support because code is outdated since a long time 
 [#617990] FVANtom, mkalkbrenner: Themekey disables themes after configuration
 [#442188] kratib, mkalkbrenner: Supporting regex
 [#615720] mkalkbrenner: Condition operators don't work on properties based on array values
