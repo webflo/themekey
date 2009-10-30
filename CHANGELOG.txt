@@ -2,6 +2,7 @@
 
 ThemeKey 6.x-1.2-beta2, 2009-xx-xx
 ----------------------------------
+[#617990] FVANtom, mkalkbrenner: Themekey disables themes after configuration
 [#442188] kratib, mkalkbrenner: Supporting regex
 [#615720] mkalkbrenner: Condition operators don't work on properties based on array values
 [#607394] dankh, mkalkbrenner: Property "taxonomy:tid_and_childs" incompatible with module "Taxonomy Menu"

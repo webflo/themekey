@@ -5,8 +5,9 @@
  * Function _themekey_theme_options().
  */
 function _themekey_theme_options($default = TRUE) {
-  $themes = system_theme_data();
+  $themes = list_themes();
   ksort($themes);
+
   $options_themes = array();
   if ($default) {
     $options_themes['default'] = t('System default');
