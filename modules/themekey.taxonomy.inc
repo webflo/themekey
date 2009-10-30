@@ -46,15 +46,15 @@ function themekey_taxonomy_themekey_paths() {
   if (module_exists('forum') && variable_get('themekey_module_forum_triggers_taxonomy_vid', 0)) {
     $paths[] = array('path' => 'forum/#taxonomy:vid');
   }
-  // Add support for 'taxonomy_menu' paths
-  if (module_exists('taxonomy_menu') && variable_get('themekey_module_taxonomy_menu_triggers_taxonomy_tid', 0)) {
-    // FIXME integration of taxonomy_menu is outdated: http://drupal.org/node/616946
-    $prefix = variable_get('taxonomy_menu_display_page', 'category');
-    $paths[] = array('path' => $prefix .'/#taxonomy:vid/#taxonomy:tid');
-    for ($i=1; $i<=MENU_MAX_PARTS-3; $i++) {
-      $paths[] = array('path' => $prefix .'/#taxonomy:vid/'. implode('/', array_fill(0, $i, '#')) .'/#taxonomy:tid');
-    }
-  }
+// TODO Integration of Taxonomy Menu outdated. See http://drupal.org/node/616946
+//  // Add support for 'taxonomy_menu' paths
+//  if (module_exists('taxonomy_menu') && variable_get('themekey_module_taxonomy_menu_triggers_taxonomy_tid', 0)) {
+//    $prefix = variable_get('taxonomy_menu_display_page', 'category');
+//    $paths[] = array('path' => $prefix .'/#taxonomy:vid/#taxonomy:tid');
+//    for ($i=1; $i<=MENU_MAX_PARTS-3; $i++) {
+//      $paths[] = array('path' => $prefix .'/#taxonomy:vid/'. implode('/', array_fill(0, $i, '#')) .'/#taxonomy:tid');
+//    }
+//  }
 
   return $paths;
 }

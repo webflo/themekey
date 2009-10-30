@@ -306,14 +306,15 @@ function _themekey_settings_form() {
       '#description' => t('Property taxonomy:vid is set when a single node is shown (p.e. /node/17). If this option is selected, forum pages like /forum/28 will set taxonomy:vid as well.')
     );
   }
-  if (module_exists('taxonomy_menu')) {
-    $form['settings']['themekey_module_taxonomy_menu_triggers_taxonomy_tid'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Module <em>Taxonomy Menu</em> triggers property taxonomy:tid'),
-      '#default_value' => variable_get('themekey_module_taxonomy_menu_triggers_taxonomy_tid', 0),
-      '#description' => t('Property taxonomy:tid is set when a single node is shown (p.e. /node/17). If this option is selected, pages created by module Taxonomy Menu like /category/31 will set taxonomy:tid as well.')
-    );
-  }
+// TODO Integration of Taxonomy Menu outdated. See http://drupal.org/node/616946
+//  if (module_exists('taxonomy_menu')) {
+//    $form['settings']['themekey_module_taxonomy_menu_triggers_taxonomy_tid'] = array(
+//      '#type' => 'checkbox',
+//      '#title' => t('Module <em>Taxonomy Menu</em> triggers property taxonomy:tid'),
+//      '#default_value' => variable_get('themekey_module_taxonomy_menu_triggers_taxonomy_tid', 0),
+//      '#description' => t('Property taxonomy:tid is set when a single node is shown (p.e. /node/17). If this option is selected, pages created by module Taxonomy Menu like /category/31 will set taxonomy:tid as well.')
+//    );
+//  }
 
   $form['settings']['properties'] = array(
     '#type' => 'fieldset',
