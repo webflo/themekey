@@ -104,8 +104,7 @@ function _themekey_load_paths($limit = NULL) {
       }
       $item['path'] = implode('/', $parts);
     }
-    $item['conditions'] = unserialize($item['conditions']);
-    $item['conditions'] = count($item['conditions']) ? implode('; ', $item['conditions']) : '';
+    $item['conditions'] = _themekey_properties_implode_conditions(unserialize($item['conditions']));
     $paths[] = $item;
   }
 
@@ -116,14 +115,15 @@ function _themekey_load_paths($limit = NULL) {
  * Function _themekey_path_set().
  */
 function _themekey_path_set(&$item, $custom = TRUE) {
-  $item['callbacks'] = (isset($item['callbacks']) && !empty($item['callbacks'])) ? $item['callbacks'] : array();
   $item['conditions'] = (isset($item['conditions']) && !empty($item['conditions'])) ? $item['conditions'] : array();
-  if (!is_array($item['conditions'])) {
-    $item['conditions'] = preg_split('/;[\s?]/', $item['conditions']);
-  }
+  $item['conditions'] = _themekey_properties_explode_conditions($item['conditions']);
+  $item['callbacks'] = (isset($item['callbacks']) && !empty($item['callbacks'])) ? $item['callbacks'] : array();
+
   list($item['fit'], $item['weight'], $item['wildcards']) = _themekey_prepare_path($item['path']);
   $item['custom'] = $custom;
   if (!isset($item['id'])) {
+    // FIXME
+    // REVIEW does not work for two identical paths with different conditions
     if ($id = db_result(db_query('SELECT id FROM {themekey_paths} WHERE path = \'%s\' AND custom = %d', $item['path'], $item['custom']))) {
       $item['id'] = $id;
     }
@@ -195,6 +195,7 @@ function _themekey_node_discover() {
   $ignore = array(// Generic node properties
                   'teaser', 'teaser_js', 'teaser_include', 'body', 'format', 'log', 'submit', 'preview', 'form_id',
                   'path', 'vid', 'validated', 'comment', 'name', 'revision', 'status', 'date',
+                  'changed', 'created', 'language', 'nid', 'promote', 'sticky', 'type', 'uid',
                   // Book properties
                   'book/router_path', 'book/module', 'book/parent_depth_limit', 'book/weight', 'book/pick-book',
                   'book/menu_name', 'book/original_bid',
@@ -286,6 +287,7 @@ function _themekey_properties_explode_conditions($conditions) {
     $parts = array_filter(explode(';', $conditions));
     $conditions = array();
     foreach ($parts as $part) {
+      $part = trim($part);
       if (preg_match('/(.*?)([<>=!~])(.*)/', $part, $matches)) {
         $conditions[] = array(
           'property' => trim($matches[1]),

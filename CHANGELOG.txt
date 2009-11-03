@@ -1,5 +1,11 @@
 // $Id$
 
+ThemeKey 6.x-1.2-beta3, 2009-11-xx
+----------------------------------
+[#619940] mkalkbrenner: Allow themekey properties as conditions for themekey paths
+[#591200] mkalkbrenner: Performance: Some property callbacks get called multiple times
+
+
 ThemeKey 6.x-1.2-beta2, 2009-10-30
 ----------------------------------
 [#616946] mkalkbrenner: Temporally deactivated Taxonomy Menu custom path support because code is outdated since a long time 

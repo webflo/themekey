@@ -25,63 +25,92 @@ function _themekey_invoke_modules($hook) {
  * Function _themekey_get_path_ancestors().
  * (based on menu_get_ancestors() in includes/menu.inc)
  */
-function _themekey_get_path_ancestors($parts) {
-  $placeholders = array();
-  $ancestors = array();
+function _themekey_get_path_ancestors($path) {
+  static $path_ancestors = array();
 
-  $number_parts = count($parts);
-  $length =  $number_parts - 1;
-  $end = (1 << $number_parts) - 1;
+  if (empty($path_ancestors[$path])) {
+    $parts = explode('/', $path, MENU_MAX_PARTS);
 
-  $masks = variable_get('menu_masks', array());
-  foreach ($masks as $i) {
-    if ($i > $end) {
-      continue;
-    }
-    elseif ($i < (1 << $length)) {
-      --$length;
-    }
-    $current = '';
-    for ($j = $length; $j >= 0; $j--) {
-      if ($i & (1 << $j)) {
-        $current .= $parts[$length - $j];
+    $placeholders = array();
+    $ancestors = array();
+
+    $number_parts = count($parts);
+    $length =  $number_parts - 1;
+    $end = (1 << $number_parts) - 1;
+
+    $masks = variable_get('menu_masks', array());
+    foreach ($masks as $i) {
+      if ($i > $end) {
+        continue;
       }
-      else {
-        $current .= is_numeric($parts[$length - $j]) ? '#' : '%';
+      elseif ($i < (1 << $length)) {
+        --$length;
       }
-      if ($j) {
-        $current .= '/';
+      $current = '';
+      for ($j = $length; $j >= 0; $j--) {
+        if ($i & (1 << $j)) {
+          $current .= $parts[$length - $j];
+        }
+        else {
+          $current .= is_numeric($parts[$length - $j]) ? '#' : '%';
+        }
+        if ($j) {
+          $current .= '/';
+        }
       }
-    }
-    $placeholders[] = "'%s'";
-    $ancestors[] = $current;
-    if (stristr($current, '#') !== FALSE) {
       $placeholders[] = "'%s'";
-      $ancestors[] = str_replace('#', '%', $current);
+      $ancestors[] = $current;
+      if (stristr($current, '#') !== FALSE) {
+        $placeholders[] = "'%s'";
+        $ancestors[] = str_replace('#', '%', $current);
+      }
+    }
+    $path_ancestors[$path] = array($ancestors, $placeholders);
+  }
+
+  return $path_ancestors[$path];
+}
+
+/**
+ * Function _themekey_match_paths().
+ */
+function _themekey_get_global_parameters() {
+  static $global_parameters = NULL;
+
+  if (is_null($global_parameters)) {
+    $global_parameters = module_invoke_all('themekey_global');
+
+    list($ancestors, $placeholders) = _themekey_get_path_ancestors( $_GET['q']);
+
+    // TODO don't store non custom paths in database
+    $result = db_query('SELECT * FROM {themekey_paths} WHERE path IN ('. implode(',', $placeholders) .') AND custom = 0 ORDER BY fit DESC, weight DESC', $ancestors);
+    while ($item = db_fetch_array($result)) {
+      $wildcards = unserialize($item['wildcards']);
+      foreach ($wildcards as $index => $wildcard) {
+        $global_parameters[$wildcard] = arg($index, $path);
+      }
+
+      $callbacks = unserialize($item['callbacks']);
+      if (count($callbacks)) {
+        foreach ($callbacks as $callback) {
+          $callback($item, $global_parameters);
+        }
+      }
     }
   }
 
-  return array($ancestors, $placeholders);
+  return $global_parameters;
 }
 
 /**
  * Function _themekey_match_paths().
  */
 function _themekey_match_paths($path) {
-  static $global_parameters = NULL;
+  list($ancestors, $placeholders) = _themekey_get_path_ancestors($path);
 
-  // TODO only check path if there configured paths but not if only properties used
-
-  if (!isset($global_parameters)) {
-    $global_parameters = module_invoke_all('themekey_global');
-  }
-  //
-  $parts = explode('/', $path, MENU_MAX_PARTS);
-  list($ancestors, $placeholders) = _themekey_get_path_ancestors($parts);
-  //
   $result = db_query('SELECT * FROM {themekey_paths} WHERE path IN ('. implode(',', $placeholders) .') ORDER BY fit DESC, weight DESC, custom DESC', $ancestors);
   while ($item = db_fetch_array($result)) {
-    $parameters = $global_parameters;
+    $parameters = _themekey_get_global_parameters();
     $conditions = unserialize($item['conditions']);
     //
     $wildcards = unserialize($item['wildcards']);
@@ -92,17 +121,6 @@ function _themekey_match_paths($path) {
     if (!_themekey_match_conditions($conditions, $parameters)) {
       continue;
     }
-    //
-    $callbacks = unserialize($item['callbacks']);
-    if (count($callbacks)) {
-      foreach ($callbacks as $callback) {
-        $callback($item, $parameters);
-      }
-    }
-    //
-    if (!$item['theme']) {
-      $item['theme'] = _themekey_match_properties($parameters);
-    }
 
     if (!_themekey_check_theme_enabled($item['theme'])) {
       continue;
@@ -111,7 +129,7 @@ function _themekey_match_paths($path) {
     return $item['theme'];
   }
 
-  return _themekey_match_properties($global_parameters);
+  return NULL;
 }
 
 /* Property-based */
@@ -151,8 +169,8 @@ function _themekey_get_object_property($object_array, $path) {
 /**
  * Function _themekey_match_properties().
  */
-function _themekey_match_properties($parameters) {
-  //
+function _themekey_match_properties() {
+  $parameters = _themekey_get_global_parameters();
   $properties = variable_get('themekey_properties', array());
   foreach (array_keys($properties) as $property) {
     $value = _themekey_property_value($parameters, $property);

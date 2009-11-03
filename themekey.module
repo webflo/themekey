@@ -102,7 +102,6 @@ function themekey_init() {
   // don't change theme when another module already set a $custom_theme like system.module does (administration theme)
   // don't change theme when administer blocks
   if (!$custom_theme && strpos($_GET['q'], 'admin/build/block') !== 0) {
-    $theme = NULL;
     // Try to get theme for the normal Drupal path
     $theme = _themekey_match_paths($_GET['q']);
     if (!$theme) {
@@ -117,6 +116,11 @@ function themekey_init() {
       // Try to get the theme for the aliased Drupal path
       $theme = _themekey_match_paths($alias_uri);
     }
+
+    if (!$theme) {
+      $theme = _themekey_match_properties();
+    }
+
     // If no theme has been triggered but a theme
     // is in the user's session, use that theme.
     if (!$theme && isset($_SESSION['themekey_theme'])
