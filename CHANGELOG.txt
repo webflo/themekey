@@ -1,5 +1,10 @@
 // $Id$
 
+ThemeKey 6.x-1.2-beta4, 2009-11-05
+----------------------------------
+[       ] mkalkbrenner: subfolder modules was missing in 6.x-1.2-beta3
+
+
 ThemeKey 6.x-1.2-beta3, 2009-11-05
 ----------------------------------
 [#619940] mkalkbrenner: Allow themekey properties as conditions for themekey paths
