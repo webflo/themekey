@@ -121,13 +121,6 @@ function _themekey_path_set(&$item, $custom = TRUE) {
 
   list($item['fit'], $item['weight'], $item['wildcards']) = _themekey_prepare_path($item['path']);
   $item['custom'] = $custom;
-  if (!isset($item['id'])) {
-    // FIXME
-    // REVIEW does not work for two identical paths with different conditions
-    if ($id = db_result(db_query('SELECT id FROM {themekey_paths} WHERE path = \'%s\' AND custom = %d', $item['path'], $item['custom']))) {
-      $item['id'] = $id;
-    }
-  }
 
   drupal_write_record('themekey_paths', $item, isset($item['id']) ? 'id' : array());
 }

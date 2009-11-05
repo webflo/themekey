@@ -92,6 +92,28 @@ You can then specify conditions for every wildcard argument using the following 
   return _themekey_admin_form($form, '_themekey_paths');
 }
 
+function _themekey_paths_form_validate($form, &$form_state) {
+  foreach ($form_state['values']['table'] as $key => $value) {
+    foreach ($form_state['values']['table'] as $key_2 => $value_2) {
+      if ($key_2 == $key) {
+        continue;
+      }
+
+      if (!empty($value['path']) && $value_2['path'] == $value['path'] && $value_2['conditions'] == $value['conditions']) {
+        form_set_error('table][' . $key . '][path', t('You entered two identical paths with identical conditions'));
+        break(2);
+      }
+    }
+  }
+
+  foreach ($form_state['values']['table'] as $key => $value) {
+    if (!empty($value['path']) && $form_state['values']['addtable']['add']['path'] == $value['path'] && $form_state['values']['addtable']['add']['conditions'] == $value['conditions']) {
+      form_set_error('addtable][add][path', t('You entered two identical paths with identical conditions'));
+      break;
+    }
+  }
+}
+
 /**
  * Function _themekey_paths_submit().
  */
@@ -232,6 +254,37 @@ Supported operators are \'=\' (equal), \'!\' (not equal), \'<\' (smaller), \'>\'
 
   return _themekey_admin_form($form, '_themekey_properties');
 }
+
+
+function _themekey_properties_form_validate($form, &$form_state) {
+  foreach ($form_state['values']['table'] as $key => $value) {
+    if (!empty($value['conditions'])) {
+      $conditions = _themekey_properties_explode_conditions($value['conditions']);
+      if (empty($conditions) || count($conditions) != (substr_count($value['conditions'], ';') + 1)) {
+        form_set_error('table][' . $key . '][conditions', t('You entered malformatted conditions'));
+      }
+    }
+
+    foreach ($form_state['values']['table'] as $key_2 => $value_2) {
+      if ($key_2 == $key) {
+        continue;
+      }
+
+      if (!empty($value['value']) && $value_2['property'] == $value['property'] && $value_2['value'] == $value['value'] && $value_2['conditions'] == $value['conditions']) {
+        form_set_error('table][' . $key . '][value', t('You entered two identical values with identical conditions for the same property'));
+        break(2);
+      }
+    }
+  }
+
+  foreach ($form_state['values']['table'] as $key => $value) {
+    if (!empty($value['value']) && $form_state['values']['addtable']['add']['property'] == $value['property'] && $form_state['values']['addtable']['add']['value'] == $value['value'] && $form_state['values']['addtable']['add']['conditions'] == $value['conditions']) {
+      form_set_error('addtable][add][value', t('You entered two identical values with identical conditions for the same property'));
+      break;
+    }
+  }
+}
+
 
 /**
  * Function _themekey_properties_submit().
