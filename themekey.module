@@ -108,6 +108,11 @@ function themekey_init() {
       // Derive path from request_uri
       $offset = (variable_get('clean_url', 0) ? 0 : 3) + strlen(base_path());
       $alias_uri = substr(request_uri(), $offset);
+      if (strpos($alias_uri, '?') !== FALSE) {
+        // Remove query string from request uri
+        $alias_uri_parts = explode('?', $alias_uri);
+        $alias_uri = $alias_uri_parts[0];
+      }
       // For $alias_uri != $_GET['q'] the page was requested using an
       // aliased path, otherwise get the path alias internally
       if (($alias_uri == $_GET['q']) && module_exists('path')) {

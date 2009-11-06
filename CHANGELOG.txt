@@ -1,5 +1,10 @@
 // $Id$
 
+ThemeKey 6.x-1.2-beta5, 2009-xx-xx
+----------------------------------
+[#319581] mkalkbrenner: GET parameters break theme switching based on url aliases
+
+
 ThemeKey 6.x-1.2-beta4, 2009-11-05
 ----------------------------------
 [       ] mkalkbrenner: subfolder modules was missing in 6.x-1.2-beta3
