@@ -414,35 +414,6 @@ function _themekey_settings_form() {
       '#value' => $details['path']
     );
   }
-  //
-  if (isset($properties['nid']) && $properties['nid']['enabled']) {
-    $form['settings']['additional']['themekey_nodeaspath'] = array(
-      '#type' => 'select',
-      '#title' => t('Node theme preference'),
-      '#options' => array(
-        0 => t('Property-based'),
-        1 => t('Path-based')
-      ),
-      '#default_value' => variable_get('themekey_nodeaspath', 0),
-      '#description' => t('By default node themes are stored as nid property values. If you are working with path aliases it might be
-                           better to store them as paths. You should not change this settings once you have existing items.')
-    );
-    if (_themekey_num_paths() > 0) {
-      $warning  = '<br /><strong class="error">';
-      $warning .= t('WARNING: Do not change this settings or you will get duplicate (mixed) assignment to paths and properties.');
-      $warning .= '</strong>';
-      $form['settings']['additional']['themekey_nodeaspath']['#description'] .= $warning;
-    }
-  }
-  //
-  if (isset($form['settings']['additional']) && count($form['settings']['additional'])) {
-    $form['settings']['additional'] += array(
-      '#type' => 'fieldset',
-      '#title' => t('Additional Settings'),
-      '#collapsible' => TRUE,
-      '#collapsed' => FALSE
-    );
-  }
 
   return _themekey_admin_form($form, '_themekey_settings', FALSE);
 }

@@ -102,38 +102,49 @@ function themekey_init() {
   // don't change theme when another module already set a $custom_theme like system.module does (administration theme)
   // don't change theme when administer blocks
   if (!$custom_theme && strpos($_GET['q'], 'admin/build/block') !== 0) {
-    // Try to get theme for the normal Drupal path
-    $theme = _themekey_match_paths($_GET['q']);
-    if (!$theme) {
-      // Derive path from request_uri
-      $offset = (variable_get('clean_url', 0) ? 0 : 3) + strlen(base_path());
-      $alias_uri = substr(request_uri(), $offset);
-      if (strpos($alias_uri, '?') !== FALSE) {
-        // Remove query string from request uri
-        $alias_uri_parts = explode('?', $alias_uri);
-        $alias_uri = $alias_uri_parts[0];
-      }
-      // For $alias_uri != $_GET['q'] the page was requested using an
-      // aliased path, otherwise get the path alias internally
-      if (($alias_uri == $_GET['q']) && module_exists('path')) {
-        $alias_uri = drupal_get_path_alias($_GET['q']);
-      }
-      // Try to get the theme for the aliased Drupal path
-      $theme = _themekey_match_paths($alias_uri);
+    $parameters = _themekey_get_global_parameters();
+    // if a node is requested which has a theme asigned via themekey_ui, use it
+    $theme = !empty($parameters['node:theme']) ? $parameters['node:theme'] : '';
+
+    if (!empty($theme) && !_themekey_check_theme_enabled($theme)) {
+      $theme = '';
     }
 
-    if (!$theme) {
-      $theme = _themekey_match_properties();
+    if (empty($theme) || 'default' == $theme) {
+      // Try to get theme for the normal Drupal path
+      $theme = _themekey_match_paths($_GET['q']);
+      if (!$theme) {
+        // Derive path from request_uri
+        $offset = (variable_get('clean_url', 0) ? 0 : 3) + strlen(base_path());
+        $alias_uri = substr(request_uri(), $offset);
+        if (strpos($alias_uri, '?') !== FALSE) {
+          // Remove query string from request uri
+          $alias_uri_parts = explode('?', $alias_uri);
+          $alias_uri = $alias_uri_parts[0];
+        }
+        // For $alias_uri != $_GET['q'] the page was requested using an
+        // aliased path, otherwise get the path alias internally
+        if (($alias_uri == $_GET['q']) && module_exists('path')) {
+          $alias_uri = drupal_get_path_alias($_GET['q']);
+        }
+        // Try to get the theme for the aliased Drupal path
+        $theme = _themekey_match_paths($alias_uri);
+      }
+
+      if (!$theme) {
+        $theme = _themekey_match_properties();
+      }
+
+      // If no theme has been triggered but a theme
+      // is in the user's session, use that theme.
+      if (!$theme && isset($_SESSION['themekey_theme'])
+          && (!$custom_theme || $custom_theme == variable_get('theme_default', 'garland'))) {
+        $custom_theme = $_SESSION['themekey_theme'];
+      }
     }
 
-    // If no theme has been triggered but a theme
-    // is in the user's session, use that theme.
-    if (!$theme && isset($_SESSION['themekey_theme'])
-        && (!$custom_theme || $custom_theme == variable_get('theme_default', 'garland'))) {
-      $custom_theme = $_SESSION['themekey_theme'];
-    }
     // We have a theme, apply it
-    if ($theme && $theme != 'default') {
+    if (!empty($theme) && $theme != 'default') {
       if (variable_get('themekey_theme_maintain', 0)) {
         $_SESSION['themekey_theme'] = $theme;
       }

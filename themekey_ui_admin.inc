@@ -84,56 +84,24 @@ function _themekey_ui_settings_submit($form, &$form_state) {
  * Function _themekey_ui_nodeform().
  */
 function _themekey_ui_nodeform(&$form, &$form_state) {
+  $theme = !empty($form['#node']->theme) ? $form['#node']->theme : 'default';
+
   $form['nodeform_theme'] = array(
     '#type' => 'fieldset',
     '#title' => t('Theme'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE
   );
-  $theme = 'default';
-  if (isset($form['#node']->nid)) {
-    $theme = variable_get('themekey_nodeaspath', 0) ? themekey_ui_get_path_theme('node/'. $form['#node']->nid) : themekey_ui_get_node_theme($form['#node']->nid);
-  }
+
   $form['nodeform_theme']['theme'] = array(
     '#type' => 'select',
     '#default_value' => $theme,
     '#options' => _themekey_theme_options(),
-    '#description' => t('Theme to be assigned to current path/node'),
+    '#description' => t('Theme to be assigned to current node. If you select "System Default" ThemeKey applies his rules for paths and properties.'),
   );
 
   if (!_themekey_check_theme_enabled($theme, TRUE)) {
     $form['nodeform_theme']['theme']['#attributes'] = array('class' => 'error');
-  }
-
-  $form['#submit'][] = 'themekey_ui_form_submit';
-}
-
-/**
- * Function _themekey_ui_nodeapi().
- */
-function _themekey_ui_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
-  switch ($op) {
-    case 'insert':
-    case 'update':
-      if (isset($node->theme) && $node->theme != 'default') {
-        if (variable_get('themekey_nodeaspath', 0))
-          themekey_ui_set_path_theme('node/'. $node->nid, $node->theme);
-        else
-          themekey_ui_set_node_theme($node->nid, $node->theme);
-      }
-      else {
-        if (variable_get('themekey_nodeaspath', 0))
-          themekey_ui_del_path_theme('node/'. $node->nid);
-        else
-          themekey_ui_del_node_theme($node->nid);
-      }
-      break;
-    case 'delete':
-      if (variable_get('themekey_nodeaspath', 0))
-        themekey_ui_del_path_theme('node/'. $node->nid);
-      else
-        themekey_ui_del_node_theme($node->nid);
-      break;
   }
 }
 
@@ -152,7 +120,7 @@ function _themekey_ui_pathalias(&$form, &$form_state) {
     '#options' => _themekey_theme_options(),
     '#description' => t('Theme to be assigned to current path'),
   );
-  $pathalias_form['pathalias_theme']['themekey_submit'] = array(
+  $pathalias_form['pathalias_theme']['themekey_ui_submit'] = array(
     '#type' => 'value',
     '#value' => '_themekey_ui_pathalias_submit'
   );

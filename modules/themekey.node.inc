@@ -26,6 +26,14 @@ function themekey_node_themekey_paths() {
 
 function _themekey_node_callback(&$item, &$parameters) {
   if ($node = node_load($parameters['node:nid'])) {
+    $theme = !empty($node->theme) ? $node->theme : 'default';
+
+    if ('default' != $theme) {
+      $parameters['node:theme'] = $theme;
+      return;
+    }
+
     $parameters = _themekey_prepare_object($node, $parameters);
+    $parameters['node:theme'] = $theme;
   }
 }
