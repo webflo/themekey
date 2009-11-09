@@ -321,7 +321,7 @@ function _themekey_properties_reset($form, &$form_state) {
  * Function _themekey_settings_form().
  */
 function _themekey_settings_form() {
-  //
+  // REVIEW rebuild is called to many times
   _themekey_rebuild();
 
   //
