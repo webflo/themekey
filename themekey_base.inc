@@ -132,40 +132,6 @@ function _themekey_match_paths($path) {
   return NULL;
 }
 
-/* Property-based */
-
-/**
- * Function _themekey_prepare_object().
- */
-function _themekey_prepare_object($object, $parameters) {
-  $object_array = (array)drupal_clone($object);
-  $properties = variable_get('themekey_properties', array());
-  foreach ($properties as $property => $details) {
-    if (($value = _themekey_get_object_property($object_array, $details['path'])) != NULL) {
-      $parameters[$property] = $value;
-    }
-  }
-  return $parameters;
-}
-
-/**
- * Function _themekey_get_object_property().
- */
-function _themekey_get_object_property($object_array, $path) {
-  //
-  $parts = explode('/', $path);
-  foreach ($parts as $part) {
-    if (is_array($object_array) && isset($object_array[$part])) {
-      $object_array = $object_array[$part];
-    }
-    else {
-      return NULL;
-    }
-  }
-
-  return is_array($object_array) ? array_keys($object_array) : $object_array;
-}
-
 /**
  * Function _themekey_match_properties().
  */

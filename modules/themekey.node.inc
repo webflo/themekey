@@ -34,7 +34,38 @@ function _themekey_node_callback(&$item, &$parameters) {
       return;
     }
 
-    $parameters = _themekey_prepare_object($node, $parameters);
+    _themekey_node_prepare_node($node, $parameters);
     $parameters['node:theme'] = $theme;
   }
 }
+
+/**
+ * Function _themekey_node_prepare_node().
+ */
+function _themekey_node_prepare_node($node, &$parameters) {
+  $object_array = (array)drupal_clone($node);
+  $properties = variable_get('themekey_properties', array());
+  foreach ($properties as $property => $details) {
+    if (($value = _themekey_node_get_node_property($object_array, $details['path'])) != NULL) {
+      $parameters[$property] = $value;
+    }
+  }
+}
+
+/**
+ * Function _themekey_node_get_node_property().
+ */
+function _themekey_node_get_node_property($object_array, $path) {
+  $parts = explode('/', $path);
+  foreach ($parts as $part) {
+    if (is_array($object_array) && isset($object_array[$part])) {
+      $object_array = $object_array[$part];
+    }
+    else {
+      return NULL;
+    }
+  }
+
+  return is_array($object_array) ? array_keys($object_array) : $object_array;
+}
+
