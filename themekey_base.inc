@@ -265,48 +265,40 @@ function _themekey_match_conditions($conditions, $parameters) {
 /**
  * Function _themekey_property_value().
  */
-function _themekey_property_value($parameters, $property) {
+function _themekey_property_value(&$parameters, $property) {
   // Property value is available directly
   if (isset($parameters[$property])) {
     return $parameters[$property];
   }
 
-  // Try to get property value utilizing mapped properties
-  $nidmap = array('src' => FALSE, 'dst' => FALSE);
-  $uidmap = array('src' => FALSE, 'dst' => FALSE);
+  $parameters[$property] = NULL;
+
+  $src_candidates = array();
   $maps = variable_get('themekey_maps', array());
+
   foreach ($maps as $pos => $map) {
-    if (isset($parameters[$map['src']]) && $map['dst'] == 'node:nid') {
-      $nidmap['src'] = $pos;
+    if ($map['dst'] == $property) {
+      if (!empty($parameters[$map['src']])) {
+        $map_func = $map['callback'];
+        $parameters[$property] = $map_func($parameters[$map['src']], $parameters);
+        break;
+      }
+      $src_candidates[$pos] = $map['src'];
     }
-    if (isset($parameters[$map['src']]) && $map['dst'] == 'user:uid') {
-      $uidmap['src'] = $pos;
-    }
-    if ($map['src'] == 'node:nid' && $map['dst'] == $property) {
-      $nidmap['dst'] = $pos;
-    }
-    if ($map['src'] == 'user:uid' && $map['dst'] == $property) {
-      $uidmap['dst'] = $pos;
-    }
-    if (isset($parameters[$map['src']]) && $map['dst'] == $property) {
-      $map_func = $map['callback'];
-      return $map_func($parameters[$map['src']], $parameters);
-    }
-  }
-  // Support mapping via node id (src -> node:nid -> dst)
-  if ($nidmap['src'] !== FALSE && $nidmap['dst'] !== FALSE) {
-    $src_func = $maps[$nidmap['src']]['callback'];
-    $dst_func = $maps[$nidmap['dst']]['callback'];
-    return $dst_func($src_func($parameters[$maps[$nidmap['src']]['src']], $parameters), $parameters);
-  }
-  // Support mapping via user id (src -> user:uid -> dst)
-  if ($uidmap['src'] !== FALSE && $uidmap['dst'] !== FALSE) {
-    $src_func = $maps[$uidmap['src']]['callback'];
-    $dst_func = $maps[$uidmap['dst']]['callback'];
-    return $dst_func($src_func($parameters[$maps[$uidmap['src']]['src']], $parameters), $parameters);
   }
 
-  return NULL;
+  if (is_null($parameters[$property]) && !empty($src_candidates)) {
+    foreach ($src_candidates as $pos => $src) {
+      $return = _themekey_property_value($parameters, $src);
+      if ($return) {
+        $map_func = $maps[$pos]['callback'];
+        $parameters[$property] = $map_func($return, $parameters);
+        break;
+      }
+    }
+  }
+
+  return $parameters[$property];
 }
 
 

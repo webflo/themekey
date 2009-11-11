@@ -67,7 +67,7 @@ HOOK_themekey_properties()
               (does an object, e.g. a node, can have more than one of this property values)
             - weight      => weighting callback (optional)
               (if multiple values are possible, the weighting callback is required for priority)
-            - path        => Path to property value on an object (optional)
+            - path        => Path to property value on a node object (optional)
 
   Maps
     Key:    none (indexed)

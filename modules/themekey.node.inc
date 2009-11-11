@@ -12,6 +12,7 @@ function themekey_node_themekey_properties() {
   $attributes['node:sticky'] = array('description' => t('Node: Sticky'), 'path' => 'sticky');
   $attributes['node:type'] = array('description' => t('Node: Type'), 'path' => 'type');
   $attributes['node:uid'] = array('description' => t('Node: User ID'), 'path' => 'uid');
+  $attributes['node:title'] = array('description' => t('Node: Title'), 'path' => 'title');
 
   return array('attributes' => $attributes);
 }

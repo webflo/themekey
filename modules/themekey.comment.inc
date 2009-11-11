@@ -27,5 +27,5 @@ function themekey_comment_themekey_paths() {
 
 function themekey_comment_cid2nid($cid) {
   $nid = db_result(db_query('SELECT nid FROM {comments} WHERE cid = %d', $cid));
-  return $nid ? $nid : FALSE;
+  return $nid ? $nid : NULL;
 }

@@ -28,7 +28,7 @@ function themekey_book_nid2bid($nid, $object = NULL) {
     }
   }
 
-  return 0;
+  return NULL;
 }
 
 function themekey_book_nid2has_children($nid, $object = NULL) {
@@ -38,5 +38,5 @@ function themekey_book_nid2has_children($nid, $object = NULL) {
     }
   }
 
-  return 0;
+  return NULL;
 }

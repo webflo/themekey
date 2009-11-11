@@ -13,7 +13,7 @@ function themekey_taxonomy_themekey_properties() {
                                       'weight' => 'themekey_taxonomy_tid_weight',
                                       'description' => t('Taxonomy: Term'));
   $attributes['taxonomy:tid_and_childs'] = array('multiple' => TRUE,
-                                      'path' => 'taxonomy',
+                                      'path' => FALSE,
                                       'weight' => 'themekey_taxonomy_tid_weight',
                                       'description' => t('Taxonomy: Term and its childs'));
 
@@ -77,7 +77,7 @@ function themekey_taxonomy_tid2vid($tids) {
     $vid[] = db_result(db_query('SELECT vid FROM {term_data} WHERE tid = %d', $tid));
   }
 
-  return count($vid) ? $vid : FALSE;
+  return count($vid) ? $vid : NULL;
 }
 
 function themekey_taxonomy_nid2vid($nid, $object = NULL) {
@@ -88,7 +88,7 @@ function themekey_taxonomy_nid2vid($nid, $object = NULL) {
     $vid[] = $term->vid;
   }
 
-  return count($vid) ? $vid : FALSE;
+  return count($vid) ? $vid : NULL;
 }
 
 function themekey_taxonomy_nid2tid($nid, $object = NULL) {
@@ -99,7 +99,7 @@ function themekey_taxonomy_nid2tid($nid, $object = NULL) {
     $tid[] = $term->tid;
   }
 
-  return count($tid) ? $tid : FALSE;
+  return count($tid) ? $tid : NULL;
 }
 
 function themekey_taxonomy_nid2tid_and_parents($nid, $object = NULL) {
@@ -115,16 +115,19 @@ function themekey_taxonomy_nid2tid_and_parents($nid, $object = NULL) {
     }
   }
 
-  return count($tids) ? array_unique($tids) : FALSE;
+  return count($tids) ? array_unique($tids) : NULL;
 }
 
-function themekey_taxonomy_tid2tid_and_parents($tid) {
-  // note that taxonomy_get_parents_all() returns the term itself
-  $parent_terms = taxonomy_get_parents_all($tid);
-  $tids = array();
-  foreach ($parent_terms as $parent_term) {
-    $tids[] = $parent_term->tid;
+function themekey_taxonomy_tid2tid_and_parents($tids, $object = NULL) {
+  $tids = is_array($tids) ? $tids : array($tids);
+  foreach ($tids as $tid) {
+    // note that taxonomy_get_parents_all() returns the term itself
+    $parent_terms = taxonomy_get_parents_all($tid);
+    $parents = array();
+    foreach ($parent_terms as $parent_term) {
+      $parents[] = $parent_term->tid;
+    }
   }
 
-  return count($tids) ? array_unique($tids) : FALSE;
+  return count($parents) ? array_unique($parents) : NULL;
 }

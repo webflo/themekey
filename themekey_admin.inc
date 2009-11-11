@@ -257,30 +257,32 @@ Supported operators are \'=\' (equal), \'!\' (not equal), \'<\' (smaller), \'>\'
 
 
 function _themekey_properties_form_validate($form, &$form_state) {
-  foreach ($form_state['values']['table'] as $key => $value) {
-    if (!empty($value['conditions'])) {
-      $conditions = _themekey_properties_explode_conditions($value['conditions']);
-      if (empty($conditions) || count($conditions) != (substr_count($value['conditions'], ';') + 1)) {
-        form_set_error('table][' . $key . '][conditions', t('You entered malformatted conditions'));
+  if (!empty($form_state['values']['table'])) {
+    foreach ($form_state['values']['table'] as $key => $value) {
+      if (!empty($value['conditions'])) {
+        $conditions = _themekey_properties_explode_conditions($value['conditions']);
+        if (empty($conditions) || count($conditions) != (substr_count($value['conditions'], ';') + 1)) {
+          form_set_error('table][' . $key . '][conditions', t('You entered malformatted conditions'));
+        }
+      }
+
+      foreach ($form_state['values']['table'] as $key_2 => $value_2) {
+        if ($key_2 == $key) {
+          continue;
+        }
+
+        if (!empty($value['value']) && $value_2['property'] == $value['property'] && $value_2['value'] == $value['value'] && $value_2['conditions'] == $value['conditions']) {
+          form_set_error('table][' . $key . '][value', t('You entered two identical values with identical conditions for the same property'));
+          break(2);
+        }
       }
     }
 
-    foreach ($form_state['values']['table'] as $key_2 => $value_2) {
-      if ($key_2 == $key) {
-        continue;
+    foreach ($form_state['values']['table'] as $key => $value) {
+      if (!empty($value['value']) && $form_state['values']['addtable']['add']['property'] == $value['property'] && $form_state['values']['addtable']['add']['value'] == $value['value'] && $form_state['values']['addtable']['add']['conditions'] == $value['conditions']) {
+        form_set_error('addtable][add][value', t('You entered two identical values with identical conditions for the same property'));
+        break;
       }
-
-      if (!empty($value['value']) && $value_2['property'] == $value['property'] && $value_2['value'] == $value['value'] && $value_2['conditions'] == $value['conditions']) {
-        form_set_error('table][' . $key . '][value', t('You entered two identical values with identical conditions for the same property'));
-        break(2);
-      }
-    }
-  }
-
-  foreach ($form_state['values']['table'] as $key => $value) {
-    if (!empty($value['value']) && $form_state['values']['addtable']['add']['property'] == $value['property'] && $form_state['values']['addtable']['add']['value'] == $value['value'] && $form_state['values']['addtable']['add']['conditions'] == $value['conditions']) {
-      form_set_error('addtable][add][value', t('You entered two identical values with identical conditions for the same property'));
-      break;
     }
   }
 }
