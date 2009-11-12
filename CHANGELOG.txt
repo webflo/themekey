@@ -1,6 +1,6 @@
 // $Id$
 
-ThemeKey 6.x-1.2-beta5, 2009-xx-xx
+ThemeKey 6.x-1.2-beta5, 2009-11-12
 ----------------------------------
 [#319581] mkalkbrenner: GET parameters break theme switching based on url aliases
 [#627974] mkalkbrenner: Rewrite ThemeKey UI
