@@ -126,3 +126,11 @@ function themekey_update_6102() {
 
   return array();
 }
+
+
+/**
+ * Implementation of hook_update_N().
+ */
+function themekey_update_6103() {
+  variable_del('themekey_nodediscover');
+}

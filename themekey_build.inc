@@ -176,72 +176,10 @@ function _themekey_prepare_path(&$path) {
   return array($fit, $weight, $wildcards);
 }
 
-/* Property-based */
-
-/**
- * Function _themekey_node_discover().
- */
-function _themekey_node_discover() {
-  require_once(drupal_get_path('module', 'node') .'/node.pages.inc');
-
-  $properties = array();
-  $ignore = array(// Generic node properties
-                  'teaser', 'teaser_js', 'teaser_include', 'body', 'format', 'log', 'submit', 'preview', 'form_id',
-                  'path', 'vid', 'validated', 'comment', 'name', 'revision', 'status', 'date',
-                  'changed', 'created', 'language', 'nid', 'promote', 'sticky', 'type', 'uid',
-                  // Book properties
-                  'book/router_path', 'book/module', 'book/parent_depth_limit', 'book/weight', 'book/pick-book',
-                  'book/menu_name', 'book/original_bid',
-                  // Menu properties
-                  'menu/module', 'menu/parent_depth_limit', 'menu/weight', 'menu/customized', 'menu/expanded',
-                  'menu/hidden'
-                 );
-  //
-  $nodes = array();
-  $node_types = node_get_types();
-  //
-  foreach ($node_types as $node_type) {
-    $form_state = array();
-    $form_id = $node_type->type .'_node_form';
-    $node = array('uid' => 0, 'name' => '-', 'type' => $node_type->type, 'language' => 'en');
-    //
-    $form = drupal_retrieve_form($form_id, $form_state, $node);
-    $form['#post'] = array();
-    drupal_prepare_form($form_id, $form, $form_state);
-    $form = form_builder($form_id, $form, $form_state);
-    $node = node_form_submit_build_node($form, $form_state);
-    //
-    _themekey_node_discover_properties($node, $properties);
-    $properties = array_diff($properties, $ignore);
-  }
-
-  return $properties;
-}
-
-/**
- * Function _themekey_node_discover_properties().
- */
-function _themekey_node_discover_properties($node, &$properties, $parents = array()) {
-  foreach ($node as $property => $value) {
-    if (!is_numeric($property) && !array_key_exists($property, $properties)) {
-      if (is_array($value)) {
-        array_push($parents, $property);
-        _themekey_node_discover_properties($value, $properties, $parents);
-        array_pop($parents);
-      }
-      else {
-        $element = (count($parents) ? implode(':', $parents) : 'node') .':'. $property;
-        $element_path = (count($parents) ? implode('/', $parents) .'/' : '') . $property;
-        $properties[$element] = $element_path;
-      }
-    }
-  }
-}
-
 /**
  * Function _themekey_properties_discover().
  */
-function _themekey_properties_discover($nodediscover = FALSE) {
+function _themekey_properties_discover() {
   $properties = array();
 
   // Module-exposed properties
@@ -255,6 +193,7 @@ function _themekey_properties_discover($nodediscover = FALSE) {
     }
   }
   // URL argument properties
+  // REVIEW why is this required?
   $result = db_query('SELECT wildcards FROM {themekey_paths} WHERE custom = 0');
   while ($item = db_fetch_array($result)) {
     $item['wildcards'] = unserialize($item['wildcards']);
@@ -263,10 +202,6 @@ function _themekey_properties_discover($nodediscover = FALSE) {
         $properties[$wildcard] = $wildcard;
       }
     }
-  }
-  // Node properties
-  if ($nodediscover) {
-    $properties = array_merge($properties, _themekey_node_discover());
   }
 
   return $properties;

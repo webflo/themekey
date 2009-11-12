@@ -326,19 +326,20 @@ function _themekey_settings_form() {
   // REVIEW rebuild is called to many times
   _themekey_rebuild();
 
-  //
   $form['settings'] = array(
     '#type' => 'fieldset',
     '#title' => t('General Settings'),
     '#collapsible' => FALSE,
     '#collapsed' => FALSE
   );
+
   $form['settings']['themekey_allthemes'] = array(
     '#type' => 'checkbox',
     '#title' => t('Provide all themes for selection'),
     '#default_value' => variable_get('themekey_allthemes', 1),
     '#description' => t('Make all installed themes available for selection, not enabled ones only.')
   );
+
   $form['settings']['themekey_theme_maintain'] = array(
     '#type' => 'checkbox',
     '#title' => t('Retain the theme until a new theme is set'),
@@ -346,13 +347,7 @@ function _themekey_settings_form() {
     '#description' => t('Select this option to have users stay in the same theme until they
                          browse to a new page with an explicit theme set.')
   );
-  $nodediscover = variable_get('themekey_nodediscover', 0);
-  $form['settings']['themekey_nodediscover'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Discover all node properties for selection'),
-    '#default_value' => $nodediscover,
-    '#description' => t('Allows you to assign themes to node properties (e.g. type, status, uid, ...).')
-  );
+
   if (module_exists('forum')) {
     $form['settings']['themekey_module_forum_triggers_taxonomy_vid'] = array(
       '#type' => 'checkbox',
@@ -361,6 +356,7 @@ function _themekey_settings_form() {
       '#description' => t('Property taxonomy:vid is set when a single node is shown (p.e. /node/17). If this option is selected, forum pages like /forum/28 will set taxonomy:vid as well.')
     );
   }
+
 // TODO Integration of Taxonomy Menu outdated. See http://drupal.org/node/616946
 //  if (module_exists('taxonomy_menu')) {
 //    $form['settings']['themekey_module_taxonomy_menu_triggers_taxonomy_tid'] = array(
@@ -377,15 +373,16 @@ function _themekey_settings_form() {
     '#collapsible' => TRUE,
     '#collapsed' => FALSE
   );
+
   $form['settings']['properties']['table'] = array(
     '#theme' => 'themekey_table',
     '#header' => array(t('Property'), t('Description'), t('Enabled'), t('Weight'), ''),
     '#tree' => TRUE
   );
-  //
+
   $config = variable_get('themekey_properties', array());
   $attributes = variable_get('themekey_attributes', array());
-  $properties = _themekey_properties_discover($nodediscover);
+  $properties = _themekey_properties_discover();
   foreach ($properties as $property => $path) {
     $properties[$property] = array('path' => $path,
                                    'property' => $property,

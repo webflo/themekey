@@ -6,6 +6,7 @@ ThemeKey 6.x-1.2-beta5, 2009-xx-xx
 [#627974] mkalkbrenner: Rewrite ThemeKey UI
 [#629672] mkalkbrenner: taxonomy:tid_and_childs still not working in all cases => rewrite of property value detection required
 [#629676] mkalkbrenner: turn object property mapping into node property mapping
+[#626254] mkalkbrenner: problem after changes in the general tab => "Discover all node properties for selection" is incompatible to some modules
 
 
 ThemeKey 6.x-1.2-beta4, 2009-11-05
