@@ -3,6 +3,7 @@
 ThemeKey 6.x-1.2-beta6, 2009-11-13
 ----------------------------------
 [#631946] donquixote, mkalkbrenner: Incorrect table definition (themekey_ui_).
+[#631900] mkalkbrenner: Warning when entering first path at /admin/settings/themekey
 
 
 ThemeKey 6.x-1.2-beta5, 2009-11-12

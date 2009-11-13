@@ -93,23 +93,25 @@ You can then specify conditions for every wildcard argument using the following 
 }
 
 function _themekey_paths_form_validate($form, &$form_state) {
-  foreach ($form_state['values']['table'] as $key => $value) {
-    foreach ($form_state['values']['table'] as $key_2 => $value_2) {
-      if ($key_2 == $key) {
-        continue;
-      }
+  if (!empty($form_state['values']['table'])) {
+    foreach ($form_state['values']['table'] as $key => $value) {
+      foreach ($form_state['values']['table'] as $key_2 => $value_2) {
+        if ($key_2 == $key) {
+          continue;
+        }
 
-      if (!empty($value['path']) && $value_2['path'] == $value['path'] && $value_2['conditions'] == $value['conditions']) {
-        form_set_error('table][' . $key . '][path', t('You entered two identical paths with identical conditions'));
-        break(2);
+        if (!empty($value['path']) && $value_2['path'] == $value['path'] && $value_2['conditions'] == $value['conditions']) {
+          form_set_error('table][' . $key . '][path', t('You entered two identical paths with identical conditions'));
+          break(2);
+        }
       }
     }
-  }
 
-  foreach ($form_state['values']['table'] as $key => $value) {
-    if (!empty($value['path']) && $form_state['values']['addtable']['add']['path'] == $value['path'] && $form_state['values']['addtable']['add']['conditions'] == $value['conditions']) {
-      form_set_error('addtable][add][path', t('You entered two identical paths with identical conditions'));
-      break;
+    foreach ($form_state['values']['table'] as $key => $value) {
+      if (!empty($value['path']) && $form_state['values']['addtable']['add']['path'] == $value['path'] && $form_state['values']['addtable']['add']['conditions'] == $value['conditions']) {
+        form_set_error('addtable][add][path', t('You entered two identical paths with identical conditions'));
+        break;
+      }
     }
   }
 }
