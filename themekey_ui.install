@@ -12,11 +12,10 @@ function themekey_ui_schema() {
         'description' => 'The {node} this version belongs to.',
         'type' => 'int',
         'unsigned' => TRUE,
-        'not null' => TRUE,
-        'default' => 0),
+        'not null' => TRUE),
       'vid' => array(
         'description' => 'The primary identifier for this version.',
-        'type' => 'serial',
+        'type' => 'int',
         'unsigned' => TRUE,
         'not null' => TRUE),
       'theme' => array(
