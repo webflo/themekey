@@ -267,8 +267,7 @@ function _themekey_properties_set(&$item) {
   }
   $item['conditions'] = (isset($item['conditions']) && !empty($item['conditions'])) ? $item['conditions'] : array();
   $item['conditions'] = _themekey_properties_explode_conditions($item['conditions']);
-  $item['callbacks'] = (isset($item['callbacks']) && !empty($item['callbacks'])) ? $item['callbacks'] : array();
-  //
+
   $attributes = variable_get('themekey_attributes', array());
   if (isset($attributes[$item['property']]['multiple']) && $attributes[$item['property']]['multiple']) {
     _themekey_include_modules();

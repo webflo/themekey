@@ -145,20 +145,13 @@ function _themekey_match_properties() {
       $query .= is_array($value) ? ('IN ('. db_placeholders($value, 'varchar') .') ORDER BY weight') : '= \'%s\'';
       $result = db_query($query, $value);
       while ($item = db_fetch_array($result)) {
-        //
+
         $item['conditions'] = unserialize($item['conditions']);
         if (_themekey_match_conditions($item['conditions'], $parameters)) {
           if (!_themekey_check_theme_enabled($item['theme'])) {
             continue;
           }
-          //
-          $callbacks = unserialize($item['callbacks']);
-          if (is_array($callbacks) && count($callbacks)) {
-            foreach ($callbacks as $callback) {
-              $callback($item, $parameters);
-            }
-          }
-          //
+
           return $item['theme'];
         }
       }

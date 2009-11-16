@@ -1,5 +1,10 @@
 // $Id$
 
+ThemeKey 6.x-1.2-beta7, 2009-xx-xx
+----------------------------------
+[#634028] mkalkbrenner: Callbacks for properties seems to be senseless
+
+
 ThemeKey 6.x-1.2-beta6, 2009-11-13
 ----------------------------------
 [#631946] donquixote, mkalkbrenner: Incorrect table definition (themekey_ui_).

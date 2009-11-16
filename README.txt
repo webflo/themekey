@@ -87,7 +87,7 @@ HOOK_themekey_paths()
     Value:  array()
             - path      => Router path to register (required)
             - callbacks => Load (and/or match) callback (required)
-              (the callback function can set the 'theme' element in $item directly)
+              (the callback function can set the 'theme' element in $params array directly, which will be applied)
               Callback arguments:
               - $item:    array of elements associated with the path/callback
               - $params:  array of parameters available for load callback

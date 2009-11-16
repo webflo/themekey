@@ -30,12 +30,12 @@ function _themekey_node_callback(&$item, &$parameters) {
     $theme = !empty($node->theme) ? $node->theme : 'default';
 
     if ('default' != $theme) {
-      $parameters['node:theme'] = $theme;
+      $parameters['theme'] = $theme;
       return;
     }
 
     _themekey_node_prepare_node($node, $parameters);
-    $parameters['node:theme'] = $theme;
+    $parameters['theme'] = $theme;
   }
 }
 

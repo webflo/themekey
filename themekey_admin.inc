@@ -120,7 +120,7 @@ function _themekey_paths_form_validate($form, &$form_state) {
  * Function _themekey_paths_submit().
  */
 function _themekey_paths_submit($form, &$form_state) {
-  if (isset($form_state['values']['table'])) {
+  if (!empty($form_state['values']['table'])) {
     foreach ($form_state['values']['table'] as $id => $item) {
       if (empty($item['path'])) {
         _themekey_path_del($id);
@@ -294,7 +294,7 @@ function _themekey_properties_form_validate($form, &$form_state) {
  * Function _themekey_properties_submit().
  */
 function _themekey_properties_submit($form, &$form_state) {
-  if (isset($form_state['values']['table'])) {
+  if (!empty($form_state['values']['table'])) {
     foreach ($form_state['values']['table'] as $id => $item) {
       if (empty($item['value'])) {
         _themekey_properties_del($id);

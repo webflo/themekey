@@ -34,7 +34,6 @@ function themekey_schema() {
       'weight'        => array('type' => 'int', 'not null' => TRUE, 'default' => 0),
       'conditions'    => array('type' => 'text', 'not null' => TRUE, 'size' => 'big', 'serialize' => TRUE),
       'theme'         => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => ''),
-      'callbacks'     => array('type' => 'text', 'not null' => TRUE, 'size' => 'big', 'serialize' => TRUE)
     ),
     'primary key' => array('id'),
     'indexes' => array(
@@ -107,8 +106,8 @@ function themekey_update_6100() {
  * Implementation of hook_update_N().
  */
 function themekey_update_6101() {
-  db_query("UPDATE {system} SET weight = 0 WHERE name = 'themekey'");
-  return array();
+  $result = update_sql("UPDATE {system} SET weight = 0 WHERE name = 'themekey'");
+  return array($result);
 }
 
 
@@ -133,4 +132,14 @@ function themekey_update_6102() {
  */
 function themekey_update_6103() {
   variable_del('themekey_nodediscover');
+  return array();
+}
+
+
+/**
+ * Implementation of hook_update_N().
+ */
+function themekey_update_6104() {
+  $result = update_sql("ALTER TABLE {themekey_properties} DROP COLUMN callbacks");
+  return array($result);
 }
