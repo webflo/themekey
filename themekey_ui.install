@@ -58,9 +58,8 @@ function themekey_ui_update_6100() {
     $sql = "SELECT id, value, theme, nid, vid FROM {themekey_properties} JOIN {node_revisions} ON (value = nid) WHERE property = 'node:nid' AND conditions = '%s'";
     if ($result = db_query($sql, 'a:0:{}')) {
       $insert_sql = "INSERT INTO {themekey_ui_node_theme} (nid, vid, theme) VALUES (%d, %d, '%s')";
-      $return['INSERT']['query'] = check_plain($insert_sql);
       $delete_sql = "DELETE FROM {themekey_properties} WHERE id = %d";
-      $return['DELETE']['query'] = check_plain($delete_sql);
+
       while ($row = db_fetch_array($result)) {
         if ($return['INSERT']['success'] = db_query($insert_sql, $row['nid'], $row['vid'], $row['theme'])) {
           if (!($return['DELETE']['success'] = db_query($delete_sql, $row['id']))) {
@@ -71,6 +70,14 @@ function themekey_ui_update_6100() {
           $return['INSERT']['success'] = FALSE;
           break;
         }
+      }
+
+      if (isset($return['INSERT'])) {
+        $return['INSERT']['query'] = check_plain($insert_sql);
+      }
+
+      if (isset($return['DELETE'])) {
+        $return['DELETE']['query'] = check_plain($delete_sql);
       }
     }
     else {
