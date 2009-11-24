@@ -148,7 +148,7 @@ function _themekey_match_conditions($conditions, $parameters) {
   if (is_array($conditions) && count($conditions)) {
     foreach ($conditions as $condition) {
       // Default operator is 'equal'
-      if (!isset($condition['operator'])) {
+      if (empty($condition['operator'])) {
         $condition['operator'] = '=';
       }
 
@@ -196,6 +196,10 @@ function _themekey_match_conditions($conditions, $parameters) {
         else if ($condition['operator'] == '~' && !preg_match($condition['value'], $value)) {
           return FALSE;
         }
+      }
+      else {
+        // value is NULL
+        return FALSE;
       }
     }
   }
