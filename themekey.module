@@ -38,12 +38,12 @@ function themekey_menu() {
     'page arguments' => array('themekey_properties_form')
   );
   $items['admin/settings/themekey/properties'] = array(
-    'title' => 'Properties',
+    'title' => t('Theme Switching Rules'),
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => 0
   );
   $items['admin/settings/themekey/properties/delete'] = array(
-    'title' => 'Delete ThemeKey Property',
+    'title' => t('Delete ThemeKey Property'),
     'page callback' => 'drupal_get_form',
     'page arguments' => array('themekey_admin_delete_property_confirm', 1),
     'access callback' => 'user_access',
@@ -52,7 +52,7 @@ function themekey_menu() {
     'type' => MENU_CALLBACK,
   );
   $items['admin/settings/themekey/settings'] = array(
-    'title' => 'Settings',
+    'title' => t('Settings'),
     'access callback' => 'user_access',
     'access arguments' => array('administer themekey settings'),
     'file' => 'themekey_admin.inc',
@@ -62,7 +62,7 @@ function themekey_menu() {
     'weight' => 5
   );
   $items['admin/settings/themekey/settings/general'] = array(
-    'title' => 'General',
+    'title' => t('General'),
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => 0
   );

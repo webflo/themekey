@@ -40,24 +40,15 @@ You can then specify conditions for every wildcard argument using the following 
 \'<\' (smaller), \'>\' (greater) and \'~\' (regex match).'),
   );
 
-  $config = array();
-
   $themes = _themekey_theme_options();
-  $properties = array_keys(variable_get('themekey_properties', array()));
-  if (count($properties)) {
-    $config = array();
-    foreach ($properties as $property) {
-      $config[$property] = $property;
-    }
-    ksort($config);
-  }
+  $properties = variable_get('themekey_properties', array());
 
   $items = _themekey_load_properties(THEMEKEY_PAGER_LENGTH, FALSE);
   foreach ($items as $item) {
     $form['old_items'][$item['id']]['property'] = array(
       '#type' => 'select',
       '#default_value' => $item['property'],
-      '#options' => $config,
+      '#options' => $properties,
     );
     $form['old_items'][$item['id']]['value'] = array(
       '#type' => 'textfield',
@@ -100,7 +91,7 @@ You can then specify conditions for every wildcard argument using the following 
   $form['new_item']['property'] = array(
     '#type' => 'select',
     '#default_value' => '',
-    '#options' => $config
+    '#options' => $properties,
   );
   $form['new_item']['value'] = array(
     '#type' => 'textfield',
@@ -304,7 +295,7 @@ function theme_themekey_properties_form($form) {
       $row = is_array($form['new_item']['#attributes']) ? $form['new_item']['#attributes'] : array();
 
       $elements = array();
-      $elements[] = t('New Item:');
+      $elements[] = t('New Rule:');
       $elements[] = array('data' => drupal_render($form['new_item']['property']), 'class' => 'select');
       $elements[] = array('data' => drupal_render($form['new_item']['value']), 'class' => 'textfield');
       $elements[] = array('data' => drupal_render($form['new_item']['conditions']), 'class' => 'textfield');
