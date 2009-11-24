@@ -15,8 +15,7 @@ function themekey_locale_themekey_global() {
   global $language;
 
   $parameters = array();
-  // REVIEW set default language instead of 'en'
-  $parameters['locale:language'] = isset($language->language) ? $language->language : 'en';
+  $parameters['locale:language'] = !empty($language->language) ? $language->language : NULL;
 
   return $parameters;
 }

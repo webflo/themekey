@@ -24,9 +24,9 @@ function themekey_user_themekey_global() {
   global $user;
 
   $parameters = array();
-  $parameters['user:hostname'] = isset($user->hostname) ? $user->hostname : '';
-  $parameters['user:language'] = isset($user->language) ? $user->language : 'en';
-  $parameters['user:name'] = isset($user->name) ? $user->name : '';
+  $parameters['user:hostname'] = !empty($user->hostname) ? $user->hostname : NULL;
+  $parameters['user:language'] = !empty($user->language) ? $user->language : NULL;
+  $parameters['user:name'] = !empty($user->name) ? $user->name : NULL;
   $parameters['user:uid'] = $user->uid;
 
   return $parameters;
