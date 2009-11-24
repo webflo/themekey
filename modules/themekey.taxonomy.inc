@@ -4,17 +4,11 @@
 function themekey_taxonomy_themekey_properties() {
   // Attributes for properties ;)
   $attributes = array();
-  $attributes['taxonomy:vid'] = array('multiple' => TRUE,
-                                      'path' => FALSE,
-                                      'weight' => 'themekey_taxonomy_vid_weight',
+  $attributes['taxonomy:vid'] = array('path' => FALSE,
                                       'description' => t('Taxonomy: Vocabulary'));
-  $attributes['taxonomy:tid'] = array('multiple' => TRUE,
-                                      'path' => 'taxonomy',
-                                      'weight' => 'themekey_taxonomy_tid_weight',
+  $attributes['taxonomy:tid'] = array('path' => 'taxonomy',
                                       'description' => t('Taxonomy: Term'));
-  $attributes['taxonomy:tid_and_childs'] = array('multiple' => TRUE,
-                                      'path' => FALSE,
-                                      'weight' => 'themekey_taxonomy_tid_weight',
+  $attributes['taxonomy:tid_and_childs'] = array('path' => FALSE,
                                       'description' => t('Taxonomy: Term and its childs'));
 
   // Mapping functions
@@ -57,16 +51,6 @@ function themekey_taxonomy_themekey_paths() {
 //  }
 
   return $paths;
-}
-
-function themekey_taxonomy_vid_weight($item) {
-  // TODO use taxonomy API instead of SQL
-  return db_result(db_query('SELECT weight FROM {vocabulary} WHERE vid = %d', $item['value']));
-}
-
-function themekey_taxonomy_tid_weight($item) {
-  // TODO use taxonomy API instead of SQL
-  return db_result(db_query('SELECT weight FROM {term_data} WHERE tid = %d', $item['value']));
 }
 
 function themekey_taxonomy_tid2vid($tids) {

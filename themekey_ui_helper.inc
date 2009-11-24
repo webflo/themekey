@@ -7,23 +7,37 @@ require_once(drupal_get_path('module', 'themekey') .'/themekey_build.inc');
  * Function themekey_ui_get_path_theme().
  */
 function themekey_ui_get_path_theme($path) {
-  return db_result(db_query('SELECT theme FROM {themekey_paths} WHERE path = \'%s\'', $path));
+  $serialized_empty_array = serialize(array());
+  if ($result = db_query("SELECT id, theme FROM {themekey_properties} WHERE property = 'drupal:path' AND value = '%s' AND conditions = '%s' AND wildcards = '%s'", $path, $serialized_empty_array, $serialized_empty_array)) {
+    if ($row = db_fetch_array($result)) {
+      return array($row['id'], $row['theme']);
+    }
+  }
+
+  return array(0, 'default');
 }
 
 /**
  * Function themekey_ui_set_path_theme().
  */
-function themekey_ui_set_path_theme($path, $theme = 'default') {
-  $item = array('path' => $path, 'theme' => $theme);
-  if ($id = db_result(db_query('SELECT id FROM {themekey_paths} WHERE path = \'%s\'', $path))) {
+function themekey_ui_set_path_theme($path, $theme = 'default', $id = 0) {
+  $item = array(
+    'property' => 'drupal:path',
+    'value' => $path,
+    'theme' => $theme,
+    'enabled' => 1,
+  );
+
+  if ($id > 0) {
     $item['id'] = $id;
   }
-  _themekey_path_set($item);
+
+  _themekey_properties_set($item);
 }
 
 /**
  * Function themekey_ui_del_path_theme().
  */
-function themekey_ui_del_path_theme($path) {
-  db_query('DELETE FROM {themekey_paths} WHERE path = \'%s\'', $path);
+function themekey_ui_del_path_theme($id) {
+  return _themekey_properties_del($id);
 }

@@ -4,8 +4,9 @@ ThemeKey
 ========
 
 Name: themekey
-Authors: Thilo Wawrzik <drupal at profix898 dot de>
-         Markus Kalkbrenner | Cocomore AG
+Authors: Markus Kalkbrenner | Cocomore AG
+         Carsten Müller | Cocomore AG
+         Thilo Wawrzik <drupal at profix898 dot de>
 Drupal: 6.x
 Sponsor: Cocomore AG - http://www.cocomore.com
 
@@ -45,7 +46,6 @@ How to use ThemeKey UI on node forms ...
 - Go to admin/settings/themekey/settings/ui to make theme options available
   on node forms, and check off the content types you want to enable the
   options for
-- Go to admin/settings/themekey/settings and enable the 'node:nid' property
 
 
 ThemeKey Properties
@@ -63,10 +63,6 @@ HOOK_themekey_properties()
     Key:    namespace:property
     Value:  array()
             - description => Readable name of property (required)
-            - multiple    => TRUE/FALSE (optional)
-              (does an object, e.g. a node, can have more than one of this property values)
-            - weight      => weighting callback (optional)
-              (if multiple values are possible, the weighting callback is required for priority)
             - path        => Path to property value on a node object (optional)
 
   Maps
@@ -79,7 +75,7 @@ HOOK_themekey_properties()
 HOOK_themekey_global()
   Global properties
     Key:    namespace:property
-    Value:  property value
+    Value:  property value (scalar value or array of scalar values)
 
 HOOK_themekey_paths()
   Paths

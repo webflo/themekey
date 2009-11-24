@@ -1,5 +1,14 @@
 // $Id$
 
+ThemeKey 6.x-2.0-alpha1, 2009-xx-xx
+-----------------------------------
+[       ] mkalkbrenner: API: hook_themekey_properties(): removed attributes 'multiple' and 'weight'
+[       ] mkalkbrenner: API: removed themekey custom path concept. Themekey custom paths became properties using drupal:path 
+[       ] mkalkbrenner: API: removed requirement to turn properties on or off 
+[#625176] mkalkbrenner: Let admin adjust path and property weight
+[#591200] mkalkbrenner: Performance: Some property callbacks get called multiple times
+
+
 ThemeKey 6.x-1.2-beta7, 2009-11-24
 ----------------------------------
 [#634028] mkalkbrenner: Callbacks for properties seems to be senseless

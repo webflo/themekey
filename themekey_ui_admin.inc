@@ -113,16 +113,22 @@ function _themekey_ui_pathalias(&$form, &$form_state) {
     return;
   }
 
+  list($id, $theme) = themekey_ui_get_path_theme($form['#alias']['src']);
+
   $pathalias_form['pathalias_theme']['theme'] = array(
     '#type' => 'select',
     '#title' => t('Theme'),
-    '#default_value' => themekey_ui_get_path_theme($form['#alias']['src']),
+    '#default_value' => $theme,
     '#options' => _themekey_theme_options(),
     '#description' => t('Theme to be assigned to current path'),
   );
+  $pathalias_form['pathalias_theme']['themekey_property_id'] = array(
+    '#type' => 'value',
+    '#value' => $id,
+  );
   $pathalias_form['pathalias_theme']['themekey_ui_submit'] = array(
     '#type' => 'value',
-    '#value' => '_themekey_ui_pathalias_submit'
+    '#value' => '_themekey_ui_pathalias_submit',
   );
   array_splice($form, 4, 0, $pathalias_form);
   array_unshift($form['#submit'], 'themekey_ui_form_submit');
@@ -132,11 +138,11 @@ function _themekey_ui_pathalias(&$form, &$form_state) {
  * Function _themekey_ui_pathalias_submit().
  */
 function _themekey_ui_pathalias_submit($form, &$form_state) {
-  if (!isset($form_state['values']['theme'])) {
-    themekey_ui_del_path_theme($form['#alias']['src']);
+  if ((empty($form_state['values']['theme']) || 'default' == $form_state['values']['theme']) && $form_state['values']['themekey_property_id']) {
+    themekey_ui_del_path_theme($form_state['values']['themekey_property_id']);
   }
-  else {
-    themekey_ui_set_path_theme($form['#alias']['src'], $form_state['values']['theme']);
+  else if (!empty($form_state['values']['theme']) && 'default' != $form_state['values']['theme']) {
+    themekey_ui_set_path_theme($form['#alias']['src'], $form_state['values']['theme'], $form_state['values']['themekey_property_id']);
   }
 }
 

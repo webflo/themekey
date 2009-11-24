@@ -7,11 +7,13 @@ require_once(drupal_get_path('module', 'themekey') .'/themekey_base.inc');
  * Implementation of hook_theme()
  */
 function themekey_theme() {
-  return array(
-    'themekey_table' => array(
+  $items = array(
+    'themekey_properties_form' => array(
+      'file' => 'themekey_admin.inc',
       'arguments' => array('form' => NULL),
-    )
+    ),
   );
+  return $items;
 }
 
 /**
@@ -33,22 +35,21 @@ function themekey_menu() {
     'access arguments' => array('administer theme assignments'),
     'file' => 'themekey_admin.inc',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('_themekey_paths_form')
-  );
-  $items['admin/settings/themekey/paths'] = array(
-    'title' => 'Paths',
-    'type' => MENU_DEFAULT_LOCAL_TASK,
-    'weight' => 0
+    'page arguments' => array('themekey_properties_form')
   );
   $items['admin/settings/themekey/properties'] = array(
     'title' => 'Properties',
+    'type' => MENU_DEFAULT_LOCAL_TASK,
+    'weight' => 0
+  );
+  $items['admin/settings/themekey/properties/delete'] = array(
+    'title' => 'Delete ThemeKey Property',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('themekey_admin_delete_property_confirm', 1),
     'access callback' => 'user_access',
     'access arguments' => array('administer theme assignments'),
     'file' => 'themekey_admin.inc',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('_themekey_properties_form'),
-    'type' => MENU_LOCAL_TASK,
-    'weight' => 1
+    'type' => MENU_CALLBACK,
   );
   $items['admin/settings/themekey/settings'] = array(
     'title' => 'Settings',
@@ -111,29 +112,7 @@ function themekey_init() {
     }
 
     if (empty($theme) || 'default' == $theme) {
-      // Try to get theme for the normal Drupal path
-      $theme = _themekey_match_paths($_GET['q']);
-      if (!$theme) {
-        // Derive path from request_uri
-        $offset = (variable_get('clean_url', 0) ? 0 : 3) + strlen(base_path());
-        $alias_uri = substr(request_uri(), $offset);
-        if (strpos($alias_uri, '?') !== FALSE) {
-          // Remove query string from request uri
-          $alias_uri_parts = explode('?', $alias_uri);
-          $alias_uri = $alias_uri_parts[0];
-        }
-        // For $alias_uri != $_GET['q'] the page was requested using an
-        // aliased path, otherwise get the path alias internally
-        if (($alias_uri == $_GET['q']) && module_exists('path')) {
-          $alias_uri = drupal_get_path_alias($_GET['q']);
-        }
-        // Try to get the theme for the aliased Drupal path
-        $theme = _themekey_match_paths($alias_uri);
-      }
-
-      if (!$theme) {
-        $theme = _themekey_match_properties();
-      }
+      $theme = _themekey_match_properties();
 
       // If no theme has been triggered but a theme
       // is in the user's session, use that theme.
@@ -152,3 +131,4 @@ function themekey_init() {
     }
   }
 }
+

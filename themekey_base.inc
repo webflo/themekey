@@ -80,10 +80,10 @@ function _themekey_get_global_parameters() {
   if (is_null($global_parameters)) {
     $global_parameters = module_invoke_all('themekey_global');
 
-    list($ancestors, $placeholders) = _themekey_get_path_ancestors( $_GET['q']);
+    list($ancestors, $placeholders) = _themekey_get_path_ancestors($_GET['q']);
 
     // TODO don't store non custom paths in database
-    $result = db_query('SELECT * FROM {themekey_paths} WHERE path IN ('. implode(',', $placeholders) .') AND custom = 0 ORDER BY fit DESC, weight DESC', $ancestors);
+    $result = db_query('SELECT * FROM {themekey_paths} WHERE path IN ('. implode(',', $placeholders) .') ORDER BY fit DESC, weight DESC', $ancestors);
     while ($item = db_fetch_array($result)) {
       $wildcards = unserialize($item['wildcards']);
       foreach ($wildcards as $index => $wildcard) {
@@ -103,56 +103,36 @@ function _themekey_get_global_parameters() {
 }
 
 /**
- * Function _themekey_match_paths().
- */
-function _themekey_match_paths($path) {
-  list($ancestors, $placeholders) = _themekey_get_path_ancestors($path);
-
-  $result = db_query('SELECT * FROM {themekey_paths} WHERE path IN ('. implode(',', $placeholders) .') ORDER BY fit DESC, weight DESC, custom DESC', $ancestors);
-  while ($item = db_fetch_array($result)) {
-    $parameters = _themekey_get_global_parameters();
-    $conditions = unserialize($item['conditions']);
-    //
-    $wildcards = unserialize($item['wildcards']);
-    foreach ($wildcards as $index => $wildcard) {
-      $parameters[$wildcard] = arg($index, $path);
-    }
-    //
-    if (!_themekey_match_conditions($conditions, $parameters)) {
-      continue;
-    }
-
-    if (!_themekey_check_theme_enabled($item['theme'])) {
-      continue;
-    }
-
-    return $item['theme'];
-  }
-
-  return NULL;
-}
-
-/**
  * Function _themekey_match_properties().
  */
 function _themekey_match_properties() {
   $parameters = _themekey_get_global_parameters();
-  $properties = variable_get('themekey_properties', array());
-  foreach (array_keys($properties) as $property) {
-    $value = _themekey_property_value($parameters, $property);
-    if (!empty($value) || count($value)) {
-      $query = 'SELECT * FROM {themekey_properties} WHERE property = \''. $property .'\' AND value ';
-      $query .= is_array($value) ? ('IN ('. db_placeholders($value, 'varchar') .') ORDER BY weight') : '= \'%s\'';
-      $result = db_query($query, $value);
-      while ($item = db_fetch_array($result)) {
 
-        $item['conditions'] = unserialize($item['conditions']);
-        if (_themekey_match_conditions($item['conditions'], $parameters)) {
-          if (!_themekey_check_theme_enabled($item['theme'])) {
-            continue;
+  if ($result = db_query("SELECT * FROM {themekey_properties} WHERE enabled = 1 ORDER BY weight")) {
+    while ($item = db_fetch_array($result)) {
+      $values = _themekey_property_value($parameters, $item['property']);
+      if (!is_array($values)) {
+        $values = array($values);
+      }
+      foreach ($values as $value) {
+        if (!is_null($value) && $value == $item['value']) {
+          if ('drupal:path' == $item['property']) {
+            $wildcards = unserialize($item['wildcards']);
+            if (!empty($wildcards)) {
+              $path = in_array($value, $parameters['internal:path_alias']) ? $parameters['internal:alias_uri'] : $_GET['q'];
+              foreach ($wildcards as $index => $wildcard) {
+                $parameters[$wildcard] = arg($index, $path);
+              }
+            }
           }
+          $item['conditions'] = unserialize($item['conditions']);
+          if (_themekey_match_conditions($item['conditions'], $parameters)) {
+            if (!_themekey_check_theme_enabled($item['theme'])) {
+              continue(2);
+            }
 
-          return $item['theme'];
+            return $item['theme'];
+          }
         }
       }
     }
@@ -176,27 +156,29 @@ function _themekey_match_conditions($conditions, $parameters) {
 
       if (is_array($value)) {
         foreach ($value as $single_value) {
-          // Supported operators for condition check:
-          // smaller ('<'), greater ('>'), equal ('='), not equal ('!'), regex match ('~')
-          if ($condition['operator'] == '<' && $single_value < $condition['value']) {
-            return TRUE;
-          }
-          else if ($condition['operator'] == '>' && $single_value > $condition['value']) {
-            return TRUE;
-          }
-          else if ($condition['operator'] == '=' && $single_value == $condition['value']) {
-            return TRUE;
-          }
-          else if ($condition['operator'] == '!' && $single_value != $condition['value']) {
-            return TRUE;
-          }
-          else if ($condition['operator'] == '~' && preg_match($condition['value'], $single_value)) {
-            return TRUE;
+          if (!is_null($single_value)) {
+            // Supported operators for condition check:
+            // smaller ('<'), greater ('>'), equal ('='), not equal ('!'), regex match ('~')
+            if ($condition['operator'] == '<' && $single_value < $condition['value']) {
+              return TRUE;
+            }
+            else if ($condition['operator'] == '>' && $single_value > $condition['value']) {
+              return TRUE;
+            }
+            else if ($condition['operator'] == '=' && $single_value == $condition['value']) {
+              return TRUE;
+            }
+            else if ($condition['operator'] == '!' && $single_value != $condition['value']) {
+              return TRUE;
+            }
+            else if ($condition['operator'] == '~' && preg_match($condition['value'], $single_value)) {
+              return TRUE;
+            }
           }
         }
         return FALSE;
       }
-      else {
+      else if (!is_null($value)) {
         // Supported operators for condition check:
         // smaller ('<'), greater ('>'), equal ('='), not equal ('!'), regex match ('~')
         if ($condition['operator'] == '<' && $value >= $condition['value']) {
@@ -225,6 +207,9 @@ function _themekey_match_conditions($conditions, $parameters) {
  * Function _themekey_property_value().
  */
 function _themekey_property_value(&$parameters, $property) {
+
+  // TODO Warning if property is not part of variable_get('themekey_attributes')
+
   // Property value is available directly
   if (isset($parameters[$property])) {
     return $parameters[$property];

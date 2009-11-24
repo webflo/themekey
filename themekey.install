@@ -13,9 +13,6 @@ function themekey_schema() {
       'fit'           => array('type' => 'int', 'not null' => TRUE, 'default' => 0),
       'weight'        => array('type' => 'int', 'not null' => TRUE, 'default' => 0),
       'wildcards'     => array('type' => 'text', 'not null' => TRUE, 'size' => 'big', 'serialize' => TRUE),
-      'conditions'    => array('type' => 'text', 'not null' => TRUE, 'size' => 'big', 'serialize' => TRUE),
-      'custom'        => array('type' => 'int', 'not null' => TRUE, 'default' => 0),
-      'theme'         => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => ''),
       'callbacks'     => array('type' => 'text', 'not null' => TRUE, 'size' => 'big', 'serialize' => TRUE)
     ),
     'primary key' => array('id'),
@@ -34,11 +31,13 @@ function themekey_schema() {
       'weight'        => array('type' => 'int', 'not null' => TRUE, 'default' => 0),
       'conditions'    => array('type' => 'text', 'not null' => TRUE, 'size' => 'big', 'serialize' => TRUE),
       'theme'         => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => ''),
+      'enabled'       => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
+      'wildcards'     => array('type' => 'text', 'not null' => TRUE, 'size' => 'big', 'serialize' => TRUE),
     ),
     'primary key' => array('id'),
     'indexes' => array(
-      'property'  => array('property'),
-      'weight'    => array('weight')
+      'enabled'  => array('enabled'),
+      'weight'   => array('weight'),
     )
   );
 
@@ -142,4 +141,31 @@ function themekey_update_6103() {
 function themekey_update_6104() {
   $result = update_sql("ALTER TABLE {themekey_properties} DROP COLUMN callbacks");
   return array($result);
+}
+
+
+/**
+ * Implementation of hook_update_N().
+ */
+function themekey_update_6200() {
+  $ret[] = update_sql("ALTER TABLE {themekey_properties} ADD COLUMN enabled INT(11) NOT NULL DEFAULT 0");
+  $ret[] = update_sql("ALTER TABLE {themekey_properties} DROP INDEX property");
+  $ret[] = update_sql("ALTER TABLE {themekey_properties} ADD INDEX (enabled)");
+  $ret[] = update_sql("ALTER TABLE {themekey_properties} ADD COLUMN wildcards TEXT NOT NULL");
+
+  $weight = ((int) db_result(db_query("SELECT MIN(weight) FROM {themekey_properties}"))) - 1;
+  $insert_query = "INSERT INTO {themekey_properties} (property, value, weight, conditions, theme, enabled, wildcards) VALUES ('drupal:path', '%s', %d, '%s', '%s', 1, '%s')";
+
+  $result = db_query("SELECT * FROM {themekey_paths} WHERE custom = 1");
+  while ($item = db_fetch_array($result)) {
+    $insert_success = db_query($insert_query, $item['path'], $weight, $item['conditions'], $item['theme'], $item['wildcards']);
+    $ret[] = array('success' => $insert_success, 'query' => $insert_query);
+    $ret[] = update_sql('DELETE FROM {themekey_paths} WHERE id = '. $item['id']);
+  }
+
+  $ret[] = update_sql("ALTER TABLE {themekey_paths} DROP COLUMN conditions");
+  $ret[] = update_sql("ALTER TABLE {themekey_paths} DROP COLUMN custom");
+  $ret[] = update_sql("ALTER TABLE {themekey_paths} DROP COLUMN theme");
+
+  return $ret;
 }

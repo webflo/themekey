@@ -19,9 +19,6 @@ function themekey_book_themekey_properties() {
 }
 
 function themekey_book_nid2bid($nid, $object = NULL) {
-  // FIXME This function gets called up to 5 times
-  // because themekey_init() calls _themekey_match_paths() 2 times
-  // and _themekey_match_paths() calls _themekey_match_properties() 2 times and $callback($item, $parameters);
   if ($node = node_load($nid)) {
     if (!empty($node->book['bid'])) {
       return $node->book['bid'];

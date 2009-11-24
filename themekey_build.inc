@@ -27,12 +27,20 @@ function _themekey_theme_options($default = TRUE) {
 function _themekey_rebuild() {
   // Create a list of modules in the /modules subfolder (internal modules)
   _themekey_scan_modules();
+
   // Get property definitions (from internal and other modules)
   $properties = module_invoke_all('themekey_properties');
+
   // Attributes
   $attributes = isset($properties['attributes']) ? $properties['attributes'] : array();
   drupal_alter('themekey_attributes', $attributes);
   variable_set('themekey_attributes', $attributes);
+
+  $property_names = array_keys($attributes);
+  sort($property_names);
+  $property_names = array_combine($property_names, $property_names);
+  variable_set('themekey_properties', $property_names);
+
   // Property maps
   $maps = isset($properties['maps']) ? $properties['maps'] : array();
   drupal_alter('themekey_maps', $maps);
@@ -40,7 +48,7 @@ function _themekey_rebuild() {
 
   // Find all previous registered paths
   $obsolete_paths = array();
-  $result = db_query('SELECT id, path FROM {themekey_paths} WHERE custom = 0');
+  $result = db_query('SELECT id, path FROM {themekey_paths}');
   while ($item = db_fetch_array($result)) {
     $obsolete_paths[$item['id']] = $item['path'];
   }
@@ -48,7 +56,7 @@ function _themekey_rebuild() {
   $paths = module_invoke_all('themekey_paths');
   drupal_alter('themekey_paths', $paths);
   foreach ($paths as $item) {
-    _themekey_path_set($item, FALSE);
+    _themekey_path_set($item);
     if (isset($item['id'])) {
       unset($obsolete_paths[$item['id']]);
     }
@@ -89,38 +97,26 @@ function _themekey_include_modules() {
 /* Path-based */
 
 /**
- * Function _themekey_load_paths().
+ * Function themekey_complete_path().
  */
-function _themekey_load_paths($limit = NULL) {
-  $paths = array();
-  $query = 'SELECT * FROM {themekey_paths} WHERE custom = 1';
-  $result = isset($limit) ? pager_query($query, $limit) : db_query($query);
-  while ($item = db_fetch_array($result)) {
-    $item['wildcards'] = unserialize($item['wildcards']);
-    if (count($item['wildcards'])) {
-      $parts = explode('/', $item['path'], MENU_MAX_PARTS);
-      foreach ($item['wildcards'] as $index => $wildcard) {
-        $parts[$index] .= $wildcard;
-      }
-      $item['path'] = implode('/', $parts);
+function themekey_complete_path(&$item) {
+  $item['wildcards'] = unserialize($item['wildcards']);
+  if (count($item['wildcards'])) {
+    $parts = explode('/', $item['value'], MENU_MAX_PARTS);
+    foreach ($item['wildcards'] as $index => $wildcard) {
+      $parts[$index] .= $wildcard;
     }
-    $item['conditions'] = _themekey_properties_implode_conditions(unserialize($item['conditions']));
-    $paths[] = $item;
+    $item['value'] = implode('/', $parts);
   }
-
-  return $paths;
 }
 
 /**
  * Function _themekey_path_set().
  */
-function _themekey_path_set(&$item, $custom = TRUE) {
-  $item['conditions'] = (isset($item['conditions']) && !empty($item['conditions'])) ? $item['conditions'] : array();
-  $item['conditions'] = _themekey_properties_explode_conditions($item['conditions']);
+function _themekey_path_set(&$item) {
   $item['callbacks'] = (isset($item['callbacks']) && !empty($item['callbacks'])) ? $item['callbacks'] : array();
 
   list($item['fit'], $item['weight'], $item['wildcards']) = _themekey_prepare_path($item['path']);
-  $item['custom'] = $custom;
 
   drupal_write_record('themekey_paths', $item, isset($item['id']) ? 'id' : array());
 }
@@ -130,20 +126,6 @@ function _themekey_path_set(&$item, $custom = TRUE) {
  */
 function _themekey_path_del($id) {
   db_query('DELETE FROM {themekey_paths} WHERE id = %d', $id);
-}
-
-/**
- * Function _themekey_path_clear().
- */
-function _themekey_path_clear() {
-  db_query('DELETE FROM {themekey_paths} WHERE custom = 1');
-}
-
-/**
- * Function themekey_num_paths().
- */
-function _themekey_num_paths() {
-  return db_result(db_query('SELECT COUNT(id) FROM {themekey_paths} WHERE custom = 1'));
 }
 
 /**
@@ -177,34 +159,24 @@ function _themekey_prepare_path(&$path) {
 }
 
 /**
- * Function _themekey_properties_discover().
+ * Function themekey_prepare_custom_path().
+ * (based on _menu_router_build() in includes/menu.inc)
  */
-function _themekey_properties_discover() {
-  $properties = array();
+function themekey_prepare_custom_path($path) {
+  $wildcards = array();
 
-  // Module-exposed properties
-  $attributes = variable_get('themekey_attributes', array());
-  foreach ($attributes as $property => $details) {
-    if (isset($details['path'])) {
-      $properties[$property] = $details['path'];
-    }
-    else {
-      $properties[$property] = FALSE;
-    }
-  }
-  // URL argument properties
-  // REVIEW why is this required?
-  $result = db_query('SELECT wildcards FROM {themekey_paths} WHERE custom = 0');
-  while ($item = db_fetch_array($result)) {
-    $item['wildcards'] = unserialize($item['wildcards']);
-    foreach ($item['wildcards'] as $wildcard) {
-      if (!array_key_exists($wildcard, $properties)) {
-        $properties[$wildcard] = $wildcard;
+  $parts = explode('/', $path, MENU_MAX_PARTS);
+  foreach ($parts as $index => $part) {
+    if (preg_match('/^(\%|\#)([a-z0-9_:]*)$/', $part, $matches)) {
+      $parts[$index] = $matches[1];
+      if (!empty($matches[2])) {
+        $wildcards[$index] = $matches[2];
       }
     }
   }
+  $path = implode('/', $parts);
 
-  return $properties;
+  return array($path, $wildcards);
 }
 
 /**
@@ -245,13 +217,15 @@ function _themekey_properties_implode_conditions($conditions) {
 /**
  * Function _themekey_load_properties().
  */
-function _themekey_load_properties($limit = NULL, $order = TRUE) {
+function _themekey_load_properties($limit = NULL) {
   $properties = array();
-  $query = 'SELECT * FROM {themekey_properties}';
-  $query .= $order ? ' ORDER BY weight' : '';
+  $query = 'SELECT * FROM {themekey_properties} ORDER BY weight';
   $result = isset($limit) ? pager_query($query, $limit) : db_query($query);
   while ($item = db_fetch_array($result)) {
     $item['conditions'] = _themekey_properties_implode_conditions(unserialize($item['conditions']));
+    if ('drupal:path' == $item['property']) {
+      themekey_complete_path($item);
+    }
     $properties[] = $item;
   }
 
@@ -268,11 +242,11 @@ function _themekey_properties_set(&$item) {
   $item['conditions'] = (isset($item['conditions']) && !empty($item['conditions'])) ? $item['conditions'] : array();
   $item['conditions'] = _themekey_properties_explode_conditions($item['conditions']);
 
-  $attributes = variable_get('themekey_attributes', array());
-  if (isset($attributes[$item['property']]['multiple']) && $attributes[$item['property']]['multiple']) {
-    _themekey_include_modules();
-    $weightfn = $attributes[$item['property']]['weight'];
-    $item['weight'] = function_exists($weightfn) ? $weightfn($item) : 0;
+  if ('drupal:path' == $item['property']) {
+    list($item['value'], $item['wildcards']) = themekey_prepare_custom_path($item['value']);
+  }
+  else {
+    $item['wildcards'] = array();
   }
 
   drupal_write_record('themekey_properties', $item, isset($item['id']) ? 'id' : array());
@@ -283,39 +257,6 @@ function _themekey_properties_set(&$item) {
  */
 function _themekey_properties_del($id) {
   db_query('DELETE FROM {themekey_properties} WHERE id = %d', $id);
-}
-
-/**
- * Function _themekey_properties_delall().
- */
-function _themekey_properties_delall($properties) {
-  $properties = is_array($properties) ? $properties : array($properties);
-  foreach ($properties as $property) {
-    db_query('DELETE FROM {themekey_properties} WHERE property = \'%s\'', $property);
-  }
-}
-
-/**
- * Function _themekey_properties_clear().
- */
-function _themekey_properties_clear() {
-  db_query('DELETE FROM {themekey_properties}');
-}
-
-/**
- * Function _themekey_properties_cmp().
- */
-function _themekey_properties_cmp($a, $b) {
-  if ($a['weight'] == $b['weight']) {
-    if (isset($a['property']) && isset($b['property'])) {
-      return ($a['property'] < $b['property']) ? -1 : 1;
-    }
-    else {
-      return ($a['path'] < $b['path']) ? -1 : 1;
-    }
-  }
-
-  return ($a['weight'] < $b['weight']) ? -1 : 1;
 }
 
 /**
