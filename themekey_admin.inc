@@ -90,12 +90,12 @@ You can then specify conditions for every wildcard argument using the following 
 
   $form['new_item']['property'] = array(
     '#type' => 'select',
-    '#default_value' => '',
+    '#default_value' => !empty($_GET['property']) ? check_plain($_GET['property']) : '',
     '#options' => $properties,
   );
   $form['new_item']['value'] = array(
     '#type' => 'textfield',
-    '#default_value' => '',
+    '#default_value' => !empty($_GET['value']) ? check_plain($_GET['value']) : '',
     '#size' => 25,
     '#maxlength' => 255
   );
@@ -317,6 +317,7 @@ function theme_themekey_properties_form($form) {
       array('data' => t('Enabled'), 'class' => 'checkbox'),
     );
 
+    $output .= '<a name="themekey_new_rule"></a>';
     $output .= theme('table', $header, $rows, array('id' => 'themekey-new-item'));
   }
 
