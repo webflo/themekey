@@ -167,7 +167,7 @@ function themekey_update_6200() {
   $ret[] = update_sql("ALTER TABLE {themekey_paths} DROP COLUMN custom");
   $ret[] = update_sql("ALTER TABLE {themekey_paths} DROP COLUMN theme");
 
-  drupal_set_message(t('Please review ThemeKey Settings at !link', array('!link' => l('admin/settings/themekey/settings', 'admin/settings/themekey/settings'))));
+  drupal_set_message(t('Please review ThemeKey Settings at !link', array('!link' => l('admin/settings/themekey/settings', 'admin/settings/themekey/settings'))), 'warning');
 
   return $ret;
 }

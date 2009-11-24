@@ -12,6 +12,14 @@ function themekey_properties_form() {
 
   _themekey_admin_theme_warning();
 
+  $themes = _themekey_theme_options();
+  $properties = variable_get('themekey_properties', array());
+  $attributes = variable_get('themekey_attributes', array());
+
+  if (empty($properties)) {
+    drupal_set_message(t('Please visit ThemeKey Settings at !link first', array('!link' => l('admin/settings/themekey/settings', 'admin/settings/themekey/settings'))), 'error');
+  }
+
   $form = array('#tree' => TRUE);
 
   $form['help'] = array(
@@ -19,29 +27,36 @@ function themekey_properties_form() {
     '#title' => t('Help'),
     '#collapsible' => TRUE,
     '#collapsed' => TRUE,
-    '#description' => t(
-'Here you can map themes to object properties, e.g. to node properties such as the NodeID (nid).
-To add a new map entry to the table, select a property from the \'Property\' dropdown and enter
-the value which you want to assign the theme to. For example: Property = \'nid\', Value = \'123\'
-and Theme = \'Bluemarine\' switches the theme of node 123 to Bluemarine. You may also specify
-\'Additional Conditions\' so that the theme only applies when all conditions are matched. \'Additional
-Conditions\' must be provided using the following syntax: \'property=value;property2=value2;...\'.
-Supported operators are \'=\' (equal), \'!\' (not equal), \'<\' (smaller), \'>\' (greater) and \'~\' (regex match).') .
-t(
-'Here you can map themes to Drupal paths or path aliases. To add a new map entry to the table,
-enter the path into the \'Path\' field and select a theme from the \'Theme\' dropdown. For example:
-Path = \'node/add\' and Theme = \'Bluemarine\' switches the theme of the \'Create content\' page to
-Bluemarine. You may also use wildcard characters in the path and/or specify \'Conditions\' to match.<br />
-Wildcard characters are \'#\' for numeric parts and \'%\' for all characters. To match conditions
-against a certain part, use an identifier with the wildcard. For example: Path =
-\'comment/reply/#xyz\' matches all paths with \'comment/reply\' and a numeric third argument.
-You can then specify conditions for every wildcard argument using the following syntax:
-\'id=value;id2=value2;...\', e.g. \'xyz=123\'. Supported operators are \'=\' (equal), \'!\' (not equal),
-\'<\' (smaller), \'>\' (greater) and \'~\' (regex match).'),
   );
 
-  $themes = _themekey_theme_options();
-  $properties = variable_get('themekey_properties', array());
+  $form['help']['description_1'] = array(
+    '#type' => 'item',
+    '#title' => t('How to define Theme Switching Rules'),
+    '#value' => t(
+'Text copied from ThemeKey 6.x-1.2 properties description and needs to be reviewed:
+Here you can map themes to object properties, e.g. to node properties such as the NodeID (nid).
+To add a new map entry to the table, select a property from the "Property" dropdown and enter
+the value which you want to assign the theme to. For example: Property = "nid", Value = "123"
+and Theme = "Bluemarine" switches the theme of node 123 to Bluemarine. You may also specify
+"Additional Conditions" so that the theme only applies when all conditions are matched. "Additional
+Conditions" must be provided using the following syntax: "property=value;property2=value2;...".
+Supported operators are "=" (equal), "!" (not equal), "<" (smaller), ">" (greater) and "~" (regex match).'),
+  );
+
+  $form['help']['properties'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Properties explained'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+  );
+
+  foreach ($properties as $property) {
+    $form['help']['properties'][$property] = array(
+      '#type' => 'item',
+      '#title' => $property,
+      '#value' => $attributes[$property]['description'],
+    );
+  }
 
   $items = _themekey_load_properties(THEMEKEY_PAGER_LENGTH, FALSE);
   foreach ($items as $item) {

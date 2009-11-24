@@ -5,10 +5,21 @@ function themekey_system_themekey_properties() {
   // Attributes for properties
   $attributes = array();
   $attributes['system:host'] = array(
-    'description' => t('System: Server Host')
+    'description' => t('System: Server Host'),
   );
   $attributes['drupal:path'] = array(
-    'description' => t('Drupal: Drupal path or path alias')
+    'description' => t('Drupal: Drupal path or path alias with support for wildcards<br />
+Text copied from ThemeKey 6.x-1.2 paths description and needs to be reviewed:
+Here you can map themes to Drupal paths or path aliases. To add a new map entry to the table,
+enter the path into the "Path" field and select a theme from the "Theme" dropdown. For example:
+Path = "node/add" and Theme = "Bluemarine" switches the theme of the "Create content" page to
+Bluemarine. You may also use wildcard characters in the path and/or specify "Conditions" to match.<br />
+Wildcard characters are "#" for numeric parts and "%" for all characters. To match conditions
+against a certain part, use an identifier with the wildcard. For example: Path =
+"comment/reply/#xyz" matches all paths with "comment/reply" and a numeric third argument.
+You can then specify conditions for every wildcard argument using the following syntax:
+"id=value;id2=value2;...", e.g. "xyz=123". Supported operators are "=" (equal), "!" (not equal),
+"<" (smaller), ">" (greater) and "~" (regex match).'),
   );
 
   return array('attributes' => $attributes);
