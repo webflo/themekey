@@ -40,11 +40,13 @@ function themekey_system_themekey_global() {
       $alias_uri = drupal_get_path_alias($_GET['q']);
     }
 
-    $parameters['internal:alias_uri'] = $alias_uri;
+    if ($alias_uri != $_GET['q']) {
+      $parameters['internal:alias_uri'] = $alias_uri;
 
-    list($ancestors, $placeholders) = _themekey_get_path_ancestors($alias_uri);
-    foreach ($ancestors as $ancestor) {
-      $parameters['drupal:path'][] = $parameters['internal:path_alias'][] = $ancestor;
+      list($ancestors, $placeholders) = _themekey_get_path_ancestors($alias_uri);
+      foreach ($ancestors as $ancestor) {
+        $parameters['drupal:path'][] = $parameters['internal:path_alias'][] = $ancestor;
+      }
     }
   }
 
