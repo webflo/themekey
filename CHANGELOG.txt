@@ -1,6 +1,10 @@
 // $Id$
 
-ThemeKey 6.x-2.0-alpha1, 2009-xx-xx
+ThemeKey 6.x-2.0-alpha2, 2009-xx-xx
+-----------------------------------
+
+
+ThemeKey 6.x-2.0-alpha1, 2009-11-24
 -----------------------------------
 [       ] mkalkbrenner: API: hook_themekey_properties(): removed attributes 'multiple' and 'weight'
 [       ] mkalkbrenner: API: removed themekey custom path concept. Themekey custom paths became properties using drupal:path 
