@@ -116,7 +116,7 @@ function themekey_init() {
 
       // If no theme has been triggered but a theme
       // is in the user's session, use that theme.
-      if (!$theme && isset($_SESSION['themekey_theme'])
+      if (!$theme && !empty($_SESSION['themekey_theme'])
           && (!$custom_theme || $custom_theme == variable_get('theme_default', 'garland'))) {
         $custom_theme = $_SESSION['themekey_theme'];
       }
@@ -124,8 +124,12 @@ function themekey_init() {
 
     // We have a theme, apply it
     if (!empty($theme) && $theme != 'default') {
-      if (variable_get('themekey_theme_maintain', 0)) {
+      if ((user_is_logged_in() && variable_get('themekey_theme_maintain', 0)) ||
+          (!user_is_logged_in() && variable_get('themekey_theme_maintain_anonymous', 0))) {
         $_SESSION['themekey_theme'] = $theme;
+      }
+      else {
+        unset($_SESSION['themekey_theme']);
       }
       $custom_theme = $theme;
     }

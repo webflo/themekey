@@ -8,6 +8,7 @@ ThemeKey 6.x-2.0-alpha1, 2009-xx-xx
 [#625176] mkalkbrenner: Let admin adjust path and property weight
 [#591200] mkalkbrenner: Performance: Some property callbacks get called multiple times
 [#639808] mkalkbrenner: Conditions always return TRUE if property is NULL
+[#582738] mkalkbrenner: Themekey 'Retain the theme until a new theme is set' setting not working with cached pages for anonymous users
 
 
 ThemeKey 6.x-1.2-beta7, 2009-11-24
