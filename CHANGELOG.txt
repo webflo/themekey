@@ -1,5 +1,11 @@
 // $Id$
 
+ThemeKey 6.x-2.0-alpha3, 2009-11-25
+-----------------------------------
+[       ] mkalkbrenner: fixed error during fresh installation: Key column 'custom' doesn't exist in table
+[       ] mkalkbrenner: simplified installation process and changed default values
+
+
 ThemeKey 6.x-2.0-alpha2, 2009-11-25
 -----------------------------------
 [       ] mkalkbrenner: API: hook_themekey_properties(): removed attribute 'path'

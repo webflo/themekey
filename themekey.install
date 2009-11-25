@@ -20,7 +20,6 @@ function themekey_schema() {
       'path'        => array('path'),
       'fit'         => array('fit'),
       'weight'      => array('weight'),
-      'custom'      => array('custom')
     )
   );
   $schema['themekey_properties'] = array(

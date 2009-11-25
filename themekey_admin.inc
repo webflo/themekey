@@ -17,7 +17,7 @@ function themekey_properties_form() {
   $attributes = variable_get('themekey_attributes', array());
 
   if (empty($properties)) {
-    drupal_set_message(t('Please visit ThemeKey Settings at !link first', array('!link' => l('admin/settings/themekey/settings', 'admin/settings/themekey/settings'))), 'error');
+    drupal_goto('admin/settings/themekey/settings');
   }
 
   $form = array('#tree' => TRUE);
@@ -213,7 +213,7 @@ function _themekey_settings_form() {
   $form['settings']['themekey_allthemes'] = array(
     '#type' => 'checkbox',
     '#title' => t('Provide all themes for selection'),
-    '#default_value' => variable_get('themekey_allthemes', 1),
+    '#default_value' => variable_get('themekey_allthemes', 0),
     '#description' => t('Make all installed themes available for selection, not enabled ones only.')
   );
 
