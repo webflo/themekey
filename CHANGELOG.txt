@@ -1,5 +1,10 @@
 // $Id$
 
+ThemeKey 6.x-2.0-alpha4, 2009-xx-xx
+-----------------------------------
+[       ] mkalkbrenner: adjusted more default values
+
+
 ThemeKey 6.x-2.0-alpha3, 2009-11-25
 -----------------------------------
 [       ] mkalkbrenner: fixed error during fresh installation: Key column 'custom' doesn't exist in table

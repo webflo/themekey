@@ -13,7 +13,7 @@ function _themekey_theme_options($default = TRUE) {
     $options_themes['default'] = t('System default');
   }
   foreach ($themes as $themex) {
-    if ($themex->status || variable_get('themekey_allthemes', 1)) {
+    if ($themex->status || variable_get('themekey_allthemes', 0)) {
       $options_themes[$themex->name] = $themex->info['name'];
     }
   }
