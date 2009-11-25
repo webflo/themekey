@@ -1,6 +1,8 @@
 <?php
 // $Id$
 
+define('PATH_MAX_PARTS', 10);
+
 /**
  * Function _themekey_invoke_modules().
  */
@@ -19,56 +21,48 @@ function _themekey_invoke_modules($hook) {
   return $return;
 }
 
-/* Path-based */
-
 /**
  * Function _themekey_get_path_ancestors().
- * (based on menu_get_ancestors() in includes/menu.inc)
  */
 function _themekey_get_path_ancestors($path) {
   static $path_ancestors = array();
 
   if (empty($path_ancestors[$path])) {
-    $parts = explode('/', $path, MENU_MAX_PARTS);
+    $ancestors = array($path);
 
-    $placeholders = array();
-    $ancestors = array();
-
-    $number_parts = count($parts);
-    $length =  $number_parts - 1;
-    $end = (1 << $number_parts) - 1;
-
-    $masks = variable_get('menu_masks', array());
-    foreach ($masks as $i) {
-      if ($i > $end) {
-        continue;
-      }
-      elseif ($i < (1 << $length)) {
-        --$length;
-      }
-      $current = '';
-      for ($j = $length; $j >= 0; $j--) {
-        if ($i & (1 << $j)) {
-          $current .= $parts[$length - $j];
-        }
-        else {
-          $current .= is_numeric($parts[$length - $j]) ? '#' : '%';
-        }
-        if ($j) {
-          $current .= '/';
-        }
-      }
-      $placeholders[] = "'%s'";
-      $ancestors[] = $current;
-      if (stristr($current, '#') !== FALSE) {
-        $placeholders[] = "'%s'";
-        $ancestors[] = str_replace('#', '%', $current);
-      }
+    // REVIEW Is there a more efficient algorithm?
+    for ($i = 0; $i < count($ancestors); $i++) {
+       $ancestors = array_unique(array_merge($ancestors, themekey_add_path_ancestors($ancestors[$i])));
     }
-    $path_ancestors[$path] = array($ancestors, $placeholders);
+
+    $path_ancestors[$path] = array($ancestors, array_fill(0, count($ancestors), "'%s'"));
   }
 
   return $path_ancestors[$path];
+}
+
+function themekey_add_path_ancestors($path) {
+  $ancestors = array();
+  $parts = explode('/', $path, PATH_MAX_PARTS);
+  foreach ($parts as $key => $part) {
+    if ('#' == $part || '%' == $part) {
+      continue;
+    }
+
+    $slices = array_slice($parts, 0, $key);
+    if (!empty($slices)) {
+      $ancestors[] = implode('/', $slices);
+    }
+
+    if (is_numeric($part) && $part == (int) $part) {
+      $ancestors[] = implode('/', array_merge($slices, array('#'), array_slice($parts, $key + 1)));
+    }
+
+    $slices[] = '%';
+    $ancestors[] = implode('/', $slices);
+    $ancestors[] = implode('/', array_merge($slices, array_slice($parts, $key + 1)));
+  }
+  return array_unique($ancestors);
 }
 
 /**

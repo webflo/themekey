@@ -58,8 +58,15 @@ function themekey_system_themekey_global() {
       foreach ($ancestors as $ancestor) {
         $parameters['drupal:path'][] = $parameters['internal:path_alias'][] = $ancestor;
       }
+
+      if (!empty($parameters['internal:path_alias'])) {
+        $parameters['drupal:path'] = array_unique($parameters['drupal:path']);
+        $parameters['internal:path_alias'] = array_unique($parameters['internal:path_alias']);
+      }
     }
   }
+
+  rsort($parameters['drupal:path']);
 
   return $parameters;
 }
