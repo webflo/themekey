@@ -4,12 +4,9 @@
 function themekey_taxonomy_themekey_properties() {
   // Attributes for properties ;)
   $attributes = array();
-  $attributes['taxonomy:vid'] = array('path' => FALSE,
-                                      'description' => t('Taxonomy: Vocabulary'));
-  $attributes['taxonomy:tid'] = array('path' => 'taxonomy',
-                                      'description' => t('Taxonomy: Term'));
-  $attributes['taxonomy:tid_and_childs'] = array('path' => FALSE,
-                                      'description' => t('Taxonomy: Term and its childs'));
+  $attributes['taxonomy:vid'] = array('description' => t('Taxonomy: Vocabulary'));
+  $attributes['taxonomy:tid'] = array('description' => t('Taxonomy: Term'));
+  $attributes['taxonomy:tid_and_childs'] = array('description' => t('Taxonomy: Term and its childs'));
 
   // Mapping functions
   $maps = array();

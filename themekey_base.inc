@@ -119,7 +119,12 @@ function _themekey_match_properties() {
           if ('drupal:path' == $item['property']) {
             $wildcards = unserialize($item['wildcards']);
             if (!empty($wildcards)) {
-              $path = in_array($value, $parameters['internal:path_alias']) ? $parameters['internal:alias_uri'] : $_GET['q'];
+              $path = $_GET['q'];
+              if (!empty($parameters['internal:path_alias']) && !empty($parameters['internal:alias_uri'])) {
+                if (in_array($value, $parameters['internal:path_alias'])) {
+                  $path = $parameters['internal:alias_uri'];
+                }
+              }
               foreach ($wildcards as $index => $wildcard) {
                 $parameters[$wildcard] = arg($index, $path);
               }
@@ -144,7 +149,7 @@ function _themekey_match_properties() {
 /**
  * Function _themekey_match_conditions().
  */
-function _themekey_match_conditions($conditions, $parameters) {
+function _themekey_match_conditions($conditions, &$parameters) {
   if (is_array($conditions) && count($conditions)) {
     foreach ($conditions as $condition) {
       // Default operator is 'equal'

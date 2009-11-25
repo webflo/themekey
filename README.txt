@@ -63,7 +63,6 @@ HOOK_themekey_properties()
     Key:    namespace:property
     Value:  array()
             - description => Readable name of property (required)
-            - path        => Path to property value on a node object (optional)
 
   Maps
     Key:    none (indexed)
