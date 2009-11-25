@@ -171,3 +171,11 @@ function themekey_update_6200() {
 
   return $ret;
 }
+
+/**
+ * Implementation of hook_update_N().
+ */
+function themekey_update_6201() {
+  _themekey_rebuild();
+  return array();
+}
