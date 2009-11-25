@@ -3,9 +3,8 @@
 ThemeKey 6.x-2.0-alpha2, 2009-11-25
 -----------------------------------
 [       ] mkalkbrenner: API: hook_themekey_properties(): removed attribute 'path'
-[       ] mkalkbrenner: API: removed requirement to turn properties on or off 
+[#629676#comment-2304878] mkalkbrenner: API: object based node property mapping is completely removed and replaced by "normal" map functions
 [       ] mkalkbrenner: fixed warning when using drupal:path in combination with wildcards on a non aliased path
-[#629676#comment-2304878] mkalkbrenner: object based node property mapping is completely removed and replaced by "normal" map functions
 [#619940#comment-2303706] mkalkbrenner: no other node properties than node:nid are working
 [#619940#comment-2303706] mkalkbrenner: algorithm to build path ancestors returned incomplete result
 
