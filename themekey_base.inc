@@ -104,34 +104,34 @@ function _themekey_match_properties() {
 
   if ($result = db_query("SELECT * FROM {themekey_properties} WHERE enabled = 1 ORDER BY weight")) {
     while ($item = db_fetch_array($result)) {
-      $values = _themekey_property_value($parameters, $item['property']);
-      if (!is_array($values)) {
-        $values = array($values);
-      }
-      foreach ($values as $value) {
-        if (!is_null($value) && $value == $item['value']) {
-          if ('drupal:path' == $item['property']) {
-            $wildcards = unserialize($item['wildcards']);
-            if (!empty($wildcards)) {
-              $path = $_GET['q'];
-              if (!empty($parameters['internal:path_alias']) && !empty($parameters['internal:alias_uri'])) {
-                if (in_array($value, $parameters['internal:path_alias'])) {
-                  $path = $parameters['internal:alias_uri'];
-                }
-              }
-              foreach ($wildcards as $index => $wildcard) {
-                $parameters[$wildcard] = arg($index, $path);
-              }
-            }
-          }
-          $item['conditions'] = unserialize($item['conditions']);
-          if (_themekey_match_conditions($item['conditions'], $parameters)) {
-            if (!_themekey_check_theme_enabled($item['theme'])) {
-              continue(2);
-            }
+      $conditions = array(array(
+        'property' => $item['property'],
+        'operator' => '=',
+        'value' => $item['value'],
+      ));
 
-            return $item['theme'];
+      if (_themekey_match_conditions($conditions, $parameters)) {
+        if ('drupal:path' == $item['property']) {
+          $wildcards = unserialize($item['wildcards']);
+          if (!empty($wildcards)) {
+            $path = $_GET['q'];
+            if (!empty($parameters['internal:path_alias']) && !empty($parameters['internal:alias_uri'])) {
+              if (in_array($value, $parameters['internal:path_alias'])) {
+                $path = $parameters['internal:alias_uri'];
+              }
+            }
+            foreach ($wildcards as $index => $wildcard) {
+              $parameters[$wildcard] = arg($index, $path);
+            }
           }
+        }
+        $item['conditions'] = unserialize($item['conditions']);
+        if (_themekey_match_conditions($item['conditions'], $parameters)) {
+          if (!_themekey_check_theme_enabled($item['theme'])) {
+            continue;
+          }
+
+          return $item['theme'];
         }
       }
     }

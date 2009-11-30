@@ -5,7 +5,7 @@ function themekey_system_themekey_properties() {
   // Attributes for properties
   $attributes = array();
   $attributes['system:host'] = array(
-    'description' => t('System: Server Host'),
+    'description' => t('System: HTTP_HOST'),
   );
   $attributes['drupal:path'] = array(
     'description' => t('Drupal: Drupal path or path alias with support for wildcards<br />
