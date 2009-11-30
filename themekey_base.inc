@@ -104,13 +104,7 @@ function _themekey_match_properties() {
 
   if ($result = db_query("SELECT * FROM {themekey_properties} WHERE enabled = 1 ORDER BY weight")) {
     while ($item = db_fetch_array($result)) {
-      $conditions = array(array(
-        'property' => $item['property'],
-        'operator' => '=',
-        'value' => $item['value'],
-      ));
-
-      if (_themekey_match_conditions($conditions, $parameters)) {
+      if (_themekey_match_conditions(array($item), $parameters)) {
         if ('drupal:path' == $item['property']) {
           $wildcards = unserialize($item['wildcards']);
           if (!empty($wildcards)) {
@@ -164,6 +158,12 @@ function _themekey_match_conditions($conditions, &$parameters) {
             else if ($condition['operator'] == '>' && $single_value > $condition['value']) {
               return TRUE;
             }
+            else if ($condition['operator'] == '<=' && $single_value <= $condition['value']) {
+              return TRUE;
+            }
+            else if ($condition['operator'] == '>=' && $single_value >= $condition['value']) {
+              return TRUE;
+            }
             else if ($condition['operator'] == '=' && $single_value == $condition['value']) {
               return TRUE;
             }
@@ -184,6 +184,12 @@ function _themekey_match_conditions($conditions, &$parameters) {
           return FALSE;
         }
         else if ($condition['operator'] == '>' && $value <= $condition['value']) {
+          return FALSE;
+        }
+        else if ($condition['operator'] == '<=' && $value > $condition['value']) {
+          return FALSE;
+        }
+        else if ($condition['operator'] == '>=' && $value < $condition['value']) {
           return FALSE;
         }
         else if ($condition['operator'] == '=' && $value != $condition['value']) {

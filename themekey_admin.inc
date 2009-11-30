@@ -12,13 +12,23 @@ function themekey_properties_form() {
 
   _themekey_admin_theme_warning();
 
-  $themes = _themekey_theme_options();
   $properties = variable_get('themekey_properties', array());
-  $attributes = variable_get('themekey_attributes', array());
 
   if (empty($properties)) {
     drupal_goto('admin/settings/themekey/settings');
   }
+
+  $themes = _themekey_theme_options();
+  $attributes = variable_get('themekey_attributes', array());
+  $operators = array(
+    '=' => '=',
+    '!' => '!',
+    '<' => '<',
+    '<=' => '<=',
+    '>' => '>',
+    '>=' => '>=',
+    '~' => '~',
+  );
 
   $form = array('#tree' => TRUE);
 
@@ -65,6 +75,11 @@ Supported operators are "=" (equal), "!" (not equal), "<" (smaller), ">" (greate
       '#default_value' => $item['property'],
       '#options' => $properties,
     );
+    $form['old_items'][$item['id']]['operator'] = array(
+      '#type' => 'select',
+      '#default_value' => $item['operator'],
+      '#options' => $operators,
+    );
     $form['old_items'][$item['id']]['value'] = array(
       '#type' => 'textfield',
       '#default_value' => $item['value'],
@@ -107,6 +122,11 @@ Supported operators are "=" (equal), "!" (not equal), "<" (smaller), ">" (greate
     '#type' => 'select',
     '#default_value' => !empty($_GET['property']) ? check_plain($_GET['property']) : '',
     '#options' => $properties,
+  );
+  $form['new_item']['operator'] = array(
+    '#type' => 'select',
+    '#default_value' => '=',
+    '#options' => $operators,
   );
   $form['new_item']['value'] = array(
     '#type' => 'textfield',
@@ -180,9 +200,6 @@ function themekey_properties_form_validate($form, &$form_state) {
 function themekey_properties_form_submit($form, &$form_state) {
   if (!empty($form_state['values']['old_items'])) {
     foreach ($form_state['values']['old_items'] as $id => $item) {
-//      if (empty($item['value'])) {
-//        _themekey_properties_del($id);
-//      }
       $item['id'] = $id;
       _themekey_properties_set($item);
     }
@@ -275,6 +292,7 @@ function theme_themekey_properties_form($form) {
         $elements = array();
         $elements[] = '';
         $elements[] = array('data' => drupal_render($form['old_items'][$key]['property']), 'class' => 'select');
+        $elements[] = array('data' => drupal_render($form['old_items'][$key]['operator']), 'class' => 'select');
         $elements[] = array('data' => drupal_render($form['old_items'][$key]['value']), 'class' => 'textfield');
         $elements[] = array('data' => drupal_render($form['old_items'][$key]['conditions']), 'class' => 'textfield');
         $elements[] = array('data' => drupal_render($form['old_items'][$key]['theme']), 'class' => 'select');
@@ -298,11 +316,12 @@ function theme_themekey_properties_form($form) {
 
     $header = array(
       '',
-      array('data' => t('Property'), 'class' => 'select'),
-      array('data' => t('Value'), 'class' => 'textfield'),
-      array('data' => t('Conditions'), 'class' => 'textfield'),
-      array('data' => t('Theme'), 'class' => 'select'),
-      array('data' => t('Enabled'), 'class' => 'checkbox'),
+      array('data' => t('Property')),
+      array('data' => t('Op')),
+      array('data' => t('Value')),
+      array('data' => t('Conditions')),
+      array('data' => t('Theme')),
+      array('data' => t('Enabled')),
       t('Weight'),
       array('data' => t('Operations'), 'colspan' => '1'),
     );
@@ -319,6 +338,7 @@ function theme_themekey_properties_form($form) {
       $elements = array();
       $elements[] = t('New Rule:');
       $elements[] = array('data' => drupal_render($form['new_item']['property']), 'class' => 'select');
+      $elements[] = array('data' => drupal_render($form['new_item']['operator']), 'class' => 'select');
       $elements[] = array('data' => drupal_render($form['new_item']['value']), 'class' => 'textfield');
       $elements[] = array('data' => drupal_render($form['new_item']['conditions']), 'class' => 'textfield');
       $elements[] = array('data' => drupal_render($form['new_item']['theme']), 'class' => 'select');
@@ -332,11 +352,12 @@ function theme_themekey_properties_form($form) {
   if (!empty($rows)) {
     $header = array(
       '',
-      array('data' => t('Property'), 'class' => 'select'),
-      array('data' => t('Value'), 'class' => 'textfield'),
-      array('data' => t('Conditions'), 'class' => 'textfield'),
-      array('data' => t('Theme'), 'class' => 'select'),
-      array('data' => t('Enabled'), 'class' => 'checkbox'),
+      array('data' => t('Property')),
+      array('data' => t('Op')),
+      array('data' => t('Value')),
+      array('data' => t('Conditions')),
+      array('data' => t('Theme')),
+      array('data' => t('Enabled')),
     );
 
     $output .= '<a name="themekey_new_rule"></a>';

@@ -26,6 +26,7 @@ function themekey_schema() {
     'fields' => array(
       'id'            => array('type' => 'serial', 'unsigned' => TRUE, 'not null' => TRUE),
       'property'      => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => ''),
+      'operator'      => array('type' => 'varchar', 'length' => 2, 'not null' => TRUE, 'default' => '='),
       'value'         => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => ''),
       'weight'        => array('type' => 'int', 'not null' => TRUE, 'default' => 0),
       'conditions'    => array('type' => 'text', 'not null' => TRUE, 'size' => 'big', 'serialize' => TRUE),
@@ -177,4 +178,14 @@ function themekey_update_6200() {
 function themekey_update_6201() {
   _themekey_rebuild();
   return array();
+}
+
+
+/**
+ * Implementation of hook_update_N().
+ */
+function themekey_update_6202() {
+  $ret[] = update_sql("ALTER TABLE {themekey_properties} ADD COLUMN operator VARCHAR(2) NOT NULL DEFAULT '='");
+  _themekey_rebuild();
+  return $ret;
 }

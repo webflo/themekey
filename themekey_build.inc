@@ -236,9 +236,6 @@ function _themekey_load_properties($limit = NULL) {
  * Function _themekey_properties_set().
  */
 function _themekey_properties_set(&$item) {
-  if (preg_match('/'. $item['property'] .'=(.*)/', $item['value'], $matches)) {
-    $item['value'] = $matches[1];
-  }
   $item['conditions'] = (isset($item['conditions']) && !empty($item['conditions'])) ? $item['conditions'] : array();
   $item['conditions'] = _themekey_properties_explode_conditions($item['conditions']);
 
