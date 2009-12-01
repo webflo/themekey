@@ -2,9 +2,10 @@
 
 ThemeKey 6.x-2.0-alpha4, 2009-xx-xx
 -----------------------------------
+[       ] mkalkbrenner: API: don't allow altering of themekey_attributes, themekey_properties and themekey_maps via hook
 [       ] mkalkbrenner: adjusted more default values
 [#442192] mkalkbrenner: Main condition not =
-[       ] mkalkbrenner: allow <= and >= as opertors for conditions
+[       ] mkalkbrenner: allow <= and >= as operator for conditions
 
 
 ThemeKey 6.x-2.0-alpha3, 2009-11-25

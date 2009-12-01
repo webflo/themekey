@@ -33,7 +33,6 @@ function _themekey_rebuild() {
 
   // Attributes
   $attributes = isset($properties['attributes']) ? $properties['attributes'] : array();
-  drupal_alter('themekey_attributes', $attributes);
   variable_set('themekey_attributes', $attributes);
 
   $property_names = array_keys($attributes);
@@ -43,7 +42,6 @@ function _themekey_rebuild() {
 
   // Property maps
   $maps = isset($properties['maps']) ? $properties['maps'] : array();
-  drupal_alter('themekey_maps', $maps);
   variable_set('themekey_maps', $maps);
 
   // Find all previous registered paths
@@ -54,7 +52,6 @@ function _themekey_rebuild() {
   }
   // Get (and register) paths from themekey modules
   $paths = module_invoke_all('themekey_paths');
-  drupal_alter('themekey_paths', $paths);
   foreach ($paths as $item) {
     _themekey_path_set($item);
     if (isset($item['id'])) {
