@@ -8,7 +8,7 @@ require_once(drupal_get_path('module', 'themekey') .'/themekey_build.inc');
  */
 function themekey_ui_get_path_theme($path) {
   $serialized_empty_array = serialize(array());
-  if ($result = db_query("SELECT id, theme FROM {themekey_properties} WHERE property = 'drupal:path' AND value = '%s' AND conditions = '%s' AND wildcards = '%s'", $path, $serialized_empty_array, $serialized_empty_array)) {
+  if ($result = db_query("SELECT id, theme FROM {themekey_properties} WHERE property = 'drupal:path' AND value = '%s' AND wildcards = '%s'", $path, $serialized_empty_array)) {
     if ($row = db_fetch_array($result)) {
       return array($row['id'], $row['theme']);
     }

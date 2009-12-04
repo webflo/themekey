@@ -17,10 +17,8 @@ function themekey_schema() {
     ),
     'primary key' => array('id'),
     'indexes' => array(
-      'path'        => array('path'),
-      'fit'         => array('fit'),
-      'weight'      => array('weight'),
-    )
+      'path_fit_weight' => array('path', 'fit', 'weight'),
+    ),
   );
   $schema['themekey_properties'] = array(
     'fields' => array(
@@ -29,16 +27,16 @@ function themekey_schema() {
       'operator'      => array('type' => 'varchar', 'length' => 2, 'not null' => TRUE, 'default' => '='),
       'value'         => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => ''),
       'weight'        => array('type' => 'int', 'not null' => TRUE, 'default' => 0),
-      'conditions'    => array('type' => 'text', 'not null' => TRUE, 'size' => 'big', 'serialize' => TRUE),
       'theme'         => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => ''),
       'enabled'       => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
       'wildcards'     => array('type' => 'text', 'not null' => TRUE, 'size' => 'big', 'serialize' => TRUE),
+      'parent'        => array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0),
     ),
     'primary key' => array('id'),
     'indexes' => array(
-      'enabled'  => array('enabled'),
-      'weight'   => array('weight'),
-    )
+      'enabled_parent_weight' => array('enabled', 'parent', 'weight'),
+      'parent_weight' => array('parent', 'weight'),
+    ),
   );
 
   return $schema;
@@ -185,7 +183,44 @@ function themekey_update_6201() {
  * Implementation of hook_update_N().
  */
 function themekey_update_6202() {
-  $ret[] = update_sql("ALTER TABLE {themekey_properties} ADD COLUMN operator VARCHAR(2) NOT NULL DEFAULT '='");
+  $ret = array();
+
+  $field_operator = array('type' => 'varchar', 'length' => 2, 'not null' => TRUE, 'default' => '=', 'initial' => '=');
+  db_add_field($ret, 'themekey_properties', 'operator', $field_operator);
+
+  $field_parent = array('type' => 'int', 'unsigned' => TRUE,'not null' => TRUE, 'default' => 0, 'initial' => 0);
+  db_add_field($ret, 'themekey_properties', 'parent', $field_parent);
+
+  if ($result = db_query("SELECT * FROM {themekey_properties} WHERE conditions != '%s'", serialize(array()))) {
+    $insert_query = "INSERT INTO {themekey_properties} (property, operator, value, weight, theme, enabled, wildcards, parent) VALUES ('%s', '%s', '%s', %d, '%s', %d, '%s', %d)";
+
+    while ($row = db_fetch_array($result)) {
+      $conditions = unserialize($row['conditions']);
+      if (is_array($conditions)) {
+        $parent = $row['id'];
+        foreach ($conditions as $condition) {
+          $insert_result = db_query($insert_query, $condition['property'], $condition['operator'], $condition['value'], 0, $row['theme'], $row['enabled'], serialize(array()), $parent);
+          if ($insert_result) {
+            $parent = db_last_insert_id('themekey_properties', 'id');
+          }
+          $ret[] = array('success' => $insert_result, 'query' => $insert_query);
+        }
+      }
+    }
+  }
+
+  db_drop_field($ret, 'themekey_properties', 'conditions');
+  db_drop_index($ret, 'themekey_properties', 'enabled');
+  db_drop_index($ret, 'themekey_properties', 'weight');
+  db_add_index($ret, 'themekey_properties', 'enabled_parent_weight', array('enabled', 'parent', 'weight'));
+  db_add_index($ret, 'themekey_properties', 'parent_weight', array('parent', 'weight'));
+
+  db_drop_index($ret, 'themekey_paths', 'path');
+  db_drop_index($ret, 'themekey_paths', 'fit');
+  db_drop_index($ret, 'themekey_paths', 'weight');
+  db_add_index($ret, 'themekey_paths', 'path_fit_weight', array('path', 'fit', 'weight'));
+
   _themekey_rebuild();
   return $ret;
 }
+

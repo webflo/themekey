@@ -21,6 +21,10 @@ You can then specify conditions for every wildcard argument using the following 
 "id=value;id2=value2;...", e.g. "xyz=123". Supported operators are "=" (equal), "!" (not equal),
 "<" (smaller), ">" (greater) and "~" (regex match).'),
   );
+  $attributes['drupal:path:wildcard'] = array(
+    'description' => t('wildcard of drupal:path'),
+  );
+
 
   return array('attributes' => $attributes);
 }

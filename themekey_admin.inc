@@ -68,12 +68,35 @@ Supported operators are "=" (equal), "!" (not equal), "<" (smaller), ">" (greate
     );
   }
 
-  $items = _themekey_load_properties(THEMEKEY_PAGER_LENGTH, FALSE);
+  $items = _themekey_load_properties(THEMEKEY_PAGER_LENGTH);
+  $parent_options = array_merge(array(0), array_keys($items));
+  $parent_options = array_combine($parent_options, $parent_options);
   foreach ($items as $item) {
+    $property = $item['property'];
+    $wildcard = '';
+    if (!in_array($property, $properties)) {
+      $property = 'drupal:path:wildcard';
+      $wildcard = $item['property'];
+    }
+
+    $form['old_items'][$item['id']]['depth'] = array(
+      '#type' => 'value',
+      '#value' => $item['depth'],
+    );
+    $form['old_items'][$item['id']]['id'] = array(
+      '#type' => 'hidden',
+      '#value' => $item['id'],
+    );
     $form['old_items'][$item['id']]['property'] = array(
       '#type' => 'select',
-      '#default_value' => $item['property'],
+      '#default_value' => $property,
       '#options' => $properties,
+    );
+    $form['old_items'][$item['id']]['wildcard'] = array(
+      '#type' => 'textfield',
+      '#default_value' => $wildcard,
+      '#size' => 10,
+      '#maxlength' => 255,
     );
     $form['old_items'][$item['id']]['operator'] = array(
       '#type' => 'select',
@@ -83,14 +106,14 @@ Supported operators are "=" (equal), "!" (not equal), "<" (smaller), ">" (greate
     $form['old_items'][$item['id']]['value'] = array(
       '#type' => 'textfield',
       '#default_value' => $item['value'],
-      '#size' => 25,
-      '#maxlength' => 255
+      '#size' => 20,
+      '#maxlength' => 255,
     );
-    $form['old_items'][$item['id']]['conditions'] = array(
-      '#type' => 'textfield',
-      '#default_value' => $item['conditions'],
-      '#size' => 35,
-      '#maxlength' => 255
+    $form['old_items'][$item['id']]['parent'] = array(
+      '#type' => 'select',
+      '#title' => t('Self: %id', array('%id' => $item['id'])),
+      '#default_value' => $item['parent'],
+      '#options' => $parent_options
     );
     $form['old_items'][$item['id']]['theme'] = array(
       '#type' => 'select',
@@ -123,6 +146,12 @@ Supported operators are "=" (equal), "!" (not equal), "<" (smaller), ">" (greate
     '#default_value' => !empty($_GET['property']) ? check_plain($_GET['property']) : '',
     '#options' => $properties,
   );
+  $form['new_item']['wildcard'] = array(
+    '#type' => 'textfield',
+    '#default_value' => $wildcard,
+    '#size' => 10,
+    '#maxlength' => 255,
+  );
   $form['new_item']['operator'] = array(
     '#type' => 'select',
     '#default_value' => '=',
@@ -132,12 +161,6 @@ Supported operators are "=" (equal), "!" (not equal), "<" (smaller), ">" (greate
     '#type' => 'textfield',
     '#default_value' => !empty($_GET['value']) ? check_plain($_GET['value']) : '',
     '#size' => 25,
-    '#maxlength' => 255
-  );
-  $form['new_item']['conditions'] = array(
-    '#type' => 'textfield',
-    '#default_value' => '',
-    '#size' => 35,
     '#maxlength' => 255
   );
   $form['new_item']['theme'] = array(
@@ -167,27 +190,22 @@ function themekey_properties_form_validate($form, &$form_state) {
         break;
       }
 
-      if (!empty($value['conditions'])) {
-        $conditions = _themekey_properties_explode_conditions($value['conditions']);
-        if (empty($conditions) || count($conditions) != (substr_count($value['conditions'], ';') + 1)) {
-          form_set_error('old_items][' . $key . '][conditions', t('You entered malformatted conditions'));
-        }
-      }
+      // TODO validate values with custom validators
 
       foreach ($form_state['values']['old_items'] as $key_2 => $value_2) {
         if ($key_2 == $key) {
           continue;
         }
 
-        if (!empty($value['value']) && $value_2['property'] == $value['property'] && $value_2['value'] == $value['value'] && $value_2['conditions'] == $value['conditions']) {
-          form_set_error('old_items][' . $key . '][value', t('You entered two identical values with identical conditions for the same property'));
+        if (!empty($value['value']) &&
+            $value_2['property'] == $value['property'] &&
+            $value_2['operator'] == $value['operator'] &&
+            $value_2['value'] == $value['value'] &&
+            $value_2['parent'] == $value['parent']) {
+
+          form_set_error('old_items][' . $key . '][value', t('You entered two identical theme switching rules in the chain'));
           break(2);
         }
-      }
-
-      if (!empty($value['value']) && $form_state['values']['new_item']['property'] == $value['property'] && $form_state['values']['new_item']['value'] == $value['value'] && $form_state['values']['new_item']['conditions'] == $value['conditions']) {
-        form_set_error('new_item][value', t('You entered two identical values with identical conditions for the same property'));
-        break;
       }
     }
   }
@@ -198,15 +216,38 @@ function themekey_properties_form_validate($form, &$form_state) {
  * Function themekey_properties_submit().
  */
 function themekey_properties_form_submit($form, &$form_state) {
+  $max_weight = 0;
   if (!empty($form_state['values']['old_items'])) {
     foreach ($form_state['values']['old_items'] as $id => $item) {
+      if ($item['weight'] > $max_weight) {
+        $max_weight = $item['weight'];
+      }
+
       $item['id'] = $id;
+
+      if ('drupal:path:wildcard' == $item['property']) {
+        $item['property'] = $item['wildcard'];
+      }
+
+      unset($item['wildcard']);
+
       _themekey_properties_set($item);
     }
   }
 
   if (!empty($form_state['values']['new_item']['value'])) {
-    _themekey_properties_set($form_state['values']['new_item']);
+    $item = $form_state['values']['new_item'];
+
+    $item['parent'] = 0;
+    $item['weight'] = $max_weight + 1;
+
+    if ('drupal:path:wildcard' == $item['property']) {
+      $item['property'] = $item['wildcard'];
+    }
+
+    unset($item['wildcard']);
+
+    _themekey_properties_set($item);
   }
 
   drupal_set_message(t('The configuration options have been saved.'));
@@ -289,18 +330,42 @@ function theme_themekey_properties_form($form) {
       if (isset($item['property'])) {
         $row = is_array($form['old_items'][$key]['#attributes']) ? $form['old_items'][$key]['#attributes'] : array();
 
-        $elements = array();
-        $elements[] = '';
-        $elements[] = array('data' => drupal_render($form['old_items'][$key]['property']), 'class' => 'select');
-        $elements[] = array('data' => drupal_render($form['old_items'][$key]['operator']), 'class' => 'select');
-        $elements[] = array('data' => drupal_render($form['old_items'][$key]['value']), 'class' => 'textfield');
-        $elements[] = array('data' => drupal_render($form['old_items'][$key]['conditions']), 'class' => 'textfield');
-        $elements[] = array('data' => drupal_render($form['old_items'][$key]['theme']), 'class' => 'select');
-        $elements[] = array('data' => drupal_render($form['old_items'][$key]['enabled']), 'class' => 'checkbox');
         // Add special classes to be used for tabledrag.js.
+        $form['old_items'][$key]['id']['#attributes']['class'] = 'themekey-property-id';
+        $form['old_items'][$key]['parent']['#attributes']['class'] = 'themekey-property-parent';
         $form['old_items'][$key]['weight']['#attributes']['class'] = 'themekey-property-weight';
-        $elements[] = array('data' => drupal_render($form['old_items'][$key]['weight']));
-        $elements[] = array('data' => drupal_render($form['old_items'][$key]['delete']));
+        // Add special classes to be used for themekey-properties.js.
+        $form['old_items'][$key]['property']['#attributes']['class'] = 'themekey-property-property';
+        $form['old_items'][$key]['wildcard']['#attributes']['class'] = 'themekey-property-wildcard';
+        if ('drupal:path:wildcard' != $form['old_items'][$key]['property']['#value']) {
+          $form['old_items'][$key]['wildcard']['#attributes']['style'] = 'display: none';
+        }
+
+        $elements = array();
+
+        $elements[] = array('data' =>
+          theme('indentation', $form['old_items'][$key]['depth']['#value']) .
+          drupal_render($form['old_items'][$key]['id']) .
+          drupal_render($form['old_items'][$key]['property']) .
+          drupal_render($form['old_items'][$key]['wildcard']) .
+          drupal_render($form['old_items'][$key]['operator']) .
+          drupal_render($form['old_items'][$key]['value']),
+          'class' => 'themekey-properties-row');
+
+        $elements[] = array('data' =>
+          drupal_render($form['old_items'][$key]['theme']));
+
+        $elements[] = array('data' =>
+          drupal_render($form['old_items'][$key]['enabled']));
+
+        $elements[] = array('data' =>
+          drupal_render($form['old_items'][$key]['delete']));
+
+        $elements[] = array('data' =>
+          drupal_render($form['old_items'][$key]['parent']));
+
+        $elements[] = array('data' =>
+          drupal_render($form['old_items'][$key]['weight']));
 
         $row['class'] = !empty($row['class']) ? $row['class'] .' draggable' : 'draggable';
         $row['data'] = $elements;
@@ -311,19 +376,17 @@ function theme_themekey_properties_form($form) {
 
   if (!empty($rows)) {
     if (empty($form['pager']['#value'])) {
+      drupal_add_tabledrag('themekey-properties', 'match', 'parent', 'themekey-property-parent', 'themekey-property-parent', 'themekey-property-id', TRUE);
       drupal_add_tabledrag('themekey-properties', 'order', 'sibling', 'themekey-property-weight');
     }
 
     $header = array(
-      '',
-      array('data' => t('Property')),
-      array('data' => t('Op')),
-      array('data' => t('Value')),
-      array('data' => t('Conditions')),
+      array('data' => t('Theme Switching Rule')),
       array('data' => t('Theme')),
       array('data' => t('Enabled')),
-      t('Weight'),
-      array('data' => t('Operations'), 'colspan' => '1'),
+      array('data' => t('Operation')),
+      array('data' => t('Parent')),
+      array('data' => t('Weight')),
     );
 
     $output .= theme('table', $header, $rows, array('id' => 'themekey-properties'));
@@ -335,14 +398,23 @@ function theme_themekey_properties_form($form) {
     if (isset($form['new_item']['property'])) {
       $row = is_array($form['new_item']['#attributes']) ? $form['new_item']['#attributes'] : array();
 
+      // Add special classes to be used for themekey-properties.js.
+      $form['new_item']['property']['#attributes']['class'] = 'themekey-property-property';
+      $form['new_item']['wildcard']['#attributes']['class'] = 'themekey-property-wildcard';
+      if ('drupal:path:wildcard' != $form['new_item']['property']['#value']) {
+        $form['new_item']['wildcard']['#attributes']['style'] = 'display: none';
+      }
+
       $elements = array();
       $elements[] = t('New Rule:');
-      $elements[] = array('data' => drupal_render($form['new_item']['property']), 'class' => 'select');
-      $elements[] = array('data' => drupal_render($form['new_item']['operator']), 'class' => 'select');
-      $elements[] = array('data' => drupal_render($form['new_item']['value']), 'class' => 'textfield');
-      $elements[] = array('data' => drupal_render($form['new_item']['conditions']), 'class' => 'textfield');
-      $elements[] = array('data' => drupal_render($form['new_item']['theme']), 'class' => 'select');
-      $elements[] = array('data' => drupal_render($form['new_item']['enabled']), 'class' => 'checkbox');
+      $elements[] = array('data' =>
+        drupal_render($form['new_item']['property']) .
+        drupal_render($form['new_item']['wildcard']) .
+        drupal_render($form['new_item']['operator']) .
+        drupal_render($form['new_item']['value']),
+        'class' => 'themekey-properties-row');
+      $elements[] = array('data' => drupal_render($form['new_item']['theme']));
+      $elements[] = array('data' => drupal_render($form['new_item']['enabled']));
 
       $row['data'] = $elements;
       $rows[] = $row;
@@ -352,10 +424,7 @@ function theme_themekey_properties_form($form) {
   if (!empty($rows)) {
     $header = array(
       '',
-      array('data' => t('Property')),
-      array('data' => t('Op')),
-      array('data' => t('Value')),
-      array('data' => t('Conditions')),
+      array('data' => t('Theme Switching Rule')),
       array('data' => t('Theme')),
       array('data' => t('Enabled')),
     );
@@ -365,6 +434,9 @@ function theme_themekey_properties_form($form) {
   }
 
   $output .= drupal_render($form);
+
+  drupal_add_css(drupal_get_path('module', 'themekey') . '/themekey_properties.css');
+  drupal_add_js(drupal_get_path('module', 'themekey') . '/themekey_properties.js');
 
   return $output;
 }

@@ -177,55 +177,28 @@ function themekey_prepare_custom_path($path) {
 }
 
 /**
- * Function _themekey_properties_explode_conditions().
- */
-function _themekey_properties_explode_conditions($conditions) {
-  if (!is_array($conditions)) {
-    $parts = array_filter(explode(';', $conditions));
-    $conditions = array();
-    foreach ($parts as $part) {
-      $part = trim($part);
-      if (preg_match('/(.*?)(<=|<|>=|>|=|!|~)(.*)/', $part, $matches)) {
-        $conditions[] = array(
-          'property' => trim($matches[1]),
-          'operator' => trim($matches[2]),
-          'value' => trim($matches[3])
-        );
-      }
-    }
-  }
-
-  return $conditions;
-}
-
-/**
- * Function _themekey_properties_implode_conditions().
- */
-function _themekey_properties_implode_conditions($conditions) {
-  $string = array();
-  foreach ($conditions as $condition) {
-    $string[] = $condition['property'] . $condition['operator'] . $condition['value'];
-  }
-  $string = implode('; ', $string);
-
-  return $string;
-}
-
-/**
  * Function _themekey_load_properties().
  */
-function _themekey_load_properties($limit = NULL) {
-  $properties = array();
-  $query = 'SELECT * FROM {themekey_properties} ORDER BY weight';
-  $result = isset($limit) ? pager_query($query, $limit) : db_query($query);
+function _themekey_load_properties($limit = NULL, $parent = 0, $depth = 0) {
+  static $properties = array();
+  static $parent_lookups = array();
+
+  if (isset($parent_lookups[$parent])) {
+    // prevent endless recursion in case of malformated data in database
+    return $properties;
+  }
+
+  $query = 'SELECT * FROM {themekey_properties} WHERE parent = %d ORDER BY weight';
+  $result = !is_null($limit) ? pager_query($query, $limit, 0, NULL, $parent) : db_query($query, $parent);
   while ($item = db_fetch_array($result)) {
-    $item['conditions'] = _themekey_properties_implode_conditions(unserialize($item['conditions']));
     if ('drupal:path' == $item['property']) {
       themekey_complete_path($item);
     }
-    $properties[] = $item;
+    $item['depth'] = $depth;
+    $properties[$item['id']] = $item;
+    _themekey_load_properties(NULL, $item['id'], $depth + 1);
+    $parent_lookups[$item['id']] = TRUE;
   }
-
   return $properties;
 }
 
@@ -233,9 +206,6 @@ function _themekey_load_properties($limit = NULL) {
  * Function _themekey_properties_set().
  */
 function _themekey_properties_set(&$item) {
-  $item['conditions'] = (isset($item['conditions']) && !empty($item['conditions'])) ? $item['conditions'] : array();
-  $item['conditions'] = _themekey_properties_explode_conditions($item['conditions']);
-
   if ('drupal:path' == $item['property']) {
     list($item['value'], $item['wildcards']) = themekey_prepare_custom_path($item['value']);
   }

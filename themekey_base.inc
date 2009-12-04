@@ -76,7 +76,7 @@ function _themekey_get_global_parameters() {
 
     list($ancestors, $placeholders) = _themekey_get_path_ancestors($_GET['q']);
 
-    // TODO don't store non custom paths in database
+    // TODO don't store paths in database. mayby use a variable.
     $result = db_query('SELECT * FROM {themekey_paths} WHERE path IN ('. implode(',', $placeholders) .') ORDER BY fit DESC, weight DESC', $ancestors);
     while ($item = db_fetch_array($result)) {
       $wildcards = unserialize($item['wildcards']);
@@ -102,9 +102,31 @@ function _themekey_get_global_parameters() {
 function _themekey_match_properties() {
   $parameters = _themekey_get_global_parameters();
 
-  if ($result = db_query("SELECT * FROM {themekey_properties} WHERE enabled = 1 ORDER BY weight")) {
+  return themekey_match_property_childs($parameters);
+}
+
+/**
+ *
+ * @param mixed $parameters
+ * @param int $parent
+ * @return NULL in case of an error
+ *         string name of the theme
+ *         FALSE if no more child prperties in the chain
+ */
+function themekey_match_property_childs(&$parameters, $parent = 0) {
+  static $child_lookups = array();
+
+  if (isset($child_lookups[$parent])) {
+    // prevent endless recursion in case of malformated data in database
+    return $child_lookups[$parent];
+  }
+
+  if ($result = db_query("SELECT * FROM {themekey_properties} WHERE enabled = 1 AND parent = %d ORDER BY weight", $parent)) {
+    $num_childs = 0;
+
     while ($item = db_fetch_array($result)) {
-      if (_themekey_match_conditions(array($item), $parameters)) {
+      $num_childs++;
+      if (_themekey_match_condition($item, $parameters)) {
         if ('drupal:path' == $item['property']) {
           $wildcards = unserialize($item['wildcards']);
           if (!empty($wildcards)) {
@@ -119,93 +141,103 @@ function _themekey_match_properties() {
             }
           }
         }
-        $item['conditions'] = unserialize($item['conditions']);
-        if (_themekey_match_conditions($item['conditions'], $parameters)) {
+
+        $child_lookups[$parent] = themekey_match_property_childs($parameters, $item['id']);
+
+        if (FALSE === $child_lookups[$parent]) {
           if (!_themekey_check_theme_enabled($item['theme'])) {
             continue;
           }
 
-          return $item['theme'];
+          $child_lookups[$parent] = $item['theme'];
         }
+
+        // return own theme or theme from child property or NULL in case of a database error
+        return $child_lookups[$parent];
       }
+    }
+
+    // No more child properties in the chain
+    if (0 == $num_childs) {
+      $child_lookups[$parent] = FALSE;
+      return $child_lookups[$parent];
     }
   }
 
-  return NULL;
+  $child_lookups[$parent] = NULL;
+  return $child_lookups[$parent];
 }
 
 /**
- * Function _themekey_match_conditions().
+ * Function _themekey_match_condition().
  */
-function _themekey_match_conditions($conditions, &$parameters) {
-  if (is_array($conditions) && count($conditions)) {
-    foreach ($conditions as $condition) {
-      // Default operator is 'equal'
-      if (empty($condition['operator'])) {
-        $condition['operator'] = '=';
-      }
+function _themekey_match_condition($condition, &$parameters) {
+  if (is_array($condition) && count($condition)) {
+    // Default operator is 'equal'
+    if (empty($condition['operator'])) {
+      $condition['operator'] = '=';
+    }
 
-      $value = _themekey_property_value($parameters, $condition['property']);
+    $value = _themekey_property_value($parameters, $condition['property']);
 
-      if (is_array($value)) {
-        foreach ($value as $single_value) {
-          if (!is_null($single_value)) {
-            // Supported operators for condition check:
-            // smaller ('<'), greater ('>'), equal ('='), not equal ('!'), regex match ('~')
-            if ($condition['operator'] == '<' && $single_value < $condition['value']) {
-              return TRUE;
-            }
-            else if ($condition['operator'] == '>' && $single_value > $condition['value']) {
-              return TRUE;
-            }
-            else if ($condition['operator'] == '<=' && $single_value <= $condition['value']) {
-              return TRUE;
-            }
-            else if ($condition['operator'] == '>=' && $single_value >= $condition['value']) {
-              return TRUE;
-            }
-            else if ($condition['operator'] == '=' && $single_value == $condition['value']) {
-              return TRUE;
-            }
-            else if ($condition['operator'] == '!' && $single_value != $condition['value']) {
-              return TRUE;
-            }
-            else if ($condition['operator'] == '~' && preg_match($condition['value'], $single_value)) {
-              return TRUE;
-            }
+    if (is_array($value)) {
+      foreach ($value as $single_value) {
+        if (!is_null($single_value)) {
+          // Supported operators for condition check:
+          // smaller ('<'), greater ('>'), equal ('='), not equal ('!'), regex match ('~')
+          if ($condition['operator'] == '<' && $single_value < $condition['value']) {
+            return TRUE;
+          }
+          else if ($condition['operator'] == '>' && $single_value > $condition['value']) {
+            return TRUE;
+          }
+          else if ($condition['operator'] == '<=' && $single_value <= $condition['value']) {
+            return TRUE;
+          }
+          else if ($condition['operator'] == '>=' && $single_value >= $condition['value']) {
+            return TRUE;
+          }
+          else if ($condition['operator'] == '=' && $single_value == $condition['value']) {
+            return TRUE;
+          }
+          else if ($condition['operator'] == '!' && $single_value != $condition['value']) {
+            return TRUE;
+          }
+          else if ($condition['operator'] == '~' && preg_match($condition['value'], $single_value)) {
+            return TRUE;
           }
         }
+      }
+      return FALSE;
+    }
+    else if (!is_null($value)) {
+      // Supported operators for condition check:
+      // smaller ('<'), greater ('>'), equal ('='), not equal ('!'), regex match ('~')
+      if ($condition['operator'] == '<' && $value >= $condition['value']) {
         return FALSE;
       }
-      else if (!is_null($value)) {
-        // Supported operators for condition check:
-        // smaller ('<'), greater ('>'), equal ('='), not equal ('!'), regex match ('~')
-        if ($condition['operator'] == '<' && $value >= $condition['value']) {
-          return FALSE;
-        }
-        else if ($condition['operator'] == '>' && $value <= $condition['value']) {
-          return FALSE;
-        }
-        else if ($condition['operator'] == '<=' && $value > $condition['value']) {
-          return FALSE;
-        }
-        else if ($condition['operator'] == '>=' && $value < $condition['value']) {
-          return FALSE;
-        }
-        else if ($condition['operator'] == '=' && $value != $condition['value']) {
-          return FALSE;
-        }
-        else if ($condition['operator'] == '!' && $value == $condition['value']) {
-          return FALSE;
-        }
-        else if ($condition['operator'] == '~' && !preg_match($condition['value'], $value)) {
-          return FALSE;
-        }
-      }
-      else {
-        // value is NULL
+      else if ($condition['operator'] == '>' && $value <= $condition['value']) {
         return FALSE;
       }
+      else if ($condition['operator'] == '<=' && $value > $condition['value']) {
+        return FALSE;
+      }
+      else if ($condition['operator'] == '>=' && $value < $condition['value']) {
+        return FALSE;
+      }
+      else if ($condition['operator'] == '=' && $value != $condition['value']) {
+        return FALSE;
+      }
+      else if ($condition['operator'] == '!' && $value == $condition['value']) {
+        return FALSE;
+      }
+      else if ($condition['operator'] == '~' && !preg_match($condition['value'], $value)) {
+        return FALSE;
+      }
+    }
+    else {
+      // value is NULL
+      return FALSE;
     }
   }
 
