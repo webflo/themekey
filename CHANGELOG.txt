@@ -5,6 +5,7 @@ ThemeKey 6.x-2.0-alpha4, 2009-xx-xx
 [       ] mkalkbrenner: API: replaced concept of conditions by chaining simple property based rules
 [       ] mkalkbrenner: API: don't allow altering of themekey_attributes, themekey_properties and themekey_maps via hook
 [       ] mkalkbrenner: optimized database performance
+[       ] mkalkbrenner: improved user interface
 [       ] mkalkbrenner: adjusted more default values
 [#442192] mkalkbrenner: Main condition not =
 [       ] mkalkbrenner: allow <= and >= as operator for conditions

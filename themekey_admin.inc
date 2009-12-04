@@ -181,7 +181,7 @@ Supported operators are "=" (equal), "!" (not equal), "<" (smaller), ">" (greate
   return $form;
 }
 
-
+// FIXME validate after submit and disable rule in database. otherwise all drag and drop stuff is lost in case of an error
 function themekey_properties_form_validate($form, &$form_state) {
   if (!empty($form_state['values']['old_items'])) {
     foreach ($form_state['values']['old_items'] as $key => $value) {
@@ -326,9 +326,30 @@ function theme_themekey_properties_form($form) {
   $rows = array();
 
   if (!empty($form['old_items'])) {
+    $num_childs = array();
+    $parents_disabled = array();
+
     foreach ($form['old_items'] as $key => $item) {
       if (isset($item['property'])) {
-        $row = is_array($form['old_items'][$key]['#attributes']) ? $form['old_items'][$key]['#attributes'] : array();
+        $num_childs[$key] = 0;
+        $parents_disabled[$key] = FALSE;
+
+        if (!empty($parents_disabled[$item['parent']['#value']])) {
+          $form['old_items'][$key]['enabled']['#value'] = 0;
+        }
+
+        if (!$form['old_items'][$key]['enabled']['#value']) {
+          $parents_disabled[$key] = TRUE;
+        }
+        else if ($item['parent']['#value']) {
+          $num_childs[$item['parent']['#value']]++;
+        }
+      }
+    }
+
+    foreach ($form['old_items'] as $key => $item) {
+      if (isset($item['property'])) {
+      $row = is_array($form['old_items'][$key]['#attributes']) ? $form['old_items'][$key]['#attributes'] : array();
 
         // Add special classes to be used for tabledrag.js.
         $form['old_items'][$key]['id']['#attributes']['class'] = 'themekey-property-id';
@@ -337,8 +358,18 @@ function theme_themekey_properties_form($form) {
         // Add special classes to be used for themekey-properties.js.
         $form['old_items'][$key]['property']['#attributes']['class'] = 'themekey-property-property';
         $form['old_items'][$key]['wildcard']['#attributes']['class'] = 'themekey-property-wildcard';
-        if ('drupal:path:wildcard' != $form['old_items'][$key]['property']['#value']) {
+        $form['old_items'][$key]['enabled']['#attributes']['class'] = 'themekey-property-enabled';
+        $form['old_items'][$key]['theme']['#attributes']['class'] = 'themekey-property-theme';
+        if ('drupal:path:wildcard' != $item['property']['#value']) {
           $form['old_items'][$key]['wildcard']['#attributes']['style'] = 'display: none';
+        }
+        if ($num_childs[$key]) {
+          $form['old_items'][$key]['theme']['#attributes']['class'] .= ' themekey-fade-out';
+        }
+        if ($parents_disabled[$item['parent']['#value']]) {
+          $form['old_items'][$key]['enabled']['#attributes']['class'] .= ' themekey-property-enabled-parent-' . $item['parent']['#value'];
+          $form['old_items'][$key]['enabled']['#attributes']['style'] = 'display: none';
+          $form['old_items'][$key]['enabled']['#default_value'] = 0;
         }
 
         $elements = array();
@@ -368,6 +399,10 @@ function theme_themekey_properties_form($form) {
           drupal_render($form['old_items'][$key]['weight']));
 
         $row['class'] = !empty($row['class']) ? $row['class'] .' draggable' : 'draggable';
+        if (!$form['old_items'][$key]['enabled']['#value']) {
+          $row['class'] .= ' themekey-fade-out';
+        }
+        $row['id'] = 'themekey-properties-row-' . $key;
         $row['data'] = $elements;
         $rows[] = $row;
       }
@@ -381,7 +416,7 @@ function theme_themekey_properties_form($form) {
     }
 
     $header = array(
-      array('data' => t('Theme Switching Rule')),
+      array('data' => t('Theme Switching Rule Chain')),
       array('data' => t('Theme')),
       array('data' => t('Enabled')),
       array('data' => t('Operation')),
@@ -390,6 +425,10 @@ function theme_themekey_properties_form($form) {
     );
 
     $output .= theme('table', $header, $rows, array('id' => 'themekey-properties'));
+
+    foreach ($num_childs as $parent => $num) {
+      $output .= '<input id="themekey-num-childs-' . $parent . '" type="hidden" value="' . $num . '"></input>';
+    }
   }
 
   $rows = array();
