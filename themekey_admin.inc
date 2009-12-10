@@ -111,7 +111,6 @@ Supported operators are "=" (equal), "!" (not equal), "<" (smaller), ">" (greate
     );
     $form['old_items'][$item['id']]['parent'] = array(
       '#type' => 'select',
-      '#title' => t('Self: %id', array('%id' => $item['id'])),
       '#default_value' => $item['parent'],
       '#options' => $parent_options
     );
@@ -120,9 +119,6 @@ Supported operators are "=" (equal), "!" (not equal), "<" (smaller), ">" (greate
       '#default_value' => $item['theme'],
       '#options' => $themes,
     );
-    if (!_themekey_check_theme_enabled($item['theme'], TRUE)) {
-      $form['old_items'][$item['id']]['theme']['#attributes'] = array('class' => 'error');
-    }
     $form['old_items'][$item['id']]['enabled'] = array(
       '#type' => 'checkbox',
       '#default_value' => $item['enabled'],
@@ -181,30 +177,40 @@ Supported operators are "=" (equal), "!" (not equal), "<" (smaller), ">" (greate
   return $form;
 }
 
-// FIXME validate after submit and disable rule in database. otherwise all drag and drop stuff is lost in case of an error
-function themekey_properties_form_validate($form, &$form_state) {
-  if (!empty($form_state['values']['old_items'])) {
-    foreach ($form_state['values']['old_items'] as $key => $value) {
-      if (empty($value['value'])) {
-        form_set_error('old_items][' . $key . '][value', t('You must enter a value'));
-        break;
-      }
+// validate after submit and disable rule in database. otherwise all drag and drop stuff is lost in case of an error
+function themekey_properties_form_alter(&$form, $form_state, $form_id) {
+  if ('themekey_properties_form' == $form_id && empty($form_state['post'])) {
+    if (!empty($form['old_items'])) {
+      foreach ($form['old_items'] as $key => $value) {
+        if ($value['enabled']['#default_value']) {
+          if (!_themekey_check_theme_enabled($value['theme']['#default_value'], TRUE)) {
+            form_set_error('old_items][' . $key . '][theme', t('Theme is not activated'));
+          }
 
-      // TODO validate values with custom validators
+          if (0 == strlen($value['value']['#default_value'])) {
+            form_set_error('old_items][' . $key . '][value', t('You must enter a value'));
+          }
 
-      foreach ($form_state['values']['old_items'] as $key_2 => $value_2) {
-        if ($key_2 == $key) {
-          continue;
-        }
+          // TODO validate values with custom validators
 
-        if (!empty($value['value']) &&
-            $value_2['property'] == $value['property'] &&
-            $value_2['operator'] == $value['operator'] &&
-            $value_2['value'] == $value['value'] &&
-            $value_2['parent'] == $value['parent']) {
+          foreach ($form['old_items'] as $key_2 => $value_2) {
+            if ($key_2 == $key) {
+              continue;
+            }
 
-          form_set_error('old_items][' . $key . '][value', t('You entered two identical theme switching rules in the chain'));
-          break(2);
+            if ($value_2['enabled']['#default_value'] &&
+                !empty($value['value']['#default_value']) &&
+                $value_2['property']['#default_value'] == $value['property']['#default_value'] &&
+                $value_2['operator']['#default_value'] == $value['operator']['#default_value'] &&
+                $value_2['value']['#default_value'] == $value['value']['#default_value'] &&
+                $value_2['parent']['#default_value'] == $value['parent']['#default_value']) {
+
+              if ('drupal:path:wildcard' != $value_2['property']['#default_value'] ||
+                  ('drupal:path:wildcard' == $value_2['property']['#default_value'] && $value_2['wildcard']['#default_value'] == $value['wildcard']['#default_value'])) {
+                form_set_error('old_items][' . $key . '][property', t('You entered two identical theme switching rules in the chain'));
+              }
+            }
+          }
         }
       }
     }

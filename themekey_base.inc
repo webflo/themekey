@@ -121,7 +121,7 @@ function themekey_match_property_childs(&$parameters, $parent = 0) {
     return $child_lookups[$parent];
   }
 
-  if ($result = db_query("SELECT * FROM {themekey_properties} WHERE enabled = 1 AND parent = %d ORDER BY weight", $parent)) {
+  if ($result = db_query("SELECT * FROM {themekey_properties} WHERE enabled = 1 AND parent = %d AND value != '' ORDER BY weight", $parent)) {
     $num_childs = 0;
 
     while ($item = db_fetch_array($result)) {
