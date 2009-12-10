@@ -356,18 +356,19 @@ function theme_themekey_properties_form($form) {
         $form['old_items'][$key]['parent']['#attributes']['class'] = 'themekey-property-parent';
         $form['old_items'][$key]['weight']['#attributes']['class'] = 'themekey-property-weight';
         // Add special classes to be used for themekey-properties.js.
-        $form['old_items'][$key]['property']['#attributes']['class'] = 'themekey-property-property';
-        $form['old_items'][$key]['wildcard']['#attributes']['class'] = 'themekey-property-wildcard';
+        $form['old_items'][$key]['property']['#attributes']['class'] = 'themekey-property-property themekey-fadeable';
+        $form['old_items'][$key]['wildcard']['#attributes']['class'] = 'themekey-property-wildcard themekey-fadeable';
+        $form['old_items'][$key]['operator']['#attributes']['class'] = 'themekey-fadeable';
+        $form['old_items'][$key]['value']['#attributes']['class'] = 'themekey-fadeable';
         $form['old_items'][$key]['enabled']['#attributes']['class'] = 'themekey-property-enabled';
-        $form['old_items'][$key]['theme']['#attributes']['class'] = 'themekey-property-theme';
+        $form['old_items'][$key]['theme']['#attributes']['class'] = 'themekey-property-theme themekey-fadeable';
         if ('drupal:path:wildcard' != $item['property']['#value']) {
           $form['old_items'][$key]['wildcard']['#attributes']['style'] = 'display: none';
         }
         if ($num_childs[$key]) {
-          $form['old_items'][$key]['theme']['#attributes']['class'] .= ' themekey-fade-out';
+          $form['old_items'][$key]['theme']['#attributes']['style'] = 'display: none';
         }
         if ($parents_disabled[$item['parent']['#value']]) {
-          $form['old_items'][$key]['enabled']['#attributes']['class'] .= ' themekey-property-enabled-parent-' . $item['parent']['#value'];
           $form['old_items'][$key]['enabled']['#attributes']['style'] = 'display: none';
           $form['old_items'][$key]['enabled']['#default_value'] = 0;
         }
