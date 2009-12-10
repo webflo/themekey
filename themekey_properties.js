@@ -47,8 +47,12 @@ if (Drupal.jsEnabled) {
       var rowElement = $(this.rowObject.element);
       var newParentId = $('.themekey-property-parent', rowElement).val();
       var enabledElement = $('.themekey-property-enabled', rowElement);
+
       if (enabledElement.attr('checked')) {
-        ThemeKey.adjustChildCounter(ThemeKey.oldParentId, -1);
+        if (0 < ThemeKey.oldParentId) {
+          ThemeKey.adjustChildCounter(ThemeKey.oldParentId, -1);
+        }
+        
         if (0 < newParentId) {
           var parentEnabledElement = $('.themekey-property-enabled', $('#themekey-properties-row-' + newParentId));
           if (parentEnabledElement.attr('checked')) {
@@ -63,10 +67,6 @@ if (Drupal.jsEnabled) {
             ThemeKey.disableChilds(id);
           }
         }
-        else {
-         // no parent
-         enabledElement.css('display', 'block');
-        }
       }
       else {
         if (0 < newParentId) {
@@ -78,10 +78,16 @@ if (Drupal.jsEnabled) {
             enabledElement.css('display', 'none');
           }
         }
-        else {
-          // no parent
-          enabledElement.css('display', 'block');
+      }
+
+      if (0 < newParentId) {
+        if (0 >= ThemeKey.oldParentId) {
+          rowElement.removeClass('themekey-top-level');
         }
+      }
+      else {
+        enabledElement.css('display', 'block');
+        rowElement.addClass('themekey-top-level');
       }
     }
     return null;

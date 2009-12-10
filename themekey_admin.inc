@@ -403,6 +403,9 @@ function theme_themekey_properties_form($form) {
         if (!$form['old_items'][$key]['enabled']['#value']) {
           $row['class'] .= ' themekey-fade-out';
         }
+        if (!$form['old_items'][$key]['parent']['#value']) {
+          $row['class'] .= ' themekey-top-level';
+        }
         $row['id'] = 'themekey-properties-row-' . $key;
         $row['data'] = $elements;
         $rows[] = $row;
