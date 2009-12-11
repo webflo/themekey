@@ -223,18 +223,3 @@ function _themekey_properties_del($id) {
   db_query('DELETE FROM {themekey_properties} WHERE id = %d', $id);
 }
 
-/**
- * Function _themekey_properties_resort().
- */
-function _themekey_properties_resort($key) {
-  $attributes = variable_get('themekey_attributes', array());
-  if (isset($attributes[$key]['multiple']) && $attributes[$key]['multiple']) {
-    _themekey_include_modules();
-    $weightfn = $attributes[$key]['weight'];
-    $result = db_query('SELECT * FROM {themekey_properties} WHERE property = \'%s\'', $key);
-    while ($item = db_fetch_array($result)) {
-      $item['weight'] = function_exists($weightfn) ? $weightfn($item) : 0;
-      drupal_write_record('themekey_properties', $item, 'id');
-    }
-  }
-}

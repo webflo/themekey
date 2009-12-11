@@ -5,7 +5,8 @@ function themekey_locale_themekey_properties() {
   // Attributes for properties
   $attributes = array();
   $attributes['locale:language'] = array(
-    'description' => t('Locale: Language')
+    'description' => t('Locale: Language'),
+    'validator' => 'themekey_validator_language',
   );
 
   return array('attributes' => $attributes);

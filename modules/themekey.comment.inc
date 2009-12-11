@@ -4,7 +4,10 @@
 function themekey_comment_themekey_properties() {
   // Attributes for properties
   $attributes = array();
-  $attributes['comment:cid'] = array('description' => t('Comment: ID'));
+  $attributes['comment:cid'] = array(
+    'description' => t('Comment: ID'),
+    'validator' => 'themekey_validator_ctype_digit',
+  );
 
   // Mapping functions
   $maps = array();

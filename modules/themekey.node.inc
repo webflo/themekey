@@ -4,15 +4,58 @@
 function themekey_node_themekey_properties() {
   // Attributes for properties
   $attributes = array();
-  $attributes['node:changed'] = array('description' => t('Node: Changed date'));
-  $attributes['node:created'] = array('description' => t('Node: Created date'));
-  $attributes['node:language'] = array('description' => t('Node: Language'));
-  $attributes['node:nid'] = array('description' => t('Node: ID'));
-  $attributes['node:promote'] = array('description' => t('Node: Promoted'));
-  $attributes['node:sticky'] = array('description' => t('Node: Sticky'));
-  $attributes['node:type'] = array('description' => t('Node: Type'));
-  $attributes['node:uid'] = array('description' => t('Node: User ID'));
-  $attributes['node:title'] = array('description' => t('Node: Title'));
+  $attributes['node:changed'] = array(
+    'description' => t('Node: Changed date'),
+    'validator' => 'themekey_validator_ctype_digit',
+  );
+  $attributes['node:created'] = array(
+    'description' => t('Node: Created date'),
+    'validator' => 'themekey_validator_ctype_digit',
+  );
+  $attributes['node:changed_date_time'] = array(
+    'description' => t('Node: Changed date formatted like "2009-12-24 18:13:24"'),
+    'validator' => 'themekey_validator_date_time',
+  );
+  $attributes['node:created_date_time'] = array(
+    'description' => t('Node: Created date formatted like "2009-12-24 18:13:24"'),
+    'validator' => 'themekey_validator_date_time',
+  );
+  $attributes['node:changed_date'] = array(
+    'description' => t('Node: Changed date formatted like "2009-12-24"'),
+    'validator' => 'themekey_validator_date',
+  );
+  $attributes['node:created_date'] = array(
+    'description' => t('Node: Created date formatted like "2009-12-24"'),
+    'validator' => 'themekey_validator_date',
+  );
+  $attributes['node:language'] = array(
+    'description' => t('Node: Language'),
+    'validator' => 'themekey_validator_language',
+  );
+  $attributes['node:nid'] = array(
+    'description' => t('Node: ID'),
+    'validator' => 'themekey_validator_ctype_digit',
+  );
+  $attributes['node:promote'] = array(
+    'description' => t('Node: Promoted'),
+    'validator' => 'themekey_validator_nummeric_boolean',
+  );
+  $attributes['node:sticky'] = array(
+    'description' => t('Node: Sticky'),
+    'validator' => 'themekey_validator_nummeric_boolean',
+  );
+  $attributes['node:type'] = array(
+    'description' => t('Node: Type'),
+    'validator' => 'themekey_validator_node_type',
+  );
+  $attributes['node:uid'] = array(
+    'description' => t('Node: User ID'),
+    'validator' => 'themekey_validator_ctype_digit',
+  );
+  $attributes['node:title'] = array(
+    'description' => t('Node: Title'),
+    'validator' => '',
+  );
 
   // Mapping functions
   $maps = array();
@@ -22,6 +65,18 @@ function themekey_node_themekey_properties() {
   $maps[] = array('src'       => 'node:nid',
                   'dst'       => 'node:created',
                   'callback'  => 'themekey_node_nid2created');
+  $maps[] = array('src'       => 'node:changed',
+                  'dst'       => 'node:changed_date_time',
+                  'callback'  => 'themekey_node_timestamp2datetime');
+  $maps[] = array('src'       => 'node:created',
+                  'dst'       => 'node:created_date_time',
+                  'callback'  => 'themekey_node_timestamp2datetime');
+  $maps[] = array('src'       => 'node:changed',
+                  'dst'       => 'node:changed_date',
+                  'callback'  => 'themekey_node_timestamp2date');
+  $maps[] = array('src'       => 'node:created',
+                  'dst'       => 'node:created_date',
+                  'callback'  => 'themekey_node_timestamp2date');
   $maps[] = array('src'       => 'node:nid',
                   'dst'       => 'node:language',
                   'callback'  => 'themekey_node_nid2language');
@@ -96,4 +151,12 @@ function themekey_node_nid2uid($nid) {
 
 function themekey_node_nid2title($nid) {
   return themekey_node_get_simple_node_property($nid, 'title');
+}
+
+function themekey_node_timestamp2datetime($timestamp) {
+  return date('Y-m-d H:i:s', $timestamp);
+}
+
+function themekey_node_timestamp2date($timestamp) {
+  return date('Y-m-d', $timestamp);
 }

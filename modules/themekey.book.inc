@@ -4,8 +4,14 @@
 function themekey_book_themekey_properties() {
   // Attributes for properties
   $attributes = array();
-  $attributes['book:bid'] = array('description' => t('Book: ID'));
-  $attributes['book:has_children'] = array('description' => t('Book: Has Children'));
+  $attributes['book:bid'] = array(
+    'description' => t('Book: ID'),
+    'validator' => 'themekey_validator_ctype_digit',
+  );
+  $attributes['book:has_children'] = array(
+    'description' => t('Book: Has Children'),
+    'validator' => 'themekey_validator_nummeric_boolean',
+  );
 
   $maps = array();
   $maps[] = array('src'       => 'node:nid',

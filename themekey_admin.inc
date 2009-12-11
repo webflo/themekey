@@ -179,19 +179,40 @@ Supported operators are "=" (equal), "!" (not equal), "<" (smaller), ">" (greate
 
 // validate after submit and disable rule in database. otherwise all drag and drop stuff is lost in case of an error
 function themekey_properties_form_alter(&$form, $form_state, $form_id) {
+  $attributes = variable_get('themekey_attributes', array());
+
   if ('themekey_properties_form' == $form_id && empty($form_state['post'])) {
+    require_once(drupal_get_path('module', 'themekey') .'/themekey_validators.inc');
+
     if (!empty($form['old_items'])) {
       foreach ($form['old_items'] as $key => $value) {
         if ($value['enabled']['#default_value']) {
           if (!_themekey_check_theme_enabled($value['theme']['#default_value'], TRUE)) {
-            form_set_error('old_items][' . $key . '][theme', t('Theme is not activated'));
+            themekey_properties_form_set_error($form, $key, 'theme', t('Theme is not activated'));
           }
 
           if (0 == strlen($value['value']['#default_value'])) {
-            form_set_error('old_items][' . $key . '][value', t('You must enter a value'));
+            themekey_properties_form_set_error($form, $key, 'value', t('You must enter a value'));
           }
-
-          // TODO validate values with custom validators
+          else if (!empty($attributes[$value['property']['#default_value']]['validator'])) {
+            //validate rule with custom validator
+            $validator = $attributes[$value['property']['#default_value']]['validator'];
+            if (function_exists($validator)) {
+              $rule = array(
+                'property' => $value['property']['#default_value'],
+                'wildcard' => $value['wildcard']['#default_value'],
+                'operator' => $value['operator']['#default_value'],
+                'value' => $value['value']['#default_value'],
+              );
+              $errors = $validator($rule);
+              foreach ($errors as $element => $msg) {
+                themekey_properties_form_set_error($form, $key, $element, $msg);
+              }
+            }
+            else {
+              themekey_properties_form_set_error($form, $key, 'property', t('ThemeKey requested an unknown validator called %validator to validate property %property', array('%validator' => $validator, '%property' => $value['property']['#default_value'])));
+            }
+          }
 
           foreach ($form['old_items'] as $key_2 => $value_2) {
             if ($key_2 == $key) {
@@ -207,16 +228,36 @@ function themekey_properties_form_alter(&$form, $form_state, $form_id) {
 
               if ('drupal:path:wildcard' != $value_2['property']['#default_value'] ||
                   ('drupal:path:wildcard' == $value_2['property']['#default_value'] && $value_2['wildcard']['#default_value'] == $value['wildcard']['#default_value'])) {
-                form_set_error('old_items][' . $key . '][property', t('You entered two identical theme switching rules in the chain'));
+                themekey_properties_form_set_error($form, $key, 'property', t('You entered two identical theme switching rules in the chain'));
               }
             }
           }
         }
       }
     }
+
+    // dump all errors
+    themekey_properties_form_set_error($form);
   }
 }
 
+function themekey_properties_form_set_error(&$form, $rule_id = 0, $element = '', $msg = '') {
+  static $error_stack = array();
+
+  if (!empty($rule_id)) {
+    $error_stack[$rule_id][] = array('old_items][' . $rule_id . '][' . $element, $msg);
+  }
+  else {
+    $error_counter = 0;
+    foreach ($error_stack as $rule_id => $errors) {
+      $error_counter++;
+      $form['old_items'][$rule_id]['id']['#prefix'] = '<span class="error">' . $error_counter . '</span>';
+      foreach ($errors as $error) {
+        form_set_error($error[0], $error_counter .': ' . $error[1]);
+      }
+    }
+  }
+}
 
 /**
  * Function themekey_properties_submit().

@@ -63,6 +63,8 @@ HOOK_themekey_properties()
     Key:    namespace:property
     Value:  array()
             - description => Readable name of property (required)
+            - validator => Callback function to validate a rule starting with that property
+      TODO: describe validator arguments and return value 
 
   Maps
     Key:    none (indexed)
