@@ -5,16 +5,19 @@ function themekey_user_themekey_properties() {
   // Attributes for properties
   $attributes = array();
   $attributes['user:hostname'] = array(
-    'description' => t('User: Hostname')
+    'description' => t('User: Hostname'),
+    'validator' => 'themekey_validator_http_host',
   );
   $attributes['user:language'] = array(
-    'description' => t('User: Language')
+    'description' => t('User: Language'),
+    'validator' => 'themekey_validator_language',
   );
   $attributes['user:name'] = array(
-    'description' => t('User: Name')
+    'description' => t('User: Name'),
   );
   $attributes['user:uid'] = array(
-    'description' => t('User: ID')
+    'description' => t('User: ID'),
+    'validator' => 'themekey_validator_ctype_digit',
   );
 
   return array('attributes' => $attributes);

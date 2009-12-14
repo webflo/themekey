@@ -4,9 +4,18 @@
 function themekey_taxonomy_themekey_properties() {
   // Attributes for properties ;)
   $attributes = array();
-  $attributes['taxonomy:vid'] = array('description' => t('Taxonomy: Vocabulary'));
-  $attributes['taxonomy:tid'] = array('description' => t('Taxonomy: Term'));
-  $attributes['taxonomy:tid_and_childs'] = array('description' => t('Taxonomy: Term and its childs'));
+  $attributes['taxonomy:vid'] = array(
+    'description' => t('Taxonomy: Vocabulary'),
+    'validator' => 'themekey_validator_ctype_digit',
+  );
+  $attributes['taxonomy:tid'] = array(
+    'description' => t('Taxonomy: Term'),
+    'validator' => 'themekey_validator_ctype_digit',
+  );
+  $attributes['taxonomy:tid_and_childs'] = array(
+    'description' => t('Taxonomy: Term and its childs'),
+    'validator' => 'themekey_validator_ctype_digit',
+  );
 
   // Mapping functions
   $maps = array();

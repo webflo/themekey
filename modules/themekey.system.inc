@@ -6,6 +6,7 @@ function themekey_system_themekey_properties() {
   $attributes = array();
   $attributes['system:host'] = array(
     'description' => t('System: HTTP_HOST'),
+    'validator' => 'themekey_validator_http_host',
   );
   $attributes['drupal:path'] = array(
     'description' => t('Drupal: Drupal path or path alias with support for wildcards<br />
@@ -23,6 +24,7 @@ You can then specify conditions for every wildcard argument using the following 
   );
   $attributes['drupal:path:wildcard'] = array(
     'description' => t('wildcard of drupal:path'),
+    'validator' => 'themekey_validator_wildcard',
   );
 
 
