@@ -5,7 +5,7 @@ ThemeKey 6.x-2.0-beta1, 2009-12-15
 [       ] mkalkbrenner: API: replaced concept of conditions by chaining simple property based rules
 [       ] mkalkbrenner: API: don't allow altering of themekey_attributes, themekey_properties and themekey_maps via hook
 [       ] mkalkbrenner: API: introduced validators for rules depending on selected property
-[       ] mkalkbrenner: new properties node:created_date_time, node:created_date, node:cchanged_date_time, node:changed_date
+[       ] mkalkbrenner: new properties node:created_date_time, node:created_date, node:changed_date_time, node:changed_date
 [       ] mkalkbrenner: optimized database performance
 [       ] mkalkbrenner: improved user interface
 [       ] mkalkbrenner: adjusted more default values
