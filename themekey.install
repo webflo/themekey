@@ -145,27 +145,123 @@ function themekey_update_6104() {
 /**
  * Implementation of hook_update_N().
  */
+function themekey_update_6105() {
+  global $db_type;
+
+  $return = array();
+
+  // we need to handle upgrade of module ThemeKey UI here because
+  // it will fail when triggered at themekey_ui.install after
+  // ThemeKey upgrade from 6.x-1.1 to 6.x.2.0
+  if (module_exists('themekey_ui')) {
+    $schema_version = drupal_get_installed_schema_version('themekey_ui');
+    if (6100 > $schema_version) {
+      $return = drupal_install_schema('themekey_ui');
+
+      if (!variable_get('themekey_nodeaspath', 0)) {
+        $sql = '';
+        if (0 === strpos($db_type, 'mysql')) {
+          $sql = "SELECT id, value, theme, nid, vid FROM {themekey_properties} JOIN {node_revisions} ON (value = nid) WHERE property = 'node:nid' AND conditions = '%s'";
+        }
+        else if (0 === strpos($db_type, 'pqsql')) {
+          $sql = "SELECT id, value, theme, nid, vid FROM {themekey_properties} JOIN {node_revisions} ON (value = nid::character varying) WHERE property = 'node:nid' AND conditions = '%s'";
+        }
+        if ($result = db_query($sql, 'a:0:{}')) {
+          $insert_sql = "INSERT INTO {themekey_ui_node_theme} (nid, vid, theme) VALUES (%d, %d, '%s')";
+          $delete_sql = "DELETE FROM {themekey_properties} WHERE id = %d";
+
+          while ($row = db_fetch_array($result)) {
+            if ($return['INSERT']['success'] = db_query($insert_sql, $row['nid'], $row['vid'], $row['theme'])) {
+              if (!($return['DELETE']['success'] = db_query($delete_sql, $row['id']))) {
+                break;
+              }
+            }
+            else {
+              $return['INSERT']['success'] = FALSE;
+              break;
+            }
+          }
+
+          if (isset($return['INSERT'])) {
+            $return['INSERT']['query'] = check_plain($insert_sql);
+          }
+
+          if (isset($return['DELETE'])) {
+            $return['DELETE']['query'] = check_plain($delete_sql);
+          }
+        }
+        else {
+          $return['SELECT'] = array('success' => FALSE, 'query' => check_plain($sql));
+        }
+      }
+
+      variable_del('themekey_nodeaspath');
+    }
+  }
+
+  return $return;
+}
+
+
+/**
+ * Function _themekey_properties_explode_conditions()
+ * was part of themekey_build.inc up to version 6.x-1.2.
+ * Now it's only required one more time to perform
+ * themekey_update_6200()
+ */
+function _themekey_properties_explode_conditions($conditions) {
+  if (!is_array($conditions)) {
+    $parts = array_filter(explode(';', $conditions));
+    $conditions = array();
+    foreach ($parts as $part) {
+      $part = trim($part);
+      if (preg_match('/(.*?)([<>=!~])(.*)/', $part, $matches)) {
+        $conditions[] = array(
+          'property' => trim($matches[1]),
+          'operator' => trim($matches[2]),
+          'value' => trim($matches[3])
+        );
+      }
+    }
+  }
+
+  return $conditions;
+}
+
+
+/**
+ * Implementation of hook_update_N().
+ */
 function themekey_update_6200() {
-  $ret[] = update_sql("ALTER TABLE {themekey_properties} ADD COLUMN enabled INT(11) NOT NULL DEFAULT 0");
-  $ret[] = update_sql("ALTER TABLE {themekey_properties} DROP INDEX property");
-  $ret[] = update_sql("ALTER TABLE {themekey_properties} ADD INDEX (enabled)");
-  $ret[] = update_sql("ALTER TABLE {themekey_properties} ADD COLUMN wildcards TEXT NOT NULL");
+  $field = array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => '0', 'initial' => '1');
+  db_add_field($ret, 'themekey_properties', 'enabled', $field);
+
+  db_drop_index($ret, 'themekey_properties', 'property');
+  db_add_index($ret, 'themekey_properties', 'enabled', array('enabled'));
+
+  $field = array('type' => 'text', 'not null' => TRUE);
+  db_add_field($ret, 'themekey_properties', 'wildcards', $field);
 
   $weight = ((int) db_result(db_query("SELECT MIN(weight) FROM {themekey_properties}"))) - 1;
   $insert_query = "INSERT INTO {themekey_properties} (property, value, weight, conditions, theme, enabled, wildcards) VALUES ('drupal:path', '%s', %d, '%s', '%s', 1, '%s')";
 
   $result = db_query("SELECT * FROM {themekey_paths} WHERE custom = 1");
   while ($item = db_fetch_array($result)) {
-    $insert_success = db_query($insert_query, $item['path'], $weight, $item['conditions'], $item['theme'], $item['wildcards']);
+    $conditions = unserialize($item['conditions']);
+    if (is_array($conditions) && !empty($conditions)) {
+      if (!is_array($conditions[0])) {
+        // ThemeKey 6.x-1.1 stored conditions for paths as simple string within an array
+        $conditions = _themekey_properties_explode_conditions($conditions[0]);
+      }
+    }
+    $insert_success = db_query($insert_query, $item['path'], $weight, serialize($conditions), $item['theme'], $item['wildcards']);
     $ret[] = array('success' => $insert_success, 'query' => $insert_query);
     $ret[] = update_sql('DELETE FROM {themekey_paths} WHERE id = '. $item['id']);
   }
 
-  $ret[] = update_sql("ALTER TABLE {themekey_paths} DROP COLUMN conditions");
-  $ret[] = update_sql("ALTER TABLE {themekey_paths} DROP COLUMN custom");
-  $ret[] = update_sql("ALTER TABLE {themekey_paths} DROP COLUMN theme");
-
-  drupal_set_message(t('Please review ThemeKey Settings at !link', array('!link' => l('admin/settings/themekey/settings', 'admin/settings/themekey/settings'))), 'warning');
+  db_drop_field($ret, 'themekey_paths', 'conditions');
+  db_drop_field($ret, 'themekey_paths', 'custom');
+  db_drop_field($ret, 'themekey_paths', 'theme');
 
   return $ret;
 }
@@ -174,7 +270,8 @@ function themekey_update_6200() {
  * Implementation of hook_update_N().
  */
 function themekey_update_6201() {
-  _themekey_rebuild();
+  // Don't rebuild anymore when themekey_update_6202() will run
+  //_themekey_rebuild();
   return array();
 }
 
@@ -220,7 +317,10 @@ function themekey_update_6202() {
   db_drop_index($ret, 'themekey_paths', 'weight');
   db_add_index($ret, 'themekey_paths', 'path_fit_weight', array('path', 'fit', 'weight'));
 
-  _themekey_rebuild();
+  // calling _themekey_rebuild() at this point will cause an error because
+  // modified schema is not yet populated
+  // therefor we show a message
+  drupal_set_message(t("ThemeKey won't work correctly until you reviewed ThemeKey's !settings_link", array('!settings_link' => l(t("settings"), 'admin/settings/themekey/settings'))), 'error');
+
   return $ret;
 }
-

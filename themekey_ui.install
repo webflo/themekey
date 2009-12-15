@@ -48,44 +48,13 @@ function themekey_ui_uninstall() {
   cache_clear_all('variables', 'cache');
 }
 
+
 /**
  * Implementation of hook_update_N().
  */
 function themekey_ui_update_6100() {
-  $return = drupal_install_schema('themekey_ui');
 
-  if (!variable_get('themekey_nodeaspath', 0)) {
-    $sql = "SELECT id, value, theme, nid, vid FROM {themekey_properties} JOIN {node_revisions} ON (value = nid) WHERE property = 'node:nid' AND conditions = '%s'";
-    if ($result = db_query($sql, 'a:0:{}')) {
-      $insert_sql = "INSERT INTO {themekey_ui_node_theme} (nid, vid, theme) VALUES (%d, %d, '%s')";
-      $delete_sql = "DELETE FROM {themekey_properties} WHERE id = %d";
+  // moved to themekey_update_6105() to not break upgrades from ThemeKey 6.x-1.1 to 6.x-2.0
 
-      while ($row = db_fetch_array($result)) {
-        if ($return['INSERT']['success'] = db_query($insert_sql, $row['nid'], $row['vid'], $row['theme'])) {
-          if (!($return['DELETE']['success'] = db_query($delete_sql, $row['id']))) {
-            break;
-          }
-        }
-        else {
-          $return['INSERT']['success'] = FALSE;
-          break;
-        }
-      }
-
-      if (isset($return['INSERT'])) {
-        $return['INSERT']['query'] = check_plain($insert_sql);
-      }
-
-      if (isset($return['DELETE'])) {
-        $return['DELETE']['query'] = check_plain($delete_sql);
-      }
-    }
-    else {
-      $return['SELECT'] = array('success' => FALSE, 'query' => check_plain($sql));
-    }
-  }
-
-  variable_del('themekey_nodeaspath');
-
-  return $return;
+  return array();
 }

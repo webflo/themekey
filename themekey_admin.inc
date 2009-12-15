@@ -3,8 +3,6 @@
 
 require_once(drupal_get_path('module', 'themekey') .'/themekey_build.inc');
 
-define('THEMEKEY_PAGER_LENGTH', 40);
-
 /**
  * Function _themekey_properties_form().
  */
@@ -44,13 +42,13 @@ function themekey_properties_form() {
     '#title' => t('How to define Theme Switching Rules'),
     '#value' => t(
 'Text copied from ThemeKey 6.x-1.2 properties description and needs to be reviewed:
-Here you can map themes to object properties, e.g. to node properties such as the NodeID (nid).
+<del>Here you can map themes to object properties, e.g. to node properties such as the NodeID (nid).
 To add a new map entry to the table, select a property from the "Property" dropdown and enter
 the value which you want to assign the theme to. For example: Property = "nid", Value = "123"
 and Theme = "Bluemarine" switches the theme of node 123 to Bluemarine. You may also specify
 "Additional Conditions" so that the theme only applies when all conditions are matched. "Additional
 Conditions" must be provided using the following syntax: "property=value;property2=value2;...".
-Supported operators are "=" (equal), "!" (not equal), "<" (smaller), ">" (greater) and "~" (regex match).'),
+Supported operators are "=" (equal), "!" (not equal), "<" (smaller), ">" (greater) and "~" (regex match).</del>'),
   );
 
   $form['help']['properties'] = array(
@@ -68,7 +66,7 @@ Supported operators are "=" (equal), "!" (not equal), "<" (smaller), ">" (greate
     );
   }
 
-  $items = _themekey_load_properties(THEMEKEY_PAGER_LENGTH);
+  $items = _themekey_load_properties();
   $parent_options = array_merge(array(0), array_keys($items));
   $parent_options = array_combine($parent_options, $parent_options);
   foreach ($items as $item) {
@@ -133,10 +131,6 @@ Supported operators are "=" (equal), "!" (not equal), "<" (smaller), ">" (greate
     );
   }
 
-  if (count($items)) {
-    $form['pager'] = array('#value' => theme('pager', array(), THEMEKEY_PAGER_LENGTH));
-  }
-
   $form['new_item']['property'] = array(
     '#type' => 'select',
     '#default_value' => !empty($_GET['property']) ? check_plain($_GET['property']) : '',
@@ -178,11 +172,11 @@ Supported operators are "=" (equal), "!" (not equal), "<" (smaller), ">" (greate
 }
 
 // validate after submit and disable rule in database. otherwise all drag and drop stuff is lost in case of an error
-function themekey_properties_form_alter(&$form, $form_state, $form_id) {
-  $attributes = variable_get('themekey_attributes', array());
-
+function themekey_form_alter(&$form, $form_state, $form_id) {
   if ('themekey_properties_form' == $form_id && empty($form_state['post'])) {
     require_once(drupal_get_path('module', 'themekey') .'/themekey_validators.inc');
+
+    $attributes = variable_get('themekey_attributes', array());
 
     if (!empty($form['old_items'])) {
       foreach ($form['old_items'] as $key => $value) {
@@ -224,7 +218,8 @@ function themekey_properties_form_alter(&$form, $form_state, $form_id) {
                 $value_2['property']['#default_value'] == $value['property']['#default_value'] &&
                 $value_2['operator']['#default_value'] == $value['operator']['#default_value'] &&
                 $value_2['value']['#default_value'] == $value['value']['#default_value'] &&
-                $value_2['parent']['#default_value'] == $value['parent']['#default_value']) {
+                ($value_2['parent']['#default_value'] == $value['parent']['#default_value'] ||
+                 $value_2['parent']['#default_value'] == $value['id']['#value'])) {
 
               if ('drupal:path:wildcard' != $value_2['property']['#default_value'] ||
                   ('drupal:path:wildcard' == $value_2['property']['#default_value'] && $value_2['wildcard']['#default_value'] == $value['wildcard']['#default_value'])) {
@@ -253,8 +248,12 @@ function themekey_properties_form_set_error(&$form, $rule_id = 0, $element = '',
       $error_counter++;
       $form['old_items'][$rule_id]['id']['#prefix'] = '<span class="error">' . $error_counter . '</span>';
       foreach ($errors as $error) {
-        form_set_error($error[0], $error_counter .': ' . $error[1]);
+        form_set_error($error[0], $error_counter .') ' . $error[1]);
       }
+    }
+
+    if (0 < $error_counter) {
+      drupal_set_message(t("Your current configuration of Theme Switching Rules contains at least one logical error. Nevertheless this configuration is stored and active."), 'warning');
     }
   }
 }

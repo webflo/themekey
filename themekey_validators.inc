@@ -143,7 +143,7 @@ function themekey_validator_http_host($rule) {
 }
 
 
-function themekey_validator_wildcard($rule) {
+function themekey_validator_no_whitespace($rule) {
   $errors = array();
   switch ($rule['operator']) {
     case '~':
@@ -151,10 +151,17 @@ function themekey_validator_wildcard($rule) {
       break;
 
     default:
-      if (preg_match("/^\s/", $rule['value'])) {
+      if (preg_match("/\s/", $rule['value'])) {
         $errors['value'] = t('Value could not contain white spaces');
       }
     }
+
+  return $errors;
+}
+
+
+function themekey_validator_wildcard($rule) {
+  $errors = themekey_validator_no_whitespace($rule);
 
   if (preg_match("/^[#%]/", $rule['wildcard'])) {
     $errors['wildcard'] = t('Wildcard must not start with type identifier "#" or "%" at this point');

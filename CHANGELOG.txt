@@ -1,7 +1,7 @@
 // $Id$
 
-ThemeKey 6.x-2.0-alpha4, 2009-xx-xx
------------------------------------
+ThemeKey 6.x-2.0-beta1, 2009-12-15
+----------------------------------
 [       ] mkalkbrenner: API: replaced concept of conditions by chaining simple property based rules
 [       ] mkalkbrenner: API: don't allow altering of themekey_attributes, themekey_properties and themekey_maps via hook
 [       ] mkalkbrenner: API: introduced validators for rules depending on selected property
@@ -9,8 +9,12 @@ ThemeKey 6.x-2.0-alpha4, 2009-xx-xx
 [       ] mkalkbrenner: optimized database performance
 [       ] mkalkbrenner: improved user interface
 [       ] mkalkbrenner: adjusted more default values
-[#442192] mkalkbrenner: Main condition not =
 [       ] mkalkbrenner: allow <= and >= as operator for conditions
+[       ] mkalkbrenner: removed pager from "Theme Switching Rule Chain"
+[       ] mkalkbrenner: refactored upgrade path from ThemeKey 6.x-1.1 to 6.x-2.0beta1
+[       ] mkalkbrenner: refactored upgrade path from ThemeKey 6.x-1.2beta7 to 6.x-2.0beta1
+[#442192] mkalkbrenner: Main condition not =
+[#654368] metaphysis, mkalkbrenner: Update from 6.x-1.2-beta1 to beta7 fails with postgresql
 
 
 ThemeKey 6.x-2.0-alpha3, 2009-11-25

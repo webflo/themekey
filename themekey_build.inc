@@ -179,7 +179,7 @@ function themekey_prepare_custom_path($path) {
 /**
  * Function _themekey_load_properties().
  */
-function _themekey_load_properties($limit = NULL, $parent = 0, $depth = 0) {
+function _themekey_load_properties($parent = 0, $depth = 0) {
   static $properties = array();
   static $parent_lookups = array();
 
@@ -189,14 +189,14 @@ function _themekey_load_properties($limit = NULL, $parent = 0, $depth = 0) {
   }
 
   $query = 'SELECT * FROM {themekey_properties} WHERE parent = %d ORDER BY weight';
-  $result = !is_null($limit) ? pager_query($query, $limit, 0, NULL, $parent) : db_query($query, $parent);
+  $result = db_query($query, $parent);
   while ($item = db_fetch_array($result)) {
     if ('drupal:path' == $item['property']) {
       themekey_complete_path($item);
     }
     $item['depth'] = $depth;
     $properties[$item['id']] = $item;
-    _themekey_load_properties(NULL, $item['id'], $depth + 1);
+    _themekey_load_properties($item['id'], $depth + 1);
     $parent_lookups[$item['id']] = TRUE;
   }
   return $properties;
