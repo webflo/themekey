@@ -12,7 +12,7 @@ function themekey_validator_nummeric_boolean($rule) {
       $errors['operator'] = t('Possible operators are "=" and "!"');
   }
 
-  if (!(is_numeric($rule['value']) && 0 <= $rule['value'] && 1 >= $rule['value'])) {
+  if (!ctype_digit($rule['value']) || 1 < $rule['value']) {
     $errors['value'] = t('Possible values are "0" and "1"');
   }
 
