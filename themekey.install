@@ -317,10 +317,22 @@ function themekey_update_6202() {
   db_drop_index($ret, 'themekey_paths', 'weight');
   db_add_index($ret, 'themekey_paths', 'path_fit_weight', array('path', 'fit', 'weight'));
 
+  return $ret;
+}
+
+
+/**
+ * Implementation of hook_update_N().
+ */
+function themekey_update_6203() {
   // calling _themekey_rebuild() at this point will cause an error because
   // modified schema is not yet populated
   // therefor we show a message
-  drupal_set_message(t("ThemeKey won't work correctly until you reviewed ThemeKey's !settings_link", array('!settings_link' => l(t("settings"), 'admin/settings/themekey/settings'))), 'error');
+  drupal_set_message(t("ThemeKey won't work correctly until you click 'Save configuration' at !settings_link", array('!settings_link' => l(t("ThemeKey settings"), 'admin/settings/themekey/settings'))), 'error');
 
-  return $ret;
+  if (module_exists('themekey_ui')) {
+    drupal_set_message(t("ThemeKey UI won't work correctly until click 'Save configuration' at !settings_link", array('!settings_link' => l(t("ThemeKey UI settings"), 'admin/settings/themekey/settings/ui'))), 'error');
+  }
+
+  return array();
 }
