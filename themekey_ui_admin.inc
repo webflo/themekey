@@ -53,16 +53,15 @@ function _themekey_ui_settings_form() {
   $form['buttons']['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Save configuration'),
-    '#submit' => array('_themekey_ui_settings_submit')
   );
 
   return $form;
 }
 
 /**
- * Function _themekey_ui_settings_submit().
+ * Function _themekey_ui_settings_form_submit().
  */
-function _themekey_ui_settings_submit($form, &$form_state) {
+function _themekey_ui_settings_form_submit($form, &$form_state) {
   //
   foreach ($form_state['values'] as $key => $value) {
     $pos = strpos($key, 'themekey_ui_');
@@ -71,8 +70,11 @@ function _themekey_ui_settings_submit($form, &$form_state) {
     }
   }
 
+  themekey_update_static_property('themekey_ui:node_triggers_theme', $form_state['values']['themekey_ui_nodeform']);
+
   drupal_set_message(t('The configuration options have been saved.'));
 }
+
 
 /**
  * Function _themekey_ui_nodeform().

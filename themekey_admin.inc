@@ -58,11 +58,17 @@ Supported operators are "=" (equal), "!" (not equal), "<" (smaller), ">" (greate
     '#collapsed' => TRUE,
   );
 
-  foreach ($properties as $property) {
+  foreach ($attributes as $property => $attribute) {
     $form['help']['properties'][$property] = array(
-      '#type' => 'item',
+      '#type' => 'fieldset',
       '#title' => $property,
-      '#value' => $attributes[$property]['description'],
+      '#collapsible' => TRUE,
+      '#collapsed' => TRUE,
+    );
+
+    $form['help']['properties'][$property]['item'] = array(
+      '#type' => 'item',
+      '#value' => $attribute['description'],
     );
   }
 
@@ -70,62 +76,108 @@ Supported operators are "=" (equal), "!" (not equal), "<" (smaller), ">" (greate
   $parent_options = array_merge(array(0), array_keys($items));
   $parent_options = array_combine($parent_options, $parent_options);
   foreach ($items as $item) {
-    $property = $item['property'];
-    $wildcard = '';
-    if (!in_array($property, $properties)) {
-      $property = 'drupal:path:wildcard';
-      $wildcard = $item['property'];
-    }
-
     $form['old_items'][$item['id']]['depth'] = array(
       '#type' => 'value',
       '#value' => $item['depth'],
     );
+
     $form['old_items'][$item['id']]['id'] = array(
       '#type' => 'hidden',
       '#value' => $item['id'],
     );
-    $form['old_items'][$item['id']]['property'] = array(
-      '#type' => 'select',
-      '#default_value' => $property,
-      '#options' => $properties,
-    );
+
+    $property = $item['property'];
+    $wildcard = '';
+    if (!in_array($property, $properties)) {
+      if (!empty($attributes[$property]['static'])) {
+        $form['old_items'][$item['id']]['property'] = array(
+          '#type' => 'hidden',
+          '#default_value' => $property,
+          '#value' => $property,
+          '#prefix' => '<span class="themekey-fadeable">' . $property . '</span>',
+        );
+
+        $form['old_items'][$item['id']]['operator'] = array(
+          '#type' => 'hidden',
+          '#default_value' => '=',
+          '#value' => '=',
+        );
+
+        $form['old_items'][$item['id']]['value'] = array(
+          '#type' => 'hidden',
+          '#default_value' => 'static',
+          '#value' => 'static',
+        );
+
+        $form['old_items'][$item['id']]['theme'] = array(
+          '#type' => 'select',
+          '#default_value' => 'default',
+          '#options' => array('default' => t('Triggered')),
+        );
+      }
+      else {
+        $property = 'drupal:path:wildcard';
+        $wildcard = $item['property'];
+      }
+    }
+
+    if (!isset($form['old_items'][$item['id']]['property'])) {
+      $form['old_items'][$item['id']]['property'] = array(
+        '#type' => 'select',
+        '#default_value' => $property,
+        '#options' => $properties,
+      );
+    }
+
     $form['old_items'][$item['id']]['wildcard'] = array(
       '#type' => 'textfield',
       '#default_value' => $wildcard,
       '#size' => 10,
       '#maxlength' => 255,
     );
-    $form['old_items'][$item['id']]['operator'] = array(
-      '#type' => 'select',
-      '#default_value' => $item['operator'],
-      '#options' => $operators,
-    );
-    $form['old_items'][$item['id']]['value'] = array(
-      '#type' => 'textfield',
-      '#default_value' => $item['value'],
-      '#size' => 20,
-      '#maxlength' => 255,
-    );
+
+    if (!isset($form['old_items'][$item['id']]['operator'])) {
+      $form['old_items'][$item['id']]['operator'] = array(
+        '#type' => 'select',
+        '#default_value' => $item['operator'],
+        '#options' => $operators,
+      );
+    }
+
+    if (!isset($form['old_items'][$item['id']]['value'])) {
+      $form['old_items'][$item['id']]['value'] = array(
+        '#type' => 'textfield',
+        '#default_value' => $item['value'],
+        '#size' => 20,
+        '#maxlength' => 255,
+      );
+    }
+
     $form['old_items'][$item['id']]['parent'] = array(
       '#type' => 'select',
       '#default_value' => $item['parent'],
       '#options' => $parent_options
     );
-    $form['old_items'][$item['id']]['theme'] = array(
-      '#type' => 'select',
-      '#default_value' => $item['theme'],
-      '#options' => $themes,
-    );
+
+    if (!isset($form['old_items'][$item['id']]['theme'])) {
+      $form['old_items'][$item['id']]['theme'] = array(
+        '#type' => 'select',
+        '#default_value' => $item['theme'],
+        '#options' => $themes,
+      );
+    }
+
     $form['old_items'][$item['id']]['enabled'] = array(
       '#type' => 'checkbox',
       '#default_value' => $item['enabled'],
     );
+
     $form['old_items'][$item['id']]['weight'] = array(
       '#type' => 'weight',
       '#delta' => 50,
       '#default_value' => $item['weight'],
     );
+
     $form['old_items'][$item['id']]['delete'] = array(
       '#value' => l(t('delete'), 'admin/settings/themekey/properties/delete/' . $item['id']),
     );

@@ -63,8 +63,10 @@ HOOK_themekey_properties()
     Key:    namespace:property
     Value:  array()
             - description => Readable name of property (required)
-            - validator => Callback function to validate a rule starting with that property
-      TODO: describe validator arguments and return value 
+            - validator   => Callback function to validate a rule starting with that property (optional)
+                             TODO: describe validator arguments and return value 
+              static      => true/false, static properties don't occur in properties drop down
+                             and have fixed operator and value (optional)
 
   Maps
     Key:    none (indexed)
@@ -83,7 +85,7 @@ HOOK_themekey_paths()
     Key:    none (indexed)
     Value:  array()
             - path      => Router path to register (required)
-            - callbacks => Load (and/or match) callback (required)
+            - callbacks => Load (and/or match) callback (optional)
               (the callback function can set the 'theme' element in $params array directly, which will be applied)
               Callback arguments:
               - $item:    array of elements associated with the path/callback

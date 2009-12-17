@@ -319,8 +319,8 @@ function _themekey_check_theme_enabled($theme, $settings_page = FALSE) {
     global $user;
 
     if (!$warned && 1 == $user->uid) {
-      drupal_set_message(t('A matching ThemeKey rule to select theme %theme was not applied because this theme is disabled. You can enable this theme at !build_themes or remove this ThemeKey rule at !themekey_paths or !themekey_properties or edit current node if the theme was selected using ThemeKey UI.',
-        array('%theme' => $theme, '!build_themes' => l('admin/build/themes', 'admin/build/themes'), '!themekey_paths' => l('admin/settings/themekey', 'admin/settings/themekey'), '!themekey_properties' => l('admin/settings/themekey/properties', 'admin/settings/themekey/properties'))), 'warning');
+      drupal_set_message(t('A matching Theme Switching Rule to select theme %theme was not applied because this theme is disabled. You can enable this theme at !build_themes or remove this Theme Switching Rule at !themekey_properties or edit current node if the theme was selected using ThemeKey UI.',
+        array('%theme' => $theme, '!build_themes' => l('admin/build/themes', 'admin/build/themes'), '!themekey_properties' => l('admin/settings/themekey/properties', 'admin/settings/themekey/properties'))), 'warning');
       $warned = TRUE;
     }
   }

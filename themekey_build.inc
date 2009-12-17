@@ -33,10 +33,15 @@ function _themekey_rebuild() {
 
   // Attributes
   $attributes = isset($properties['attributes']) ? $properties['attributes'] : array();
+  ksort($attributes);
   variable_set('themekey_attributes', $attributes);
 
-  $property_names = array_keys($attributes);
-  sort($property_names);
+  $property_names = array();
+  foreach ($attributes as $property_name => $attribute) {
+    if (empty($attribute['static'])) {
+      $property_names[] = $property_name;
+    }
+  }
   $property_names = array_combine($property_names, $property_names);
   variable_set('themekey_properties', $property_names);
 
@@ -213,7 +218,7 @@ function _themekey_properties_set(&$item) {
     $item['wildcards'] = array();
   }
 
-  drupal_write_record('themekey_properties', $item, isset($item['id']) ? 'id' : array());
+  drupal_write_record('themekey_properties', $item, !empty($item['id']) ? 'id' : array());
 }
 
 /**
@@ -221,5 +226,32 @@ function _themekey_properties_set(&$item) {
  */
 function _themekey_properties_del($id) {
   db_query('DELETE FROM {themekey_properties} WHERE id = %d', $id);
+}
+
+
+function themekey_update_static_property($property, $state) {
+  $id = db_result(db_query("SELECT id FROM {themekey_properties} WHERE property = '%s' LIMIT 1", $property));
+  if ($state) {
+    $item = array(
+      'property' => $property,
+      'operator' => '=',
+      'value' => 'static',
+      'theme' => 'default',
+    );
+
+    if ($id) {
+      $item['id'] = $id;
+      // leave 'enabled' as it is in database
+    }
+    else {
+      // enable new rule
+      $item['enabled'] = 1;
+    }
+
+    _themekey_properties_set($item);
+  }
+  else if ($id) {
+    _themekey_properties_del($id);
+  }
 }
 

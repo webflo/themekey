@@ -101,16 +101,9 @@ function themekey_node_themekey_properties() {
 
 function themekey_node_themekey_paths() {
   $paths = array();
-  $paths[] = array('path'       => 'node/#node:nid',
-                   'callbacks'  => array('themekey_node_callback'));
+  $paths[] = array('path' => 'node/#node:nid');
 
   return $paths;
-}
-
-function themekey_node_callback(&$item, &$parameters) {
-  if ($node = node_load($parameters['node:nid'])) {
-    $parameters['theme'] = !empty($node->theme) ? $node->theme : 'default';
-  }
 }
 
 function themekey_node_get_simple_node_property($nid, $property) {
