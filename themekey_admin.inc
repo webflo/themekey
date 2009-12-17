@@ -181,7 +181,7 @@ function themekey_form_alter(&$form, $form_state, $form_id) {
     if (!empty($form['old_items'])) {
       foreach ($form['old_items'] as $key => $value) {
         if ($value['enabled']['#default_value']) {
-          if (!_themekey_check_theme_enabled($value['theme']['#default_value'], TRUE)) {
+          if (!_themekey_check_theme_enabled($value['theme']['#default_value'])) {
             themekey_properties_form_set_error($form, $key, 'theme', t('Theme is not activated'));
           }
 

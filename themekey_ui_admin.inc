@@ -33,12 +33,6 @@ function _themekey_ui_settings_form() {
   if ($nodeform) {
     $form['themekey_ui']['content_type'] = array(
       '#type' => 'fieldset',
-      '#title' => t('Content Types'),
-      '#collapsible' => TRUE,
-      '#collapsed' => TRUE
-    );
-    $form['themekey_ui']['content_type'] = array(
-      '#type' => 'fieldset',
       '#title' => t('Show \'Theme\' option for nodes of type'),
       '#collapsible' => TRUE,
       '#collapsed' => FALSE,

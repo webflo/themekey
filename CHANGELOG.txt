@@ -3,6 +3,7 @@
 ThemeKey 6.x-2.0-beta2, 2009-xx-xx
 -----------------------------------
 [       ] Carsten Müller: improved validator themekey_validator_nummeric_boolean()
+[       ] mkalkbrenner: moved modules into package ThemeKey
 
 
 ThemeKey 6.x-2.0-beta1, 2009-12-15

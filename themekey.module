@@ -104,7 +104,8 @@ function themekey_init() {
   // don't change theme when administer blocks
   if (!$custom_theme && strpos($_GET['q'], 'admin/build/block') !== 0) {
     $parameters = _themekey_get_global_parameters();
-    // if a node is requested which has a theme asigned via themekey_ui, use it
+    // if a node is requested which has a theme asigned via themekey_ui, use it.
+    // other modules might set $parameters['theme'] as well
     $theme = !empty($parameters['theme']) ? $parameters['theme'] : '';
 
     if (!empty($theme) && !_themekey_check_theme_enabled($theme)) {
