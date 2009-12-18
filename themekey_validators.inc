@@ -1,49 +1,19 @@
 <?php
 // $Id$
 
-function themekey_validator_boolean($rule) {
-  
-  $checked = FALSE;
-  $error = FALSE;
+function themekey_validator_string_boolean($rule) {
   $errors = array();
+
   switch ($rule['operator']) {
     case '=':
     case '!':
+      if ('true' !== $rule['value'] && 'false' !== $rule['value']) {
+        $errors['value'] = t('Possible values are "true" and "false"');
+      }
       break;
 
     default:
       $errors['operator'] = t('Possible operators are "=" and "!"');
-  }
-
-  $possibilites_string = array(
-  'true',
-  'false',
-  );
-  
-  
-  if (is_string($rule['value']) && !is_numeric($rule['value'])) {
-    if (!empty($possibilites_string)) {
-      foreach ($possibilites_string as $string) {
-        if (strtolower($rule['value']) != $string) {
-          $error = TRUE;
-        }
-        else {
-          $checked = TRUE;
-          $error = FALSE;
-          break;
-        }
-      }
-    }
-  }
-  
-  if (!$checked) {
-    if (!ctype_digit($rule['value']) || 1 < $rule['value']) {
-      $error = TRUE;
-    }
-  }
-  
-  if ($error) {
-    $errors['value'] = t('Possible values are "TRUE", "FALSE", "0" and "1"');
   }
 
   return $errors;
@@ -55,14 +25,13 @@ function themekey_validator_nummeric_boolean($rule) {
   switch ($rule['operator']) {
     case '=':
     case '!':
+      if (!ctype_digit($rule['value']) || 1 < $rule['value']) {
+        $errors['value'] = t('Possible values are "0" and "1"');
+      }
       break;
 
     default:
       $errors['operator'] = t('Possible operators are "=" and "!"');
-  }
-
-  if (!ctype_digit($rule['value']) || 1 < $rule['value']) {
-    $errors['value'] = t('Possible values are "0" and "1"');
   }
 
   return $errors;

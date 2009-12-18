@@ -2,7 +2,7 @@
 
 ThemeKey 6.x-2.0-beta3, 2009-12-18
 -----------------------------------
-[       ] Carsten Müller: added validation function themekey_validator_boolean()
+[       ] Carsten Müller, mkalkbrenner: added validation function themekey_validator_string_boolean() and improved themekey_validator_nummeric_boolean()
 [#662786] mkalkbrenner: Error Message after upgrading to latest beta
 
 
