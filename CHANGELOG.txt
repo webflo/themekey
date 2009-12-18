@@ -1,8 +1,9 @@
 // $Id$
 
-ThemeKey 6.x-2.0-beta3, xxxx-xx-xx
+ThemeKey 6.x-2.0-beta3, 2009-12-18
 -----------------------------------
 [       ] Carsten Müller: added validation function themekey_validator_boolean()
+[#662786] mkalkbrenner: Error Message after upgrading to latest beta
 
 
 ThemeKey 6.x-2.0-beta2, 2009-12-17

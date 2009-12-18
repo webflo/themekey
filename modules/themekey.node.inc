@@ -153,3 +153,26 @@ function themekey_node_timestamp2datetime($timestamp) {
 function themekey_node_timestamp2date($timestamp) {
   return date('Y-m-d', $timestamp);
 }
+
+/**
+ * This function isn't needed anymore and has been removed with ThemeKey 6.x-2.0-beta2.
+ * But if it's missing a fatal error occurs if you upgrade from any version before
+ * 6.x-2.0-beta2 until you called update.php. That should be avoided.
+ * So this function is available again and does nothing else than reminding the
+ * administrator to call update.php
+ *
+ * see http://drupal.org/node/662786
+ *
+ * @param unknown_type $item
+ * @param unknown_type $parameters
+ * @return unknown_type
+ */
+function _themekey_node_callback(&$item, &$parameters) {
+  global $user;
+
+  if (1 == $user->uid) {
+    drupal_set_message(t('You uploaded a new version of ThemeKey. Please !link your site!', l(t('update'), '/update.php')));
+  }
+}
+
+
