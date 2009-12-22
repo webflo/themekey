@@ -180,68 +180,54 @@ function _themekey_match_condition($condition, &$parameters) {
 
     $value = _themekey_property_value($parameters, $condition['property']);
 
-    if (is_array($value)) {
+    if (!is_array($value)) {
+      $value = array($value);
+    }
+
+    if (!empty($value)) {
       foreach ($value as $single_value) {
         if (!is_null($single_value)) {
           // Supported operators for condition check:
           // smaller ('<'), greater ('>'), equal ('='), not equal ('!'), regex match ('~')
-          if ($condition['operator'] == '<' && $single_value < $condition['value']) {
-            return TRUE;
+          if ($condition['operator'] == '<' && $single_value >= $condition['value']) {
+            return FALSE;
           }
-          else if ($condition['operator'] == '>' && $single_value > $condition['value']) {
-            return TRUE;
+          else if ($condition['operator'] == '>' && $single_value <= $condition['value']) {
+            return FALSE;
           }
-          else if ($condition['operator'] == '<=' && $single_value <= $condition['value']) {
-            return TRUE;
+          else if ($condition['operator'] == '<=' && $single_value > $condition['value']) {
+            return FALSE;
           }
-          else if ($condition['operator'] == '>=' && $single_value >= $condition['value']) {
-            return TRUE;
+          else if ($condition['operator'] == '>=' && $single_value < $condition['value']) {
+            return FALSE;
           }
           else if ($condition['operator'] == '=' && $single_value == $condition['value']) {
             return TRUE;
           }
-          else if ($condition['operator'] == '!' && $single_value != $condition['value']) {
-            return TRUE;
+          else if ($condition['operator'] == '!' && $single_value == $condition['value']) {
+            return FALSE;
           }
           else if ($condition['operator'] == '~' && preg_match($condition['value'], $single_value)) {
             return TRUE;
           }
         }
+        else {
+          // value is NULL
+          return FALSE;
+        }
       }
-      return FALSE;
-    }
-    else if (!is_null($value)) {
-      // Supported operators for condition check:
-      // smaller ('<'), greater ('>'), equal ('='), not equal ('!'), regex match ('~')
-      if ($condition['operator'] == '<' && $value >= $condition['value']) {
-        return FALSE;
-      }
-      else if ($condition['operator'] == '>' && $value <= $condition['value']) {
-        return FALSE;
-      }
-      else if ($condition['operator'] == '<=' && $value > $condition['value']) {
-        return FALSE;
-      }
-      else if ($condition['operator'] == '>=' && $value < $condition['value']) {
-        return FALSE;
-      }
-      else if ($condition['operator'] == '=' && $value != $condition['value']) {
-        return FALSE;
-      }
-      else if ($condition['operator'] == '!' && $value == $condition['value']) {
-        return FALSE;
-      }
-      else if ($condition['operator'] == '~' && !preg_match($condition['value'], $value)) {
-        return FALSE;
-      }
+
+      // condition matched for all values
+      return TRUE;
     }
     else {
-      // value is NULL
+      // value array is empty => value is NULL
       return FALSE;
     }
   }
-
-  return TRUE;
+  else {
+    trigger_error(t('Function _themekey_match_condition() called with illegal parameters'), E_USER_ERROR);
+  }
 }
 
 /**
