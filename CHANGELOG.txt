@@ -1,10 +1,14 @@
 // $Id$
 
+ThemeKey 6.x-2.0-beta4, 2009-xx-xx
+-----------------------------------
+[#665710] mkalkbrenner: wrong strategy for checking multi valued properties for some operators
+
+
 ThemeKey 6.x-2.0-beta3, 2009-12-18
 -----------------------------------
 [       ] Carsten Müller, mkalkbrenner: added validation function themekey_validator_string_boolean() and improved themekey_validator_nummeric_boolean()
 [#662786] mkalkbrenner: Error Message after upgrading to latest beta
-[#665710] mkalkbrenner: wrong strategy for checking multi valued properties for some operators
 
 
 ThemeKey 6.x-2.0-beta2, 2009-12-17
