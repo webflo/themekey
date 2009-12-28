@@ -1,6 +1,24 @@
 <?php
 // $Id$
 
+/**
+ * @file
+ * ThemeKey is meant to be a generic theme switching module.
+ *
+ * ThemeKey allows you to define simple or sophisticated Theme Switching Rules.
+ * Using these rules you are able to use a different theme depending on current
+ * path, taxonomy terms, language, node type and many many more properties.
+ * It can also be easily extended to support additional properties as exposed by
+ * other modules:
+ * @see themekey_properties.module
+ *
+ * @author Markus Kalkbrenner
+ *   @see http://drupal.org/user/124705
+ *
+ * @author profix898
+ *   @see http://drupal.org/user/35192
+ */
+
 require_once(drupal_get_path('module', 'themekey') .'/themekey_base.inc');
 
 /**
@@ -16,12 +34,14 @@ function themekey_theme() {
   return $items;
 }
 
+
 /**
  * Implementation of hook_perm().
  */
 function themekey_perm() {
   return array('administer theme assignments', 'administer themekey settings');
 }
+
 
 /**
  * Implementation of hook_menu().
@@ -38,12 +58,12 @@ function themekey_menu() {
     'page arguments' => array('themekey_properties_form')
   );
   $items['admin/settings/themekey/properties'] = array(
-    'title' => t('Theme Switching Rule Chain'),
+    'title' => 'Theme Switching Rule Chain',
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => 0
   );
   $items['admin/settings/themekey/properties/delete'] = array(
-    'title' => t('Delete ThemeKey Property'),
+    'title' => 'Delete ThemeKey Property',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('themekey_admin_delete_property_confirm', 1),
     'access callback' => 'user_access',
@@ -52,7 +72,7 @@ function themekey_menu() {
     'type' => MENU_CALLBACK,
   );
   $items['admin/settings/themekey/settings'] = array(
-    'title' => t('Settings'),
+    'title' => 'Settings',
     'access callback' => 'user_access',
     'access arguments' => array('administer themekey settings'),
     'file' => 'themekey_admin.inc',
@@ -62,13 +82,14 @@ function themekey_menu() {
     'weight' => 5
   );
   $items['admin/settings/themekey/settings/general'] = array(
-    'title' => t('General'),
+    'title' => 'General',
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => 0
   );
 
   return $items;
 }
+
 
 /**
  * Implementation of hook_themekey_properties().
@@ -78,6 +99,7 @@ function themekey_themekey_properties() {
   return _themekey_invoke_modules('themekey_properties');
 }
 
+
 /**
  * Implementation of hook_themekey_global().
  */
@@ -86,6 +108,7 @@ function themekey_themekey_global() {
   return _themekey_invoke_modules('themekey_global');
 }
 
+
 /**
  * Implementation of hook_themekey_paths().
  */
@@ -93,6 +116,7 @@ function themekey_themekey_paths() {
   require_once(drupal_get_path('module', 'themekey') .'/themekey_build.inc');
   return _themekey_invoke_modules('themekey_paths');
 }
+
 
 /**
  * Implementation of hook_init().
@@ -125,4 +149,3 @@ function themekey_init() {
     }
   }
 }
-

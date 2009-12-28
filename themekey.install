@@ -2,6 +2,18 @@
 // $Id$
 
 /**
+ * @file
+ * Database schema of @see themekey.module
+ *
+ * @author Markus Kalkbrenner
+ *   @see http://drupal.org/user/124705
+ *
+ * @author profix898
+ *   @see http://drupal.org/user/35192
+ */
+
+
+/**
  * Implementation of hook_schema().
  */
 function themekey_schema() {
@@ -42,12 +54,14 @@ function themekey_schema() {
   return $schema;
 }
 
+
 /**
  * Implementation of hook_install().
  */
 function themekey_install() {
   drupal_install_schema('themekey');
 }
+
 
 /**
  * Implementation of hook_uninstall().
@@ -60,9 +74,11 @@ function themekey_uninstall() {
   cache_clear_all('variables', 'cache');
 }
 
+
 /**
  * Implementation of hook_update_N().
- * (Update property 'nid' to 'node:nid')
+ *
+ * Update property 'nid' to 'node:nid'
  */
 function themekey_update_6001() {
   $ret = array();
@@ -79,6 +95,7 @@ function themekey_update_6001() {
 
   return $ret;
 }
+
 
 /**
  * Implementation of hook_update_N().
@@ -163,7 +180,7 @@ function themekey_update_6105() {
         if (0 === strpos($db_type, 'mysql')) {
           $sql = "SELECT id, value, theme, nid, vid FROM {themekey_properties} JOIN {node_revisions} ON (value = nid) WHERE property = 'node:nid' AND conditions = '%s'";
         }
-        else if (0 === strpos($db_type, 'pqsql')) {
+        elseif (0 === strpos($db_type, 'pqsql')) {
           $sql = "SELECT id, value, theme, nid, vid FROM {themekey_properties} JOIN {node_revisions} ON (value = nid::character varying) WHERE property = 'node:nid' AND conditions = '%s'";
         }
         if ($result = db_query($sql, 'a:0:{}')) {
@@ -205,9 +222,16 @@ function themekey_update_6105() {
 
 /**
  * Function _themekey_properties_explode_conditions()
- * was part of themekey_build.inc up to version 6.x-1.2.
+ * converts conditions formatted as string into an array.
+ * It was part of themekey_build.inc up to version 6.x-1.2.
  * Now it's only required one more time to perform
  * themekey_update_6200()
+ *
+ * @param $conditions
+ *   ThemeKey conditions as string
+ *
+ * @return
+ *   ThemeKey conditions as array
  */
 function _themekey_properties_explode_conditions($conditions) {
   if (!is_array($conditions)) {
@@ -266,6 +290,7 @@ function themekey_update_6200() {
   return $ret;
 }
 
+
 /**
  * Implementation of hook_update_N().
  */
@@ -285,10 +310,10 @@ function themekey_update_6202() {
   $field_operator = array('type' => 'varchar', 'length' => 2, 'not null' => TRUE, 'default' => '=', 'initial' => '=');
   db_add_field($ret, 'themekey_properties', 'operator', $field_operator);
 
-  $field_parent = array('type' => 'int', 'unsigned' => TRUE,'not null' => TRUE, 'default' => 0, 'initial' => 0);
+  $field_parent = array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => 0, 'initial' => 0);
   db_add_field($ret, 'themekey_properties', 'parent', $field_parent);
 
-  if ($result = db_query("SELECT * FROM {themekey_properties} WHERE conditions != '%s'", serialize(array()))) {
+  if ($result = db_query("SELECT * FROM {themekey_properties} WHERE conditions <> '%s'", serialize(array()))) {
     $insert_query = "INSERT INTO {themekey_properties} (property, operator, value, weight, theme, enabled, wildcards, parent) VALUES ('%s', '%s', '%s', %d, '%s', %d, '%s', %d)";
 
     while ($row = db_fetch_array($result)) {

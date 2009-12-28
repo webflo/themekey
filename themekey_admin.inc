@@ -240,7 +240,7 @@ function themekey_form_alter(&$form, $form_state, $form_id) {
           if (0 == strlen($value['value']['#default_value'])) {
             themekey_properties_form_set_error($form, $key, 'value', t('You must enter a value'));
           }
-          else if (!empty($attributes[$value['property']['#default_value']]['validator'])) {
+          elseif (!empty($attributes[$value['property']['#default_value']]['validator'])) {
             //validate rule with custom validator
             $validator = $attributes[$value['property']['#default_value']]['validator'];
             if (function_exists($validator)) {
@@ -439,7 +439,7 @@ function theme_themekey_properties_form($form) {
         if (!$form['old_items'][$key]['enabled']['#value']) {
           $parents_disabled[$key] = TRUE;
         }
-        else if ($item['parent']['#value']) {
+        elseif ($item['parent']['#value']) {
           $num_childs[$item['parent']['#value']]++;
         }
       }

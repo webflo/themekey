@@ -121,7 +121,7 @@ function themekey_match_property_childs(&$parameters, $parent = 0) {
     return $child_lookups[$parent];
   }
 
-  if ($result = db_query("SELECT * FROM {themekey_properties} WHERE enabled = 1 AND parent = %d AND value != '' ORDER BY weight", $parent)) {
+  if ($result = db_query("SELECT * FROM {themekey_properties} WHERE enabled = 1 AND parent = %d AND value <> '' ORDER BY weight", $parent)) {
     $num_childs = 0;
 
     while ($item = db_fetch_array($result)) {
@@ -192,22 +192,22 @@ function _themekey_match_condition($condition, &$parameters) {
           if ($condition['operator'] == '<' && $single_value >= $condition['value']) {
             return FALSE;
           }
-          else if ($condition['operator'] == '>' && $single_value <= $condition['value']) {
+          elseif ($condition['operator'] == '>' && $single_value <= $condition['value']) {
             return FALSE;
           }
-          else if ($condition['operator'] == '<=' && $single_value > $condition['value']) {
+          elseif ($condition['operator'] == '<=' && $single_value > $condition['value']) {
             return FALSE;
           }
-          else if ($condition['operator'] == '>=' && $single_value < $condition['value']) {
+          elseif ($condition['operator'] == '>=' && $single_value < $condition['value']) {
             return FALSE;
           }
-          else if ($condition['operator'] == '=' && $single_value == $condition['value']) {
+          elseif ($condition['operator'] == '=' && $single_value == $condition['value']) {
             return TRUE;
           }
-          else if ($condition['operator'] == '!' && $single_value == $condition['value']) {
+          elseif ($condition['operator'] == '!' && $single_value == $condition['value']) {
             return FALSE;
           }
-          else if ($condition['operator'] == '~' && preg_match($condition['value'], $single_value)) {
+          elseif ($condition['operator'] == '~' && preg_match($condition['value'], $single_value)) {
             return TRUE;
           }
         }

@@ -230,7 +230,7 @@ function _themekey_properties_del($id) {
 
 
 function themekey_update_static_property($property, $state) {
-  $id = db_result(db_query("SELECT id FROM {themekey_properties} WHERE property = '%s' LIMIT 1", $property));
+  $id = db_result(db_query("SELECT id FROM {themekey_properties} WHERE property = '%s'", $property));
   if ($state) {
     $item = array(
       'property' => $property,
@@ -250,7 +250,7 @@ function themekey_update_static_property($property, $state) {
 
     _themekey_properties_set($item);
   }
-  else if ($id) {
+  elseif ($id) {
     _themekey_properties_del($id);
   }
 }

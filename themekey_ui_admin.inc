@@ -137,7 +137,7 @@ function _themekey_ui_pathalias_submit($form, &$form_state) {
   if ((empty($form_state['values']['theme']) || 'default' == $form_state['values']['theme']) && $form_state['values']['themekey_property_id']) {
     themekey_ui_del_path_theme($form_state['values']['themekey_property_id']);
   }
-  else if (!empty($form_state['values']['theme']) && 'default' != $form_state['values']['theme']) {
+  elseif (!empty($form_state['values']['theme']) && 'default' != $form_state['values']['theme']) {
     themekey_ui_set_path_theme($form['#alias']['src'], $form_state['values']['theme'], $form_state['values']['themekey_property_id']);
   }
 }

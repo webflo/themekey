@@ -518,7 +518,7 @@ function themekey_validator_wildcard($rule) {
   if (preg_match("/^[#%]/", $rule['wildcard'])) {
     $errors['wildcard'] = t('Wildcard must not start with type identifier "#" or "%" at this point');
   }
-  else if (preg_match("/\s/", $rule['wildcard'])) {
+  elseif (preg_match("/\s/", $rule['wildcard'])) {
     $errors['wildcard'] = t('Wildcard must not contain white spaces');
   }
 
@@ -558,7 +558,7 @@ function themekey_validator_regex($rule) {
   switch ($rule['operator']) {
     case '~':
       if (FALSE === @preg_match($rule['value'], 'dummy')) {
-        $errors['value'] = t('Regular expression seems to be malformed. See !link for details', array('!link' => l('PHP Manual', 'http://php.net/manual/en/pcre.pattern.php')));
+        $errors['value'] = t('Regular expression seems to be malformed. See !link for details', array('!link' => l(t('PHP Manual'), 'http://php.net/manual/en/pcre.pattern.php')));
       }
       break;
 
