@@ -7,10 +7,10 @@
  * ThemeKey Theme Switching Rules.
  * @see themekey_admin.inc
  *
- * @author Markus Kalkbrenner
+ * @author Markus Kalkbrenner | Cocomore AG
  *   @see http://drupal.org/user/124705
  *
- * @author Carsten Müller
+ * @author Carsten Müller | Cocomore AG
  *   @see http://drupal.org/user/124707
  */
 
@@ -275,7 +275,7 @@ function themekey_validator_date($rule) {
     case '=':
     case '!':
       if (!preg_match("/^[0-9]{4}-[0-1]{1}[0-9]{1}-[0-3]{1}[0-9]{1}$/", $rule['value'])) {
-        $errors['value'] = t('Not a valid date string. Format schould look like "2009-12-24"');
+        $errors['value'] = t('Not a valid date string. Format should look like "2009-12-24"');
       }
       break;
 
@@ -328,7 +328,7 @@ function themekey_validator_time($rule) {
     case '=':
     case '!':
       if (!preg_match("/^[0-2][0-9]:[0-5][0-9]:[0-5][0-9]$/", $rule['value'])) {
-        $errors['value'] = t('Not a valid date string. Format schould look like "23:16:56"');
+        $errors['value'] = t('Not a valid date string. Format should look like "23:16:56"');
       }
       break;
 
