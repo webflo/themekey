@@ -3,6 +3,8 @@
 ThemeKey 6.x-2.0-beta4, 2009-xx-xx
 -----------------------------------
 [#665710] mkalkbrenner: wrong strategy for checking multi valued properties for some operators
+[       ] mkalkbrenner: added themekey_validator_time()
+[       ] mkalkbrenner: improved validators and documented validators in source code
 
 
 ThemeKey 6.x-2.0-beta3, 2009-12-18
