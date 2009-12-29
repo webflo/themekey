@@ -217,8 +217,14 @@ function _themekey_match_condition($condition, &$parameters) {
         }
       }
 
-      // condition matched for all values
-      return TRUE;
+      if ($condition['operator'] == '=' || $condition['operator'] == '~') {
+        // no value matched
+        return FALSE;
+      }
+      else {
+        // condition matched for all values
+        return TRUE;
+      }
     }
     else {
       // value array is empty => value is NULL
