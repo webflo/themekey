@@ -225,7 +225,24 @@ function _themekey_properties_set(&$item) {
  * Function _themekey_properties_del().
  */
 function _themekey_properties_del($id) {
-  db_query('DELETE FROM {themekey_properties} WHERE id = %d', $id);
+  // lock table to prevent race condition
+  db_lock_table('themekey_properties');
+  $num_childs = db_result(db_query("SELECT COUNT(*) FROM {themekey_properties} WHERE parent = %d", $id));
+  if (FALSE !== $num_childs) {
+    if ($num_childs > 0) {
+      drupal_set_message(t('ThemeKey rule could not be deleted because it has children in the chain'), 'error');
+    }
+    else {
+      if (!db_query('DELETE FROM {themekey_properties} WHERE id = %d', $id)) {
+        drupal_set_message(t('Error while deleteing ThemeKey rule'), 'error');
+      }
+    }
+  }
+  else {
+    drupal_set_message(t('Error while deleteing ThemeKey rule'), 'error');
+  }
+
+  db_unlock_tables();
 }
 
 
