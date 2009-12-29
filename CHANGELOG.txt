@@ -11,6 +11,7 @@ ThemeKey 6.x-2.0-beta4, 2009-xx-xx
 [       ] mkalkbrenner: cleaned up code and API
 [       ] mkalkbrenner: themekey_ui_get_path_theme() should only return themes assigened to rules without children
 [       ] mkalkbrenner: lock table to prevent race condition in function themekey_properties_del()
+[#670086] mkalkbrenner: ThemeKey UI: Unable to set differnt themes for differnt path aliases
 
 
 ThemeKey 6.x-2.0-beta3, 2009-12-18
