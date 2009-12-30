@@ -5,7 +5,8 @@ function themekey_user_themekey_properties() {
   // Attributes for properties
   $attributes = array();
   $attributes['user:hostname'] = array(
-    'description' => t('User: Hostname'), // TODO
+    'description' => t("User: Hostname - The user hostname property which is the IP address of client machine, adjusted for reverse proxy. Text from Drupal bootstrap.inc: 
+      If Drupal is behind a reverse proxy, we use the X-Forwarded-For header instead of \$_SERVER['REMOTE_ADDR'], which would be the IP address of the proxy server, and not the client's."), 
     'validator' => 'themekey_validator_http_host',
   );
   $attributes['user:language'] = array(
