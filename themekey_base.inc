@@ -1,12 +1,31 @@
 <?php
 // $Id$
 
+/**
+ * @file
+ * The functions in this file are the back end of ThemeKey.
+ *
+ * @author Markus Kalkbrenner | Cocomore AG
+ *   @see http://drupal.org/user/124705
+ *
+ * @author profix898
+ *   @see http://drupal.org/user/35192
+ */
+
 define('PATH_MAX_PARTS', 10);
 
+
 /**
- * Function _themekey_invoke_modules().
+ * Invokes a hook on all modules stored in the global
+ * variable 'themekey_modules'
+ *
+ * @param $hook
+ *   name of the hook as string
+ *
+ * @return
+ *   mixed output of all hooks
  */
-function _themekey_invoke_modules($hook) {
+function themekey_invoke_modules($hook) {
   $return = array();
   foreach (variable_get('themekey_modules', array('themekey.node')) as $module) {
     if (is_readable(drupal_get_path('module', 'themekey') .'/modules/'. $module .'.inc')) {
@@ -21,10 +40,18 @@ function _themekey_invoke_modules($hook) {
   return $return;
 }
 
+
 /**
- * Function _themekey_get_path_ancestors().
+ * Creates all variants / ancestors of a given path
+ * describing this path with unnamed wildcards.
+ *
+ * @param $path
+ *   path as string
+ *
+ * @return
+ *   an array of all path variants / ancestors
  */
-function _themekey_get_path_ancestors($path) {
+function themekey_get_path_ancestors($path) {
   static $path_ancestors = array();
 
   if (empty($path_ancestors[$path])) {
@@ -41,6 +68,16 @@ function _themekey_get_path_ancestors($path) {
   return $path_ancestors[$path];
 }
 
+
+/**
+ * Helper function of @see themekey_get_path_ancestors()
+ *
+ * @param $path
+ *   path as string
+ *
+ * @return
+ *   an array of all path variants / ancestors
+ */
 function themekey_add_path_ancestors($path) {
   $ancestors = array();
   $parts = explode('/', $path, PATH_MAX_PARTS);
@@ -65,16 +102,22 @@ function themekey_add_path_ancestors($path) {
   return array_unique($ancestors);
 }
 
+
 /**
- * Function _themekey_match_paths().
+ * Assigns global parameters' values to ThemeKey properties.
+ * Therefor it calls hook_themekey_global()
+ *
+ * @return
+ *   associative array containing some
+ *   ThemeKey properties and their values
  */
-function _themekey_get_global_parameters() {
+function themekey_get_global_parameters() {
   static $global_parameters = NULL;
 
   if (is_null($global_parameters)) {
     $global_parameters = module_invoke_all('themekey_global');
 
-    list($ancestors, $placeholders) = _themekey_get_path_ancestors($_GET['q']);
+    list($ancestors, $placeholders) = themekey_get_path_ancestors($_GET['q']);
 
     // TODO don't store paths in database. mayby use a variable.
     $result = db_query('SELECT * FROM {themekey_paths} WHERE path IN ('. implode(',', $placeholders) .') ORDER BY fit DESC, weight DESC', $ancestors);
@@ -97,21 +140,32 @@ function _themekey_get_global_parameters() {
 }
 
 /**
- * Function _themekey_match_properties().
+ * This function steps through
+ * the rule chain and returns a theme.
+ *
+ * @return
+ *   a theme as string or NULL
  */
-function _themekey_match_properties() {
-  $parameters = _themekey_get_global_parameters();
+function themekey_match_properties() {
+  $parameters = themekey_get_global_parameters();
 
   return themekey_match_property_childs($parameters);
 }
 
 /**
+ * Helper function of @see themekey_match_properties()
  *
- * @param mixed $parameters
- * @param int $parent
- * @return NULL in case of an error
- *         string name of the theme
- *         FALSE if no more child prperties in the chain
+ * @param $parameters
+ *   reference to an array containing all
+ *   ThemeKey properties an their values
+ *
+ * @param $parent
+ *   id of parent rule
+ *
+ * @return
+ *   NULL in case of an error
+ *   string name of the theme
+ *   FALSE if no more child prperties in the chain
  */
 function themekey_match_property_childs(&$parameters, $parent = 0) {
   static $child_lookups = array();
@@ -126,7 +180,7 @@ function themekey_match_property_childs(&$parameters, $parent = 0) {
 
     while ($item = db_fetch_array($result)) {
       $num_childs++;
-      if (_themekey_match_condition($item, $parameters)) {
+      if (themekey_match_condition($item, $parameters)) {
         if ('drupal:path' == $item['property']) {
           $wildcards = unserialize($item['wildcards']);
           if (!empty($wildcards)) {
@@ -145,7 +199,7 @@ function themekey_match_property_childs(&$parameters, $parent = 0) {
         $child_lookups[$parent] = themekey_match_property_childs($parameters, $item['id']);
 
         if (FALSE === $child_lookups[$parent]) {
-          if (!_themekey_check_theme_enabled($item['theme'])) {
+          if (!themekey_check_theme_enabled($item['theme'])) {
             continue;
           }
 
@@ -168,17 +222,32 @@ function themekey_match_property_childs(&$parameters, $parent = 0) {
   return $child_lookups[$parent];
 }
 
+
 /**
- * Function _themekey_match_condition().
+ * Detects if a ThemeKey rule matches to the current
+ * page request.
+ *
+ * @param $condition
+ *   ThemeKey rule as associative array:
+ *   - property
+ *   - operator
+ *   - value
+ *
+ * @param $parameters
+ *   reference to an array containing all
+ *   ThemeKey properties an their values
+ *
+ * @return
+ *   boolean
  */
-function _themekey_match_condition($condition, &$parameters) {
+function themekey_match_condition($condition, &$parameters) {
   if (is_array($condition) && count($condition)) {
     // Default operator is 'equal'
     if (empty($condition['operator'])) {
       $condition['operator'] = '=';
     }
 
-    $value = _themekey_property_value($parameters, $condition['property']);
+    $value = themekey_property_value($parameters, $condition['property']);
 
     if (!is_array($value)) {
       $value = array($value);
@@ -232,14 +301,29 @@ function _themekey_match_condition($condition, &$parameters) {
     }
   }
   else {
-    trigger_error(t('Function _themekey_match_condition() called with illegal parameters'), E_USER_ERROR);
+    trigger_error(t('Function themekey_match_condition() called with illegal parameters'), E_USER_ERROR);
   }
 }
 
+
 /**
- * Function _themekey_property_value().
+ * Detects if a ThemeKey property's value for the current
+ * page request.
+ *
+ * @param $parameters
+ *   reference to an array containing all
+ *   ThemeKey properties an their values
+ *
+ * @param $property
+ *   the name of the property as string
+ *
+ * @return
+ *   The value of the property:
+ *   - string i it's a single value
+ *   - array of strings if there're multiple values
+ *   - NULL if no value
  */
-function _themekey_property_value(&$parameters, $property) {
+function themekey_property_value(&$parameters, $property) {
 
   // TODO Warning if property is not part of variable_get('themekey_attributes')
 
@@ -266,7 +350,7 @@ function _themekey_property_value(&$parameters, $property) {
 
   if (is_null($parameters[$property]) && !empty($src_candidates)) {
     foreach ($src_candidates as $pos => $src) {
-      $return = _themekey_property_value($parameters, $src);
+      $return = themekey_property_value($parameters, $src);
       if ($return) {
         $map_func = $maps[$pos]['callback'];
         $parameters[$property] = $map_func($return, $parameters);
@@ -279,7 +363,22 @@ function _themekey_property_value(&$parameters, $property) {
 }
 
 
-function _themekey_check_theme_enabled($theme, $settings_page = FALSE) {
+/**
+ * Checks if a theme is enabled and fires warning messages
+ * to the site's administrator
+ *
+ * @param $theme
+ *   name of the theme as string
+ *
+ * @param $settings_page
+ *   boolean that indicates if the function
+ *   is called from ThemeKey's administration
+ *   backend which causes a different message
+ *
+ * @return
+ *   TRUE if the theme is enabled, otherwise FALSE
+ */
+function themekey_check_theme_enabled($theme, $settings_page = FALSE) {
   static $themes_enabled = array();
   static $warned = FALSE;
   static $displayed_error = FALSE;

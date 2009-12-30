@@ -7,6 +7,7 @@
  * 'URL aliases' administration if module "Path" is enabled.
  *
  * @see themekey_ui.module
+ * @see themekey_ui_admin.inc
  *
  * @author Markus Kalkbrenner | Cocomore AG
  *   @see http://drupal.org/user/124705
@@ -18,7 +19,7 @@
 require_once(drupal_get_path('module', 'themekey') .'/themekey_build.inc');
 
 /**
- * Returns a theme assigned to a drupal path using
+ * Returns a theme assigned to a drupal path alias using
  * a ThemeKey Theme Switching Rule which is not part of a chain
  *
  * @param $path
@@ -45,7 +46,20 @@ function themekey_ui_get_path_theme($path) {
 
 
 /**
- * Function themekey_ui_set_path_theme().
+ * Saves a theme assigned to a path alias as
+ * ThemeKey rule
+ *
+ * @see themekey_property_set()
+ *
+ * @param $path
+ *   drupa path alias as string
+ *
+ * @param $theme
+ *   assigned drupal theme as string
+ *
+ * @param $id
+ *   the id of an existing rule if this
+ *   one should be modified
  */
 function themekey_ui_set_path_theme($path, $theme = 'default', $id = 0) {
   $item = array(
@@ -59,12 +73,18 @@ function themekey_ui_set_path_theme($path, $theme = 'default', $id = 0) {
     $item['id'] = $id;
   }
 
-  _themekey_properties_set($item);
+  themekey_property_set($item);
 }
 
+
 /**
- * Function themekey_ui_del_path_theme().
+ * Deletes a ThemeKey rule.
+ *
+ * @see themekey_properties_del()
+ *
+ * @param $id
+ *   the id of an existing rule
  */
 function themekey_ui_del_path_theme($id) {
-  return _themekey_properties_del($id);
+  return themekey_property_del($id);
 }

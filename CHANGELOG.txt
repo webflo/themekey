@@ -7,8 +7,8 @@ ThemeKey 6.x-2.0-beta4, 2009-xx-xx
 [       ] mkalkbrenner: improved validators and documented validators in source code
 [       ] mkalkbrenner: applied "coder" and fixed warnings
 [       ] mkalkbrenner: commented more source code
-[#669994] mkalkbrenner: wrong detection of "identical theme switching rules in the chain"
 [       ] mkalkbrenner: cleaned up code and API
+[#669994] mkalkbrenner: wrong detection of "identical theme switching rules in the chain"
 [       ] mkalkbrenner: themekey_ui_get_path_theme() should only return themes assigened to rules without children
 [       ] mkalkbrenner: lock table to prevent race condition in function themekey_properties_del()
 [#670086] mkalkbrenner: ThemeKey UI: Unable to set differnt themes for differnt path aliases

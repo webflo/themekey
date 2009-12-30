@@ -2,6 +2,15 @@
 // $Id$
 
 /**
+ * @file
+ * Database schema of @see themekey_ui.module
+ *
+ * @author Markus Kalkbrenner | Cocomore AG
+ *   @see http://drupal.org/user/124705
+ */
+
+
+/**
  * Implementation of hook_schema().
  */
 function themekey_ui_schema() {
@@ -30,12 +39,14 @@ function themekey_ui_schema() {
   return $schema;
 }
 
+
 /**
  * Implementation of hook_install().
  */
 function themekey_ui_install() {
   drupal_install_schema('themekey_ui');
 }
+
 
 /**
  * Implementation of hook_uninstall().

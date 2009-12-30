@@ -296,7 +296,7 @@ function themekey_update_6200() {
  */
 function themekey_update_6201() {
   // Don't rebuild anymore when themekey_update_6202() will run
-  //_themekey_rebuild();
+  //themekey_rebuild();
   return array();
 }
 
@@ -350,7 +350,7 @@ function themekey_update_6202() {
  * Implementation of hook_update_N().
  */
 function themekey_update_6203() {
-  // calling _themekey_rebuild() at this point will cause an error because
+  // calling themekey_rebuild() at this point will cause an error because
   // modified schema is not yet populated
   // therefor we show a message
   drupal_set_message(t("ThemeKey won't work correctly until you click 'Save configuration' at !settings_link", array('!settings_link' => l(t("ThemeKey settings"), 'admin/settings/themekey/settings'))), 'error');

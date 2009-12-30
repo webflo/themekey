@@ -16,7 +16,7 @@ function themekey_properties_form() {
     drupal_goto('admin/settings/themekey/settings');
   }
 
-  $themes = _themekey_theme_options();
+  $themes = themekey_theme_options();
   $attributes = variable_get('themekey_attributes', array());
   $operators = array(
     '=' => '=',
@@ -72,7 +72,7 @@ Supported operators are "=" (equal), "!" (not equal), "<" (smaller), ">" (greate
     );
   }
 
-  $items = _themekey_load_properties();
+  $items = themekey_load_properties();
   $parent_options = array_merge(array(0), array_keys($items));
   $parent_options = array_combine($parent_options, $parent_options);
   foreach ($items as $item) {
@@ -233,7 +233,7 @@ function themekey_form_alter(&$form, $form_state, $form_id) {
     if (!empty($form['old_items'])) {
       foreach ($form['old_items'] as $key_1 => $value_1) {
         if ($value_1['enabled']['#default_value']) {
-          if (!_themekey_check_theme_enabled($value_1['theme']['#default_value'])) {
+          if (!themekey_check_theme_enabled($value_1['theme']['#default_value'])) {
             themekey_properties_form_set_error($form, $key_1, 'theme', t('Theme is not activated'));
           }
 
@@ -373,7 +373,7 @@ function themekey_properties_form_submit($form, &$form_state) {
 
       unset($item['wildcard']);
 
-      _themekey_properties_set($item);
+      themekey_property_set($item);
     }
   }
 
@@ -389,7 +389,7 @@ function themekey_properties_form_submit($form, &$form_state) {
 
     unset($item['wildcard']);
 
-    _themekey_properties_set($item);
+    themekey_property_set($item);
   }
 
   drupal_set_message(t('The configuration options have been saved.'));
@@ -401,7 +401,7 @@ function themekey_properties_form_submit($form, &$form_state) {
 function _themekey_settings_form() {
   // REVIEW rebuild is called to many times
   // REVIEW isn't there a better place for this?
-  _themekey_rebuild();
+  themekey_rebuild();
 
   $form['settings'] = array(
     '#type' => 'fieldset',
@@ -660,7 +660,7 @@ function themekey_admin_delete_property_confirm(&$form_state, $arg, $themekey_pr
  */
 function themekey_admin_delete_property_confirm_submit($form, &$form_state) {
   if ($form_state['values']['confirm']) {
-    _themekey_properties_del($form_state['values']['themekey_property_id']);
+    themekey_property_del($form_state['values']['themekey_property_id']);
   }
 
   $form_state['redirect'] = 'admin/settings/themekey/properties';

@@ -38,7 +38,7 @@ function themekey_system_themekey_global() {
   $parameters = array();
   $parameters['system:host'] = $_SERVER['HTTP_HOST'];
 
-  list($ancestors, $placeholders) = _themekey_get_path_ancestors($_GET['q']);
+  list($ancestors, $placeholders) = themekey_get_path_ancestors($_GET['q']);
   foreach ($ancestors as $ancestor) {
     $parameters['drupal:path'][] = $ancestor;
   }
@@ -61,7 +61,7 @@ function themekey_system_themekey_global() {
     if ($alias_uri != $_GET['q']) {
       $parameters['internal:alias_uri'] = $alias_uri;
 
-      list($ancestors, $placeholders) = _themekey_get_path_ancestors($alias_uri);
+      list($ancestors, $placeholders) = themekey_get_path_ancestors($alias_uri);
       foreach ($ancestors as $ancestor) {
         $parameters['drupal:path'][] = $parameters['internal:path_alias'][] = $ancestor;
       }

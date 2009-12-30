@@ -2,11 +2,30 @@
 // $Id$
 
 /**
+ * @file
+ * ThemeKey UI is an extension for ThemeKey
+ *
+ * ThemeKey UI adds a form element to node create and edit forms
+ * to assign a theme to a node.
+ *
+ * ThemeKey UI adds a theme option to the 'URL aliases' administration
+ * if module "Path" is enabled.
+ *
+ * @see themekey.module
+ *
+ * @author Markus Kalkbrenner | Cocomore AG
+ *   @see http://drupal.org/user/124705
+ *
+ * @author profix898
+ *   @see http://drupal.org/user/35192
+ */
+
+
+/**
  * Implementation of hook_themekey_properties()
  *
  * Provides additional properties for module ThemeKey:
- *   taxonomy:theme_by_vocabulary
- *   taxonomy:theme_by_term
+ *   themekey_ui:node_triggers_theme
  *
  * @return
  *   array of themekey properties
@@ -22,7 +41,6 @@ function themekey_ui_themekey_properties() {
     'static' => TRUE,
   );
 
-
   // Mapping functions
   $maps = array();
 
@@ -34,11 +52,25 @@ function themekey_ui_themekey_properties() {
 }
 
 
+/**
+ * This function implements the interface of a ThemeKey
+ * mapping function but doesn't set a ThemeKey property's
+ * value. It sets the global variable $custom_theme to a
+ * theme directly which will cause ThemeKey to use this
+ * theme.
+ *
+ * @param $nid
+ *   a node id, current value of ThemeKey property node:nid
+ *
+ * @return
+ *   string "static" if global custom theme has been set
+ *   or NULL if no theme has been assigned to the node
+ */
 function themekey_ui_nid2theme($nid) {
   global $custom_theme;
 
   if ($node = node_load($nid)) {
-    if (!empty($node->theme) && _themekey_check_theme_enabled($node->theme)) {
+    if (!empty($node->theme) && themekey_check_theme_enabled($node->theme)) {
       $custom_theme = $node->theme;
       return 'static';
     }
@@ -59,12 +91,14 @@ function themekey_ui_theme() {
   );
 }
 
+
 /**
  * Implementation of hook_perm().
  */
 function themekey_ui_perm() {
   return array('assign node themes');
 }
+
 
 /**
  * Implementation of hook_menu().
@@ -77,13 +111,14 @@ function themekey_ui_menu() {
     'access arguments' => array('administer themekey settings'),
     'file' => 'themekey_ui_admin.inc',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('_themekey_ui_settings_form'),
+    'page arguments' => array('themekey_ui_settings_form'),
     'type' => MENU_LOCAL_TASK,
     'weight' => 1
   );
 
   return $items;
 }
+
 
 /**
  * Implementation of hook_form_alter().
@@ -94,13 +129,13 @@ function themekey_ui_form_alter(&$form, $form_state, $form_id) {
     $type = isset($form['type']['#value']) ? $form['type']['#value'] : FALSE;
     if ($form_id == $type .'_node_form' && variable_get('themekey_ui_nodeform|'. $type, 1)) {
       require_once(drupal_get_path('module', 'themekey_ui') .'/themekey_ui_admin.inc');
-      _themekey_ui_nodeform($form, $form_state);
+      themekey_ui_nodeform($form, $form_state);
     }
   }
   // Path aliases
   if ($form_id == 'path_admin_form' && variable_get('themekey_ui_pathalias', 0)) {
     require_once(drupal_get_path('module', 'themekey_ui') .'/themekey_ui_admin.inc');
-    _themekey_ui_pathalias($form, $form_state);
+    themekey_ui_pathalias($form, $form_state);
   }
 // REVIEW seems to be dead code
 //  // Views
@@ -110,6 +145,7 @@ function themekey_ui_form_alter(&$form, $form_state, $form_id) {
 //    _themekey_ui_views($form, $form_state);
 //  }
 }
+
 
 /**
  * Implementation of hook_nodeapi().
@@ -151,18 +187,5 @@ function themekey_ui_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
     case 'delete':
       db_query('DELETE FROM {themekey_ui_node_theme} WHERE nid = %d', $node->nid);
       break;
-  }
-}
-
-/**
- * Function themekey_ui_form_submit().
- */
-function themekey_ui_form_submit($form, &$form_state) {
-  if (isset($form_state['values']['themekey_ui_submit'])) {
-    require_once(drupal_get_path('module', 'themekey_ui') .'/themekey_ui_admin.inc');
-    $handler = $form_state['values']['themekey_ui_submit'];
-    if (function_exists($handler)) {
-      $handler($form, $form_state);
-    }
   }
 }

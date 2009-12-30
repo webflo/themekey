@@ -1,12 +1,30 @@
 <?php
 // $Id$
 
+/**
+ * @file
+ * Adds options to ThemeKey's adminstration back end and alters drupal forms
+ * to add theme select boxes.
+ *
+ * @see themekey_ui.module
+ *
+ * @author Markus Kalkbrenner | Cocomore AG
+ *   @see http://drupal.org/user/124705
+ *
+ * @author profix898
+ *   @see http://drupal.org/user/35192
+ */
+
 require_once(drupal_get_path('module', 'themekey_ui') .'/themekey_ui_helper.inc');
 
 /**
- * Function _themekey_ui_settings_form().
+ * ThemeKey UI settings form
+ *
+ * @see themekey_ui_settings_form_submit()
+ *
+ * @ingroup forms
  */
-function _themekey_ui_settings_form() {
+function themekey_ui_settings_form() {
   $form['themekey_ui'] = array(
     '#type' => 'fieldset',
     '#title' => t('UI Settings'),
@@ -58,10 +76,13 @@ function _themekey_ui_settings_form() {
   return $form;
 }
 
+
 /**
- * Function _themekey_ui_settings_form_submit().
+ * Form submission handler for themekey_ui_settings_form().
+ *
+ * @see themekey_ui_settings_form()
  */
-function _themekey_ui_settings_form_submit($form, &$form_state) {
+function themekey_ui_settings_form_submit($form, &$form_state) {
   //
   foreach ($form_state['values'] as $key => $value) {
     $pos = strpos($key, 'themekey_ui_');
@@ -77,9 +98,13 @@ function _themekey_ui_settings_form_submit($form, &$form_state) {
 
 
 /**
- * Function _themekey_ui_nodeform().
+ * Adds theme select box to node create and edit form
+ *
+ * @see node_form()
+ *
+ * @ingroup forms
  */
-function _themekey_ui_nodeform(&$form, &$form_state) {
+function themekey_ui_nodeform(&$form, &$form_state) {
   $theme = !empty($form['#node']->theme) ? $form['#node']->theme : 'default';
 
   $form['nodeform_theme'] = array(
@@ -92,19 +117,25 @@ function _themekey_ui_nodeform(&$form, &$form_state) {
   $form['nodeform_theme']['theme'] = array(
     '#type' => 'select',
     '#default_value' => $theme,
-    '#options' => _themekey_theme_options(),
+    '#options' => themekey_theme_options(),
     '#description' => t('Theme to be assigned to current node. If you select "System Default" ThemeKey applies his rules for paths and properties.'),
   );
 
-  if (!_themekey_check_theme_enabled($theme, TRUE)) {
+  if (!themekey_check_theme_enabled($theme, TRUE)) {
     $form['nodeform_theme']['theme']['#attributes'] = array('class' => 'error');
   }
 }
 
+
 /**
- * Function _themekey_ui_pathalias().
+ * Adds theme select box to url alias form
+ *
+ * @see path_admin_form()
+ * @see themekey_ui_pathalias_submit()
+ *
+ * @ingroup forms
  */
-function _themekey_ui_pathalias(&$form, &$form_state) {
+function themekey_ui_pathalias(&$form, &$form_state) {
   if (!isset($form['#alias'])) {
     return;
   }
@@ -115,7 +146,7 @@ function _themekey_ui_pathalias(&$form, &$form_state) {
     '#type' => 'select',
     '#title' => t('Theme'),
     '#default_value' => $theme,
-    '#options' => _themekey_theme_options(),
+    '#options' => themekey_theme_options(),
     '#description' => t('Theme to be assigned to current path'),
   );
   $pathalias_form['pathalias_theme']['themekey_property_id'] = array(
@@ -123,13 +154,16 @@ function _themekey_ui_pathalias(&$form, &$form_state) {
     '#value' => $id,
   );
   array_splice($form, 4, 0, $pathalias_form);
-  array_unshift($form['#submit'], '_themekey_ui_pathalias_submit');
+  array_unshift($form['#submit'], 'themekey_ui_pathalias_submit');
 }
 
+
 /**
- * Function _themekey_ui_pathalias_submit().
+ * Form submission handler for themekey_ui_pathalias().
+ *
+ * @see themekey_ui_pathalias()
  */
-function _themekey_ui_pathalias_submit($form, &$form_state) {
+function themekey_ui_pathalias_submit($form, &$form_state) {
   if ((empty($form_state['values']['theme']) || 'default' == $form_state['values']['theme']) && $form_state['values']['themekey_property_id']) {
     themekey_ui_del_path_theme($form_state['values']['themekey_property_id']);
   }
@@ -138,8 +172,15 @@ function _themekey_ui_pathalias_submit($form, &$form_state) {
   }
 }
 
+
 /**
- * Function theme_themekey_ui_table().
+ * Formats a table with checkboxes used by ThemeKey UI settings form.
+ *
+ * @param $form
+ *   array() containing form elements to be
+ *   formatted as table
+ *
+ * @ingroup themeable
  */
 function theme_themekey_ui_table($form) {
   $header = isset($form['#header']) ? $form['#header'] : array();

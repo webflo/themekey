@@ -96,7 +96,7 @@ function themekey_menu() {
  */
 function themekey_themekey_properties() {
   require_once(drupal_get_path('module', 'themekey') .'/themekey_build.inc');
-  return _themekey_invoke_modules('themekey_properties');
+  return themekey_invoke_modules('themekey_properties');
 }
 
 
@@ -105,7 +105,7 @@ function themekey_themekey_properties() {
  */
 function themekey_themekey_global() {
   require_once(drupal_get_path('module', 'themekey') .'/themekey_build.inc');
-  return _themekey_invoke_modules('themekey_global');
+  return themekey_invoke_modules('themekey_global');
 }
 
 
@@ -114,12 +114,16 @@ function themekey_themekey_global() {
  */
 function themekey_themekey_paths() {
   require_once(drupal_get_path('module', 'themekey') .'/themekey_build.inc');
-  return _themekey_invoke_modules('themekey_paths');
+  return themekey_invoke_modules('themekey_paths');
 }
 
 
 /**
  * Implementation of hook_init().
+ *
+ * Here happens all the magic of ThemeKey.
+ * ThemeKey detects if any Theme Switching Rule matches
+ * the current request and sets the global variable $custom_theme.
  */
 function themekey_init() {
   global $custom_theme;
@@ -127,7 +131,7 @@ function themekey_init() {
   // don't change theme when another module already set a $custom_theme like system.module does (administration theme)
   // don't change theme when administer blocks
   if (!$custom_theme && strpos($_GET['q'], 'admin/build/block') !== 0) {
-    $theme = _themekey_match_properties();
+    $theme = themekey_match_properties();
 
     // If no theme has been triggered but a theme
     // is in the user's session, use that theme.

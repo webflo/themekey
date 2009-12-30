@@ -2,9 +2,36 @@
 // $Id$
 
 /**
- * Function _themekey_theme_options().
+ * @file
+ * The functions in this file are the back end of ThemeKey which should be
+ * used only if you configure something but not when ThemeKey switches themes.
+ *
+ * @author Markus Kalkbrenner | Cocomore AG
+ *   @see http://drupal.org/user/124705
+ *
+ * @author profix898
+ *   @see http://drupal.org/user/35192
  */
-function _themekey_theme_options($default = TRUE) {
+
+
+/**
+ * Creates options array for a theme select box.
+ *
+ * Example:
+ *   $form['theme'] = array(
+ *     '#type' => 'select',
+ *     '#title' => t('Theme'),
+ *     '#options' => themekey_theme_options(),
+ *   );
+ *
+ * @param $default
+ *   Boolean to indicate if options array hould contain
+ *   'System default' theme. Default is TRUE
+ *
+ * @return
+ *   options array for a theme select box
+ */
+function themekey_theme_options($default = TRUE) {
   $themes = list_themes();
   ksort($themes);
 
@@ -21,12 +48,16 @@ function _themekey_theme_options($default = TRUE) {
   return $options_themes;
 }
 
+
 /**
- * Function _themekey_rebuild().
+ * Rebuilds all ThemeKey related drupal variables
+ * by calling ThemeKey's hooks:
+ * - hook_themekey_properties()
+ * - hook_themekey_paths()
  */
-function _themekey_rebuild() {
-  // Create a list of modules in the /modules subfolder (internal modules)
-  _themekey_scan_modules();
+function themekey_rebuild() {
+  // includes all modules in the themekey/modules subfolder (internal modules)
+  themekey_scan_modules();
 
   // Get property definitions (from internal and other modules)
   $properties = module_invoke_all('themekey_properties');
@@ -58,21 +89,28 @@ function _themekey_rebuild() {
   // Get (and register) paths from themekey modules
   $paths = module_invoke_all('themekey_paths');
   foreach ($paths as $item) {
-    _themekey_path_set($item);
+    themekey_path_set($item);
     if (isset($item['id'])) {
       unset($obsolete_paths[$item['id']]);
     }
   }
   // Unregister obsolete paths
   foreach (array_keys($obsolete_paths) as $id) {
-    _themekey_path_del($id);
+    themekey_path_del($id);
   }
 }
 
+
 /**
- * Function _themekey_scan_modules().
+ * Scans directory themekey/modules for suitable files
+ * which provide ThemeKey properties mapping function and so on
+ * and stores the file names for later usage in a drupal variable
+ * called 'themekey_modules'.
+ *
+ * @see themekey_rebuild()
+ * @see themekey_invoke_modules()
  */
-function _themekey_scan_modules() {
+function themekey_scan_modules() {
   $modules = array();
   $files = file_scan_directory(drupal_get_path('module', 'themekey') .'/modules', '\themekey.[a-z]+.inc$');
   foreach ($files as $file) {
@@ -85,21 +123,25 @@ function _themekey_scan_modules() {
   variable_set('themekey_modules', $modules);
 }
 
-/**
- * Function _themekey_include_modules().
- */
-function _themekey_include_modules() {
-  foreach (variable_get('themekey_modules', array('themekey.node')) as $module) {
-    if (is_readable(drupal_get_path('module', 'themekey') .'/modules/'. $module .'.inc')) {
-      require_once(drupal_get_path('module', 'themekey') .'/modules/'. $module .'.inc');
-    }
-  }
-}
-
-/* Path-based */
 
 /**
- * Function themekey_complete_path().
+ * Named wildcards in ThemeKey rules based on property
+ * drupal:path are stored as serialized array in the database.
+ *
+ * This function deserializes those wildcards and inject them back
+ * into the value of the rule. This format is needed by ThemeKey's
+ * administartion interface.
+ *
+ * It's the counterpart of these functions:
+ * @see themekey_prepare_path().
+ * @see themekey_prepare_custom_path().
+ *
+ * @see themekey_load_properties()
+ *
+ * @param $item
+ *   reference to an associative array
+ *   containing a ThemeKey rule as returned
+ *   directly from database
  */
 function themekey_complete_path(&$item) {
   $item['wildcards'] = unserialize($item['wildcards']);
@@ -112,29 +154,55 @@ function themekey_complete_path(&$item) {
   }
 }
 
+
 /**
- * Function _themekey_path_set().
+ * Stores ThemeKey paths created by modules
+ * via hook_themekey_paths() in database.
+ *
+ * @see themekey_rebuild()
+ *
+ * @param $item
+ *   reference to an associative array
+ *   containing a ThemeKey path structure
  */
-function _themekey_path_set(&$item) {
+function themekey_path_set(&$item) {
   $item['callbacks'] = (isset($item['callbacks']) && !empty($item['callbacks'])) ? $item['callbacks'] : array();
 
-  list($item['fit'], $item['weight'], $item['wildcards']) = _themekey_prepare_path($item['path']);
+  list($item['fit'], $item['weight'], $item['wildcards']) = themekey_prepare_path($item['path']);
 
   drupal_write_record('themekey_paths', $item, isset($item['id']) ? 'id' : array());
 }
 
+
 /**
- * Function _themekey_path_del().
+ * Deletes a ThemeKey paths formally created by
+ * modules via hook_themekey_paths() from database.
+ *
+ * @see themekey_rebuild()
+ *
+ * @param $id
+ *   the id of a ThemeKey path
  */
-function _themekey_path_del($id) {
+function themekey_path_del($id) {
   db_query('DELETE FROM {themekey_paths} WHERE id = %d', $id);
 }
 
+
 /**
- * Function _themekey_prepare_path().
- * (based on _menu_router_build() in includes/menu.inc)
+ * Extracts named wildcards from ThemeKey paths returned
+ * by modules via hook_themekey_paths() and associates a
+ * weight and a fit factor to this path.
+ *
+ * @param $item
+ *   reference to path as string
+ *
+ * @return
+ *   array containing three elements:
+ *   - fit as integer
+ *   - weight as integer
+ *   - named wildcards as array
  */
-function _themekey_prepare_path(&$path) {
+function themekey_prepare_path(&$path) {
   $fit = 0;
   $weight = 0;
   $wildcards = array();
@@ -160,9 +228,18 @@ function _themekey_prepare_path(&$path) {
   return array($fit, $weight, $wildcards);
 }
 
+
 /**
- * Function themekey_prepare_custom_path().
- * (based on _menu_router_build() in includes/menu.inc)
+ * Extracts named wildcards from paths entered as value
+ * in a ThemeKey rule with property drupal:path.
+ *
+ * @param $path
+ *   path as string
+ *
+ * @return
+ *   array containing two elements:
+ *   - path with unnamed wildcards
+ *   - named wildcards as array
  */
 function themekey_prepare_custom_path($path) {
   $wildcards = array();
@@ -181,10 +258,24 @@ function themekey_prepare_custom_path($path) {
   return array($path, $wildcards);
 }
 
+
 /**
- * Function _themekey_load_properties().
+ * Loads all ThemeKey Rules from the database.
+ * Therefor it uses a recursion to build the rule chains.
+ *
+ * @param $parent
+ *   id of the parent rule. Default is '0'.
+ *   During the recursion this parameter changes.
+ *
+ * @param $depth
+ *   Integer that represents the 'indention'
+ *   in current rule chain. Default is '0'.
+ *   During the recursion this parameter changes.
+ *
+ * @return
+ *   sorted array containing all ThemeKey rules
  */
-function _themekey_load_properties($parent = 0, $depth = 0) {
+function themekey_load_properties($parent = 0, $depth = 0) {
   static $properties = array();
   static $parent_lookups = array();
 
@@ -201,16 +292,32 @@ function _themekey_load_properties($parent = 0, $depth = 0) {
     }
     $item['depth'] = $depth;
     $properties[$item['id']] = $item;
-    _themekey_load_properties($item['id'], $depth + 1);
+    themekey_load_properties($item['id'], $depth + 1);
     $parent_lookups[$item['id']] = TRUE;
   }
   return $properties;
 }
 
+
 /**
- * Function _themekey_properties_set().
+ * Stores ThemeKey rules in database.
+ * It creates a new dataset or updates an existing one.
+ *
+ * @param $item
+ *   reference to an associative array
+ *   containing a ThemeKey rule structure:
+ *   - id
+ *   - property
+ *   - operator
+ *   - value
+ *   - weight
+ *   - theme
+ *   - enabled
+ *   - wildcards
+ *   - parent
+ *
  */
-function _themekey_properties_set(&$item) {
+function themekey_property_set(&$item) {
   if ('drupal:path' == $item['property']) {
     list($item['value'], $item['wildcards']) = themekey_prepare_custom_path($item['value']);
   }
@@ -232,10 +339,14 @@ function _themekey_properties_set(&$item) {
   }
 }
 
+
 /**
- * Function _themekey_properties_del().
+ * Deletes a ThemeKey rule from database.
+ *
+ * @param $id
+ *   id of the rule to be deleted from database
  */
-function _themekey_properties_del($id) {
+function themekey_property_del($id) {
   // lock table to prevent race condition
   db_lock_table('themekey_properties');
   $num_childs = db_result(db_query("SELECT COUNT(*) FROM {themekey_properties} WHERE parent = %d", $id));
@@ -257,6 +368,20 @@ function _themekey_properties_del($id) {
 }
 
 
+/**
+ * Adds or modifies a so called static property in the
+ * database. Static properties could be moved around in the chain
+ * and enabled or disabled by the site administrator but the values
+ * are immutable.
+ *
+ * @param $property
+ *   name of the static property as string
+ *
+ * @param $state
+ *   boolean:
+ *   - TRUE the rule should be created or updated
+ *   - FALSE the rule should be deleted
+ */
 function themekey_update_static_property($property, $state) {
   $id = db_result(db_query("SELECT id FROM {themekey_properties} WHERE property = '%s'", $property));
   if ($state) {
@@ -276,10 +401,10 @@ function themekey_update_static_property($property, $state) {
       $item['enabled'] = 1;
     }
 
-    _themekey_properties_set($item);
+    themekey_property_set($item);
   }
   elseif ($id) {
-    _themekey_properties_del($id);
+    themekey_property_del($id);
   }
 }
 
