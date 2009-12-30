@@ -5,7 +5,8 @@ function themekey_comment_themekey_properties() {
   // Attributes for properties
   $attributes = array();
   $attributes['comment:cid'] = array(
-    'description' => t('Comment: ID'),
+    'description' => t('Comment: ID - The id of a comment (cid). See !link for your published comments or !link_unpublished for comments awaiting approval', 
+      array('!link' => l('admin/content/comment', 'admin/content/comment'), '!link_unpublished' => l('admin/content/comment/approval', 'admin/content/comment/approval'))),
     'validator' => 'themekey_validator_ctype_digit',
   );
 

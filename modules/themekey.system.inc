@@ -5,7 +5,7 @@ function themekey_system_themekey_properties() {
   // Attributes for properties
   $attributes = array();
   $attributes['system:host'] = array(
-    'description' => t('System: HTTP_HOST'),
+    'description' => t('System: HTTP_HOST - The hostname/domain of the site without http:// or https://, like "www.drupal.org" or "drupal.cocomore.com"'),
     'validator' => 'themekey_validator_http_host',
   );
   $attributes['drupal:path'] = array(
@@ -24,7 +24,7 @@ You can then specify conditions for every wildcard argument using the following 
     'validator' => 'themekey_validator_no_whitespace',
   );
   $attributes['drupal:path:wildcard'] = array(
-    'description' => t('wildcard of drupal:path'),
+    'description' => t('wildcard of drupal:path'), // TODO DESCRIPTION
     'validator' => 'themekey_validator_wildcard',
   );
 

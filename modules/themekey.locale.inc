@@ -5,7 +5,8 @@ function themekey_locale_themekey_properties() {
   // Attributes for properties
   $attributes = array();
   $attributes['locale:language'] = array(
-    'description' => t('Locale: Language'),
+    'description' => t('Locale: Language - The code of the current site language, formatted like "en" or "de". See !link for your the codes of the enabled languages', 
+      array('!link' => l('admin/settings/language', 'admin/settings/language'))),
     'validator' => 'themekey_validator_language',
   );
 
