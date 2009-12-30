@@ -13,6 +13,7 @@ ThemeKey 6.x-2.0-beta4, 2009-xx-xx
 [       ] mkalkbrenner: lock table to prevent race condition in function themekey_properties_del()
 [#670086] mkalkbrenner: ThemeKey UI: Unable to set differnt themes for differnt path aliases
 [#301904] Carsten Müller: Meaning of propertys: added help texts for properties
+[       ] mkalkbrenner: always add new rules at the end of the chain
 
 
 ThemeKey 6.x-2.0-beta3, 2009-12-18

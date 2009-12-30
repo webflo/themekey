@@ -218,7 +218,18 @@ function _themekey_properties_set(&$item) {
     $item['wildcards'] = array();
   }
 
-  drupal_write_record('themekey_properties', $item, !empty($item['id']) ? 'id' : array());
+  if (empty($item['id'])) {
+    // new entry should be added at the end of the chain
+    db_lock_table('themekey_properties');
+    $weight = db_result(db_query("SELECT MAX(weight) FROM {themekey_properties}"));
+    // if query fails $weight will be FALSE which will cause $item['weight'] to be set to '1'
+    $item['weight'] = 1 + $weight;
+    drupal_write_record('themekey_properties', $item, array());
+    db_unlock_tables();
+  }
+  else {
+    drupal_write_record('themekey_properties', $item, 'id');
+  }
 }
 
 /**
