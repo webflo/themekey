@@ -136,7 +136,7 @@ function themekey_scan_modules() {
  * @see themekey_prepare_path().
  * @see themekey_prepare_custom_path().
  *
- * @see themekey_load_properties()
+ * @see themekey_load_rules()
  *
  * @param $item
  *   reference to an associative array
@@ -275,7 +275,7 @@ function themekey_prepare_custom_path($path) {
  * @return
  *   sorted array containing all ThemeKey rules
  */
-function themekey_load_properties($parent = 0, $depth = 0) {
+function themekey_load_rules($parent = 0, $depth = 0) {
   static $properties = array();
   static $parent_lookups = array();
 
@@ -292,7 +292,7 @@ function themekey_load_properties($parent = 0, $depth = 0) {
     }
     $item['depth'] = $depth;
     $properties[$item['id']] = $item;
-    themekey_load_properties($item['id'], $depth + 1);
+    themekey_load_rules($item['id'], $depth + 1);
     $parent_lookups[$item['id']] = TRUE;
   }
   return $properties;
@@ -317,7 +317,7 @@ function themekey_load_properties($parent = 0, $depth = 0) {
  *   - parent
  *
  */
-function themekey_property_set(&$item) {
+function themekey_rule_set(&$item) {
   if ('drupal:path' == $item['property']) {
     list($item['value'], $item['wildcards']) = themekey_prepare_custom_path($item['value']);
   }
@@ -346,7 +346,7 @@ function themekey_property_set(&$item) {
  * @param $id
  *   id of the rule to be deleted from database
  */
-function themekey_property_del($id) {
+function themekey_rule_del($id) {
   // lock table to prevent race condition
   db_lock_table('themekey_properties');
   $num_childs = db_result(db_query("SELECT COUNT(*) FROM {themekey_properties} WHERE parent = %d", $id));
@@ -369,10 +369,10 @@ function themekey_property_del($id) {
 
 
 /**
- * Adds or modifies a so called static property in the
- * database. Static properties could be moved around in the chain
+ * Adds or modifies a so called static rule in the
+ * database. Static rules could be moved around in the chain
  * and enabled or disabled by the site administrator but the values
- * are immutable.
+ * are immutable. There's one static rule per static property.
  *
  * @param $property
  *   name of the static property as string
@@ -382,7 +382,7 @@ function themekey_property_del($id) {
  *   - TRUE the rule should be created or updated
  *   - FALSE the rule should be deleted
  */
-function themekey_update_static_property($property, $state) {
+function themekey_update_static_rule($property, $state) {
   $id = db_result(db_query("SELECT id FROM {themekey_properties} WHERE property = '%s'", $property));
   if ($state) {
     $item = array(
@@ -401,10 +401,10 @@ function themekey_update_static_property($property, $state) {
       $item['enabled'] = 1;
     }
 
-    themekey_property_set($item);
+    themekey_rule_set($item);
   }
   elseif ($id) {
-    themekey_property_del($id);
+    themekey_rule_del($id);
   }
 }
 

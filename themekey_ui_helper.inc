@@ -49,7 +49,7 @@ function themekey_ui_get_path_theme($path) {
  * Saves a theme assigned to a path alias as
  * ThemeKey rule
  *
- * @see themekey_property_set()
+ * @see themekey_rule_set()
  *
  * @param $path
  *   drupa path alias as string
@@ -73,18 +73,18 @@ function themekey_ui_set_path_theme($path, $theme = 'default', $id = 0) {
     $item['id'] = $id;
   }
 
-  themekey_property_set($item);
+  themekey_rule_set($item);
 }
 
 
 /**
  * Deletes a ThemeKey rule.
  *
- * @see themekey_properties_del()
+ * @see themekey_rule_del()
  *
  * @param $id
  *   the id of an existing rule
  */
 function themekey_ui_del_path_theme($id) {
-  return themekey_property_del($id);
+  return themekey_rule_del($id);
 }

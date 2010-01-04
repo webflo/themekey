@@ -91,7 +91,7 @@ function themekey_ui_settings_form_submit($form, &$form_state) {
     }
   }
 
-  themekey_update_static_property('themekey_ui:node_triggers_theme', $form_state['values']['themekey_ui_nodeform']);
+  themekey_update_static_rule('themekey_ui:node_triggers_theme', $form_state['values']['themekey_ui_nodeform']);
 
   drupal_set_message(t('The configuration options have been saved.'));
 }

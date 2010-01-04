@@ -146,14 +146,14 @@ function themekey_get_global_parameters() {
  * @return
  *   a theme as string or NULL
  */
-function themekey_match_properties() {
+function themekey_match_rules() {
   $parameters = themekey_get_global_parameters();
 
-  return themekey_match_property_childs($parameters);
+  return themekey_match_rule_childs($parameters);
 }
 
 /**
- * Helper function of @see themekey_match_properties()
+ * Helper function of @see themekey_match_rules()
  *
  * @param $parameters
  *   reference to an array containing all
@@ -167,7 +167,7 @@ function themekey_match_properties() {
  *   string name of the theme
  *   FALSE if no more child prperties in the chain
  */
-function themekey_match_property_childs(&$parameters, $parent = 0) {
+function themekey_match_rule_childs(&$parameters, $parent = 0) {
   static $child_lookups = array();
 
   if (isset($child_lookups[$parent])) {
@@ -196,7 +196,7 @@ function themekey_match_property_childs(&$parameters, $parent = 0) {
           }
         }
 
-        $child_lookups[$parent] = themekey_match_property_childs($parameters, $item['id']);
+        $child_lookups[$parent] = themekey_match_rule_childs($parameters, $item['id']);
 
         if (FALSE === $child_lookups[$parent]) {
           if (!themekey_check_theme_enabled($item['theme'])) {

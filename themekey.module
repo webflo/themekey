@@ -26,7 +26,7 @@ require_once(drupal_get_path('module', 'themekey') .'/themekey_base.inc');
  */
 function themekey_theme() {
   $items = array(
-    'themekey_properties_form' => array(
+    'themekey_rule_chain_form' => array(
       'file' => 'themekey_admin.inc',
       'arguments' => array('form' => NULL),
     ),
@@ -55,7 +55,7 @@ function themekey_menu() {
     'access arguments' => array('administer theme assignments'),
     'file' => 'themekey_admin.inc',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('themekey_properties_form')
+    'page arguments' => array('themekey_rule_chain_form')
   );
   $items['admin/settings/themekey/properties'] = array(
     'title' => 'Theme Switching Rule Chain',
@@ -65,7 +65,7 @@ function themekey_menu() {
   $items['admin/settings/themekey/properties/delete'] = array(
     'title' => 'Delete ThemeKey Property',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('themekey_admin_delete_property_confirm', 1),
+    'page arguments' => array('themekey_admin_delete_rule_confirm', 1),
     'access callback' => 'user_access',
     'access arguments' => array('administer theme assignments'),
     'file' => 'themekey_admin.inc',
@@ -77,7 +77,7 @@ function themekey_menu() {
     'access arguments' => array('administer themekey settings'),
     'file' => 'themekey_admin.inc',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('_themekey_settings_form'),
+    'page arguments' => array('themekey_settings_form'),
     'type' => MENU_LOCAL_TASK,
     'weight' => 5
   );
@@ -131,7 +131,7 @@ function themekey_init() {
   // don't change theme when another module already set a $custom_theme like system.module does (administration theme)
   // don't change theme when administer blocks
   if (!$custom_theme && strpos($_GET['q'], 'admin/build/block') !== 0) {
-    $theme = themekey_match_properties();
+    $theme = themekey_match_rules();
 
     // If no theme has been triggered but a theme
     // is in the user's session, use that theme.

@@ -1,14 +1,37 @@
 <?php
 // $Id$
 
+/**
+ * @file
+ * Contains all form manipulations to required by ThemeKey.
+ *
+ *
+ * @author Markus Kalkbrenner | Cocomore AG
+ *   @see http://drupal.org/user/124705
+ *
+ * @author profix898
+ *   @see http://drupal.org/user/35192
+ */
+
 require_once(drupal_get_path('module', 'themekey') .'/themekey_build.inc');
 
-/**
- * Function _themekey_properties_form().
- */
-function themekey_properties_form() {
 
-  _themekey_admin_theme_warning();
+/**
+ * Form builder for the rule chain.
+ *
+ * The form will not be validated. All changes will be saved immediately.
+ * Validation will happen when the form displays the stored configuration.
+ * Otherwise all the drag'n'drop stuff will not work.
+ *
+ * @see themekey_form_alter()
+ * @see themekey_rule_chain_form_submit()
+ * @see themekey_rule_chain_form_set_error()
+ *
+ * @ingroup forms
+ */
+function themekey_rule_chain_form() {
+
+  themekey_admin_theme_warning();
 
   $properties = variable_get('themekey_properties', array());
 
@@ -72,7 +95,7 @@ Supported operators are "=" (equal), "!" (not equal), "<" (smaller), ">" (greate
     );
   }
 
-  $items = themekey_load_properties();
+  $items = themekey_load_rules();
   $parent_options = array_merge(array(0), array_keys($items));
   $parent_options = array_combine($parent_options, $parent_options);
   foreach ($items as $item) {
@@ -223,9 +246,20 @@ Supported operators are "=" (equal), "!" (not equal), "<" (smaller), ">" (greate
   return $form;
 }
 
-// validate after submit and disable rule in database. otherwise all drag and drop stuff is lost in case of an error
+
+/**
+ * Implementation of hook_form_alter()
+ *
+ * Alters @see themekey_rule_chain_form().
+
+ * Validation will happen here when the form displays the stored configuration.
+ * Otherwise all the drag'n'drop stuff will not work.
+ *
+ * @see themekey_rule_chain_form()
+ * @see themekey_rule_chain_form_set_error()
+ */
 function themekey_form_alter(&$form, $form_state, $form_id) {
-  if ('themekey_properties_form' == $form_id && empty($form_state['post'])) {
+  if ('themekey_rule_chain_form' == $form_id && empty($form_state['post'])) {
     require_once(drupal_get_path('module', 'themekey') .'/themekey_validators.inc');
 
     $attributes = variable_get('themekey_attributes', array());
@@ -234,11 +268,11 @@ function themekey_form_alter(&$form, $form_state, $form_id) {
       foreach ($form['old_items'] as $key_1 => $value_1) {
         if ($value_1['enabled']['#default_value']) {
           if (!themekey_check_theme_enabled($value_1['theme']['#default_value'])) {
-            themekey_properties_form_set_error($form, $key_1, 'theme', t('Theme is not activated'));
+            themekey_rule_chain_form_set_error($form, $key_1, 'theme', t('Theme is not activated'));
           }
 
           if (0 == strlen($value_1['value']['#default_value'])) {
-            themekey_properties_form_set_error($form, $key_1, 'value', t('You must enter a value'));
+            themekey_rule_chain_form_set_error($form, $key_1, 'value', t('You must enter a value'));
           }
           elseif (!empty($attributes[$value_1['property']['#default_value']]['validator'])) {
             //validate rule with custom validator
@@ -252,11 +286,11 @@ function themekey_form_alter(&$form, $form_state, $form_id) {
               );
               $errors = $validator($rule);
               foreach ($errors as $element => $msg) {
-                themekey_properties_form_set_error($form, $key_1, $element, $msg);
+                themekey_rule_chain_form_set_error($form, $key_1, $element, $msg);
               }
             }
             else {
-              themekey_properties_form_set_error($form, $key_1, 'property', t('ThemeKey requested an unknown validator called %validator to validate property %property', array('%validator' => $validator, '%property' => $value_1['property']['#default_value'])));
+              themekey_rule_chain_form_set_error($form, $key_1, 'property', t('ThemeKey requested an unknown validator called %validator to validate property %property', array('%validator' => $validator, '%property' => $value_1['property']['#default_value'])));
             }
           }
 
@@ -301,25 +335,25 @@ function themekey_form_alter(&$form, $form_state, $form_id) {
                     continue;
                   }
                   elseif (($value_1['weight']['#default_value'] > $value_2['weight']['#default_value']) && $has_childs_1 && !$has_childs_2) {
-                    themekey_properties_form_set_error($form, $key_1, 'property', t('Theme switching rule could never be reached'));
+                    themekey_rule_chain_form_set_error($form, $key_1, 'property', t('Theme switching rule could never be reached'));
                     continue;
                   }
                   elseif (($value_1['weight']['#default_value'] < $value_2['weight']['#default_value']) && !$has_childs_1 && $has_childs_2) {
-                    themekey_properties_form_set_error($form, $key_1, 'property', t('Theme switching rule hides a later one'));
+                    themekey_rule_chain_form_set_error($form, $key_1, 'property', t('Theme switching rule hides a later one'));
                     continue;
                   }
                   elseif (($value_1['weight']['#default_value'] < $value_2['weight']['#default_value']) && $has_childs_1 && $has_childs_2) {
-                    themekey_properties_form_set_error($form, $key_1, 'property', t('Theme switching rule should be combined with an identical one below'));
+                    themekey_rule_chain_form_set_error($form, $key_1, 'property', t('Theme switching rule should be combined with an identical one below'));
                     continue;
                   }
                   elseif (($value_1['weight']['#default_value'] > $value_2['weight']['#default_value']) && $has_childs_1 && $has_childs_2) {
-                    themekey_properties_form_set_error($form, $key_1, 'property', t('Theme switching rule should be combined with an identical one above'));
+                    themekey_rule_chain_form_set_error($form, $key_1, 'property', t('Theme switching rule should be combined with an identical one above'));
                     continue;
                   }
                 }
 
-                themekey_properties_form_set_error($form, $key_1, 'property', t('You entered two identical theme switching rules in the chain'));
-                themekey_properties_form_set_error($form, $key_2, 'property', t('You entered two identical theme switching rules in the chain'));
+                themekey_rule_chain_form_set_error($form, $key_1, 'property', t('You entered two identical theme switching rules in the chain'));
+                themekey_rule_chain_form_set_error($form, $key_2, 'property', t('You entered two identical theme switching rules in the chain'));
               }
             }
           }
@@ -328,11 +362,30 @@ function themekey_form_alter(&$form, $form_state, $form_id) {
     }
 
     // dump all errors
-    themekey_properties_form_set_error($form);
+    themekey_rule_chain_form_set_error($form);
   }
 }
 
-function themekey_properties_form_set_error(&$form, $rule_id = 0, $element = '', $msg = '') {
+
+/**
+ * Implements an error stack for hemekey_rule_chain_form()
+ *
+ * @see hemekey_rule_chain_form()
+ * @see themekey_form_alter()
+ *
+ * @param $form
+ *   drupal form as reference
+ *
+ * @param $rule_id
+ *   the id of a ThemeKey rule
+ *
+ * @param $element
+ *   the id of an errounous form element as string
+ *
+ * @param $msg
+ *   error message as string
+ */
+function themekey_rule_chain_form_set_error(&$form, $rule_id = 0, $element = '', $msg = '') {
   static $error_stack = array();
 
   if (!empty($rule_id)) {
@@ -355,9 +408,11 @@ function themekey_properties_form_set_error(&$form, $rule_id = 0, $element = '',
 }
 
 /**
- * Function themekey_properties_submit().
+ * Form submission handler for themekey_rule_chain_form().
+ *
+ * @see hemekey_rule_chain_form()
  */
-function themekey_properties_form_submit($form, &$form_state) {
+function themekey_rule_chain_form_submit($form, &$form_state) {
   $max_weight = 0;
   if (!empty($form_state['values']['old_items'])) {
     foreach ($form_state['values']['old_items'] as $id => $item) {
@@ -373,7 +428,7 @@ function themekey_properties_form_submit($form, &$form_state) {
 
       unset($item['wildcard']);
 
-      themekey_property_set($item);
+      themekey_rule_set($item);
     }
   }
 
@@ -389,16 +444,19 @@ function themekey_properties_form_submit($form, &$form_state) {
 
     unset($item['wildcard']);
 
-    themekey_property_set($item);
+    themekey_rule_set($item);
   }
 
   drupal_set_message(t('The configuration options have been saved.'));
 }
 
+
 /**
- * Function _themekey_settings_form().
+ * Form builder for the ThemeKey settings form.
+ *
+ * @ingroup forms
  */
-function _themekey_settings_form() {
+function themekey_settings_form() {
   // REVIEW rebuild is called to many times
   // REVIEW isn't there a better place for this?
   themekey_rebuild();
@@ -454,15 +512,13 @@ function _themekey_settings_form() {
   return system_settings_form($form);
 }
 
-function _themekey_settings_form_validate($form, &$form_state) {
-}
 
 /**
- * Theme the menu overview form into a table.
+ * Themes hemekey_rule_chain_form() and adds drag'n'drop features.
  *
  * @ingroup themeable
  */
-function theme_themekey_properties_form($form) {
+function theme_themekey_rule_chain_form($form) {
   $output = '';
 
   $rows = array();
@@ -626,7 +682,11 @@ function theme_themekey_properties_form($form) {
   return $output;
 }
 
-function _themekey_admin_theme_warning() {
+
+/**
+ * Detects if there's an active administration theme and displays a warning
+ */
+function themekey_admin_theme_warning() {
   if (variable_get('admin_theme', '0')) {
     drupal_set_message(t('Note: %admin_theme is configured as administration theme at !link. This setting is more powerful than a corresponding ThemeKey rule.',
       array('%admin_theme' => variable_get('admin_theme', '0'), '!link' => l('admin/settings/admin', 'admin/settings/admin'))), 'warning');
@@ -637,10 +697,11 @@ function _themekey_admin_theme_warning() {
   }
 }
 
+
 /**
- * Menu callback -- ask for confirmation of themekey property deletion
+ * Menu callback -- ask for confirmation of ThemeKey rule deletion
  */
-function themekey_admin_delete_property_confirm(&$form_state, $arg, $themekey_property_id) {
+function themekey_admin_delete_rule_confirm(&$form_state, $arg, $themekey_property_id) {
   $form['themekey_property_id'] = array(
     '#type' => 'value',
     '#value' => $themekey_property_id,
@@ -655,12 +716,13 @@ function themekey_admin_delete_property_confirm(&$form_state, $arg, $themekey_pr
   );
 }
 
+
 /**
- * Execute themekey property deletion
+ * Execute ThemeKey rule deletion
  */
-function themekey_admin_delete_property_confirm_submit($form, &$form_state) {
+function themekey_admin_delete_rule_confirm_submit($form, &$form_state) {
   if ($form_state['values']['confirm']) {
-    themekey_property_del($form_state['values']['themekey_property_id']);
+    themekey_rule_del($form_state['values']['themekey_property_id']);
   }
 
   $form_state['redirect'] = 'admin/settings/themekey/properties';
