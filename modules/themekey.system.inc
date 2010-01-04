@@ -1,6 +1,23 @@
 <?php
 // $Id$
 
+/**
+ * @file
+ * Provides some ThemeKey properties.
+ */
+
+
+/**
+ * Implements hook_themekey_properties().
+ *
+ * Provides additional properties for module ThemeKey:
+ * - system:host
+ * - drupal:path
+ * - drupal:path:wildcard
+ *
+ * @return
+ *   array of themekey properties and mapping functions
+ */
 function themekey_system_themekey_properties() {
   // Attributes for properties
   $attributes = array();
@@ -32,6 +49,10 @@ You can then specify conditions for every wildcard argument using the following 
   return array('attributes' => $attributes);
 }
 
+
+/**
+ * Implements hook_themekey_global().
+ */
 function themekey_system_themekey_global() {
   global $user;
 

@@ -22,7 +22,7 @@
 
 
 /**
- * Implementation of hook_themekey_properties()
+ * Implements hook_themekey_properties()
  *
  * Provides additional properties for module ThemeKey:
  *   themekey_ui:node_triggers_theme
@@ -81,7 +81,7 @@ function themekey_ui_nid2theme($nid) {
 
 
 /**
- * Implementation of hook_theme()
+ * Implements hook_theme().
  */
 function themekey_ui_theme() {
   return array(
@@ -93,7 +93,7 @@ function themekey_ui_theme() {
 
 
 /**
- * Implementation of hook_perm().
+ * Implements hook_perm().
  */
 function themekey_ui_perm() {
   return array('assign node themes');
@@ -101,7 +101,7 @@ function themekey_ui_perm() {
 
 
 /**
- * Implementation of hook_menu().
+ * Implements hook_menu().
  */
 function themekey_ui_menu() {
   $items = array();
@@ -121,7 +121,7 @@ function themekey_ui_menu() {
 
 
 /**
- * Implementation of hook_form_alter().
+ * Implements hook_form_alter().
  */
 function themekey_ui_form_alter(&$form, $form_state, $form_id) {
   // Node form
@@ -148,7 +148,7 @@ function themekey_ui_form_alter(&$form, $form_state, $form_id) {
 
 
 /**
- * Implementation of hook_nodeapi().
+ * Implements hook_nodeapi().
  */
 function themekey_ui_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
   switch ($op) {

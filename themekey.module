@@ -22,7 +22,7 @@
 require_once(drupal_get_path('module', 'themekey') .'/themekey_base.inc');
 
 /**
- * Implementation of hook_theme()
+ * Implements hook_theme().
  */
 function themekey_theme() {
   $items = array(
@@ -36,7 +36,7 @@ function themekey_theme() {
 
 
 /**
- * Implementation of hook_perm().
+ * Implements hook_perm().
  */
 function themekey_perm() {
   return array('administer theme assignments', 'administer themekey settings');
@@ -44,7 +44,7 @@ function themekey_perm() {
 
 
 /**
- * Implementation of hook_menu().
+ * Implements hook_menu().
  */
 function themekey_menu() {
   $items = array();
@@ -92,7 +92,7 @@ function themekey_menu() {
 
 
 /**
- * Implementation of hook_themekey_properties().
+ * Implements hook_themekey_properties().
  */
 function themekey_themekey_properties() {
   require_once(drupal_get_path('module', 'themekey') .'/themekey_build.inc');
@@ -101,7 +101,7 @@ function themekey_themekey_properties() {
 
 
 /**
- * Implementation of hook_themekey_global().
+ * Implements hook_themekey_global().
  */
 function themekey_themekey_global() {
   require_once(drupal_get_path('module', 'themekey') .'/themekey_build.inc');
@@ -110,7 +110,7 @@ function themekey_themekey_global() {
 
 
 /**
- * Implementation of hook_themekey_paths().
+ * Implements hook_themekey_paths().
  */
 function themekey_themekey_paths() {
   require_once(drupal_get_path('module', 'themekey') .'/themekey_build.inc');
@@ -119,7 +119,7 @@ function themekey_themekey_paths() {
 
 
 /**
- * Implementation of hook_init().
+ * Implements hook_init().
  *
  * Here happens all the magic of ThemeKey.
  * ThemeKey detects if any Theme Switching Rule matches
@@ -156,7 +156,7 @@ function themekey_init() {
 
 
 /**
- * Implementation of hook_themekey_load_validators()
+ * Implements hook_themekey_load_validators().
  */
 function themekey_themekey_load_validators() {
   module_load_include('inc', 'themekey', 'themekey_validators');

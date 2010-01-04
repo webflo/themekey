@@ -14,7 +14,7 @@
 
 
 /**
- * Implementation of hook_schema().
+ * Implements hook_schema().
  */
 function themekey_schema() {
   $schema = array();
@@ -56,7 +56,7 @@ function themekey_schema() {
 
 
 /**
- * Implementation of hook_install().
+ * Implements hook_install().
  */
 function themekey_install() {
   drupal_install_schema('themekey');
@@ -64,7 +64,7 @@ function themekey_install() {
 
 
 /**
- * Implementation of hook_uninstall().
+ * Implements hook_uninstall().
  */
 function themekey_uninstall() {
   // Drop tables
@@ -76,7 +76,7 @@ function themekey_uninstall() {
 
 
 /**
- * Implementation of hook_update_N().
+ * Implements hook_update_N().
  *
  * Update property 'nid' to 'node:nid'
  */
@@ -98,7 +98,7 @@ function themekey_update_6001() {
 
 
 /**
- * Implementation of hook_update_N().
+ * Implements hook_update_N().
  */
 function themekey_update_6100() {
 
@@ -117,7 +117,7 @@ function themekey_update_6100() {
 
 
 /**
- * Implementation of hook_update_N().
+ * Implements hook_update_N().
  */
 function themekey_update_6101() {
   $result = update_sql("UPDATE {system} SET weight = 0 WHERE name = 'themekey'");
@@ -126,7 +126,7 @@ function themekey_update_6101() {
 
 
 /**
- * Implementation of hook_update_N().
+ * Implements hook_update_N().
  */
 function themekey_update_6102() {
   if (module_exists('forum')) {
@@ -142,7 +142,7 @@ function themekey_update_6102() {
 
 
 /**
- * Implementation of hook_update_N().
+ * Implements hook_update_N().
  */
 function themekey_update_6103() {
   variable_del('themekey_nodediscover');
@@ -151,7 +151,7 @@ function themekey_update_6103() {
 
 
 /**
- * Implementation of hook_update_N().
+ * Implements hook_update_N().
  */
 function themekey_update_6104() {
   $result = update_sql("ALTER TABLE {themekey_properties} DROP COLUMN callbacks");
@@ -160,7 +160,7 @@ function themekey_update_6104() {
 
 
 /**
- * Implementation of hook_update_N().
+ * Implements hook_update_N().
  */
 function themekey_update_6105() {
   global $db_type;
@@ -254,7 +254,7 @@ function _themekey_properties_explode_conditions($conditions) {
 
 
 /**
- * Implementation of hook_update_N().
+ * Implements hook_update_N().
  */
 function themekey_update_6200() {
   $field = array('type' => 'int', 'unsigned' => TRUE, 'not null' => TRUE, 'default' => '0', 'initial' => '1');
@@ -292,7 +292,7 @@ function themekey_update_6200() {
 
 
 /**
- * Implementation of hook_update_N().
+ * Implements hook_update_N().
  */
 function themekey_update_6201() {
   // Don't rebuild anymore when themekey_update_6202() will run
@@ -302,7 +302,7 @@ function themekey_update_6201() {
 
 
 /**
- * Implementation of hook_update_N().
+ * Implements hook_update_N().
  */
 function themekey_update_6202() {
   $ret = array();
@@ -347,7 +347,7 @@ function themekey_update_6202() {
 
 
 /**
- * Implementation of hook_update_N().
+ * Implements hook_update_N().
  */
 function themekey_update_6203() {
   // calling themekey_rebuild() at this point will cause an error because

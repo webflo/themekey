@@ -1,6 +1,22 @@
 <?php
 // $Id$
 
+/**
+ * @file
+ * Provides some comment attributes as ThemeKey properties.
+ */
+
+
+/**
+ * Implements hook_themekey_properties().
+ *
+ * Provides additional properties for module ThemeKey:
+ * - book:bid
+ * - book:has_children
+ *
+ * @return
+ *   array of themekey properties and mapping functions
+ */
 function themekey_book_themekey_properties() {
   // Attributes for properties
   $attributes = array();
@@ -24,6 +40,22 @@ function themekey_book_themekey_properties() {
   return array('attributes' => $attributes, 'maps' => $maps);
 }
 
+
+/**
+ * ThemeKey mapping function to set a
+ * ThemeKey property's value (destination)
+ * with the aid of another ThemeKey property (source).
+ *
+ * src: node_nid
+ * dst: book:bid
+ *
+ * @param $nid
+ *   a node id
+ *
+ * @return
+ *   a book id
+ *   or NULL if no value could be mapped
+ */
 function themekey_book_nid2bid($nid, $object = NULL) {
   if ($node = node_load($nid)) {
     if (!empty($node->book['bid'])) {
@@ -34,6 +66,22 @@ function themekey_book_nid2bid($nid, $object = NULL) {
   return NULL;
 }
 
+
+/**
+ * ThemeKey mapping function to set a
+ * ThemeKey property's value (destination)
+ * with the aid of another ThemeKey property (source).
+ *
+ * src: node_nid
+ * dst: book:has_children
+ *
+ * @param $nid
+ *   a node id
+ *
+ * @return
+ *   boolean
+ *   or NULL if no value could be mapped
+ */
 function themekey_book_nid2has_children($nid, $object = NULL) {
   if ($node = node_load($nid)) {
     if (!empty($node->book['has_children'])) {

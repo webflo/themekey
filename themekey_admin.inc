@@ -248,7 +248,7 @@ Supported operators are "=" (equal), "!" (not equal), "<" (smaller), ">" (greate
 
 
 /**
- * Implementation of hook_form_alter()
+ * Implements hook_form_alter().
  *
  * Alters @see themekey_rule_chain_form().
 
