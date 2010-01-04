@@ -260,7 +260,7 @@ Supported operators are "=" (equal), "!" (not equal), "<" (smaller), ">" (greate
  */
 function themekey_form_alter(&$form, $form_state, $form_id) {
   if ('themekey_rule_chain_form' == $form_id && empty($form_state['post'])) {
-    require_once(drupal_get_path('module', 'themekey') .'/themekey_validators.inc');
+    module_invoke_all('themekey_load_validators');
 
     $attributes = variable_get('themekey_attributes', array());
 

@@ -90,3 +90,7 @@ HOOK_themekey_paths()
               Callback arguments:
               - $item:    array of elements associated with the path/callback
               - $params:  array of parameters available for load callback
+
+HOOK_themekey_load_validators()
+  include files containing validators
+  

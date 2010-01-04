@@ -153,3 +153,11 @@ function themekey_init() {
     }
   }
 }
+
+
+/**
+ * Implementation of hook_themekey_load_validators()
+ */
+function themekey_themekey_load_validators() {
+  module_load_include('inc', 'themekey', 'themekey_validators');
+}
