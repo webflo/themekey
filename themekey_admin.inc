@@ -53,48 +53,6 @@ function themekey_rule_chain_form() {
 
   $form = array('#tree' => TRUE);
 
-  $form['help'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Help'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-  );
-
-  $form['help']['description_1'] = array(
-    '#type' => 'item',
-    '#title' => t('How to define Theme Switching Rules'),
-    '#value' => t(
-'Text copied from ThemeKey 6.x-1.2 properties description and needs to be reviewed:
-<del>Here you can map themes to object properties, e.g. to node properties such as the NodeID (nid).
-To add a new map entry to the table, select a property from the "Property" dropdown and enter
-the value which you want to assign the theme to. For example: Property = "nid", Value = "123"
-and Theme = "Bluemarine" switches the theme of node 123 to Bluemarine. You may also specify
-"Additional Conditions" so that the theme only applies when all conditions are matched. "Additional
-Conditions" must be provided using the following syntax: "property=value;property2=value2;...".
-Supported operators are "=" (equal), "!" (not equal), "<" (smaller), ">" (greater) and "~" (regex match).</del>'),
-  );
-
-  $form['help']['properties'] = array(
-    '#type' => 'fieldset',
-    '#title' => t('Properties explained'),
-    '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
-  );
-
-  foreach ($attributes as $property => $attribute) {
-    $form['help']['properties'][$property] = array(
-      '#type' => 'fieldset',
-      '#title' => $property,
-      '#collapsible' => TRUE,
-      '#collapsed' => TRUE,
-    );
-
-    $form['help']['properties'][$property]['item'] = array(
-      '#type' => 'item',
-      '#value' => $attribute['description'],
-    );
-  }
-
   $items = themekey_load_rules();
   $parent_options = array_merge(array(0), array_keys($items));
   $parent_options = array_combine($parent_options, $parent_options);
@@ -726,4 +684,53 @@ function themekey_admin_delete_rule_confirm_submit($form, &$form_state) {
   }
 
   $form_state['redirect'] = 'admin/settings/themekey/properties';
+}
+
+
+function themekey_help_form($collapsed = TRUE) {
+  $attributes = variable_get('themekey_attributes', array());
+
+  $form['help']['examples'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Examples'),
+    '#collapsible' => TRUE,
+    '#collapsed' => $collapsed,
+  );
+
+  $form['help']['examples']['example_1'] = array(
+    '#type' => 'item',
+    '#title' => t('How to define Theme Switching Rules'),
+    '#value' => t(
+'Text copied from ThemeKey 6.x-1.2 properties description and needs to be reviewed:
+<del>Here you can map themes to object properties, e.g. to node properties such as the NodeID (nid).
+To add a new map entry to the table, select a property from the "Property" dropdown and enter
+the value which you want to assign the theme to. For example: Property = "nid", Value = "123"
+and Theme = "Bluemarine" switches the theme of node 123 to Bluemarine. You may also specify
+"Additional Conditions" so that the theme only applies when all conditions are matched. "Additional
+Conditions" must be provided using the following syntax: "property=value;property2=value2;...".
+Supported operators are "=" (equal), "!" (not equal), "<" (smaller), ">" (greater) and "~" (regex match).</del>'),
+  );
+
+  $form['help']['properties'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Properties explained'),
+    '#collapsible' => TRUE,
+    '#collapsed' => $collapsed,
+  );
+
+  foreach ($attributes as $property => $attribute) {
+    $form['help']['properties'][$property] = array(
+      '#type' => 'fieldset',
+      '#title' => $property,
+      '#collapsible' => TRUE,
+      '#collapsed' => $collapsed,
+    );
+
+    $form['help']['properties'][$property]['item'] = array(
+      '#type' => 'item',
+      '#value' => $attribute['description'],
+    );
+  }
+
+  return $form;
 }
