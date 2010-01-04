@@ -687,6 +687,11 @@ function themekey_admin_delete_rule_confirm_submit($form, &$form_state) {
 }
 
 
+/**
+ * Uses drupal's form builder to format ThemeKey's help
+ *
+ * @see themekey_help()
+ */
 function themekey_help_form($collapsed = TRUE) {
   $attributes = variable_get('themekey_attributes', array());
 
@@ -697,19 +702,36 @@ function themekey_help_form($collapsed = TRUE) {
     '#collapsed' => $collapsed,
   );
 
-  $form['help']['examples']['example_1'] = array(
-    '#type' => 'item',
-    '#title' => t('How to define Theme Switching Rules'),
-    '#value' => t(
-'Text copied from ThemeKey 6.x-1.2 properties description and needs to be reviewed:
-<del>Here you can map themes to object properties, e.g. to node properties such as the NodeID (nid).
-To add a new map entry to the table, select a property from the "Property" dropdown and enter
-the value which you want to assign the theme to. For example: Property = "nid", Value = "123"
-and Theme = "Bluemarine" switches the theme of node 123 to Bluemarine. You may also specify
-"Additional Conditions" so that the theme only applies when all conditions are matched. "Additional
-Conditions" must be provided using the following syntax: "property=value;property2=value2;...".
-Supported operators are "=" (equal), "!" (not equal), "<" (smaller), ">" (greater) and "~" (regex match).</del>'),
+  $form['help']['examples']['Set a special theme for site administrator'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Set a special theme for site administrator'),
+    '#collapsible' => TRUE,
+    '#collapsed' => $form['help']['examples']['#collapsed'],
   );
+
+  $form['help']['examples']['Set a special theme for site administrator']['item'] = array(
+    '#type' => 'item',
+    '#value' => t('Create a Theme Switching Rules:') . '<pre>
+Property: user:uid
+Operator: =
+Value: 1
+</pre>',
+    );
+
+  // TODO: add some examples using drupal:path and drupal:path:wildcard
+  $form['help']['examples']['TODO: add some examples using drupal:path and drupal:path:wildcard'] = array(
+    '#type' => 'fieldset',
+    '#title' => 'TODO: add some examples using drupal:path and drupal:path:wildcard',
+    '#collapsible' => TRUE,
+    '#collapsed' => $form['help']['examples']['#collapsed'],
+  );
+
+  $form['help']['examples']['TODO: add some examples using drupal:path and drupal:path:wildcard']['item'] = array(
+    '#type' => 'item',
+    '#value' => 'TODO' . '<pre>
+</pre>',
+    );
+
 
   $form['help']['properties'] = array(
     '#type' => 'fieldset',
