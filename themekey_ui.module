@@ -70,8 +70,8 @@ function themekey_ui_nid2theme($nid) {
   global $custom_theme;
 
   if ($node = node_load($nid)) {
-    if (!empty($node->theme) && themekey_check_theme_enabled($node->theme)) {
-      $custom_theme = $node->theme;
+    if (!empty($node->themekey_ui_theme) && themekey_check_theme_enabled($node->themekey_ui_theme)) {
+      $custom_theme = $node->themekey_ui_theme;
       return 'static';
     }
   }
@@ -87,7 +87,10 @@ function themekey_ui_theme() {
   return array(
     'themekey_ui_table' => array(
       'arguments' => array('form' => NULL),
-    )
+    ),
+    'themekey_ui_theme_select_form' => array(
+      'arguments' => array('form' => NULL),
+    ),
   );
 }
 
@@ -137,7 +140,11 @@ function themekey_ui_form_alter(&$form, $form_state, $form_id) {
       $type = isset($form['type']['#value']) ? $form['type']['#value'] : FALSE;
       if ($form_id == $type .'_node_form' && variable_get('themekey_ui_nodeform|'. $type, 1)) {
         module_load_include('inc', 'themekey_ui', 'themekey_ui_admin');
-        themekey_ui_nodeform($form, $form_state);
+        $description = t('Theme configuration for this node');
+        if (module_exists('og') && !og_is_omitted_type($type)) {
+          $description .= '<p><b>' . t('Note:') . '</b> ' . t('This content type is used in organic groups. A Theme you select here will only be used to display this node if you set the theme for the organic group to %theme', array('%theme' => variable_get('theme_default', 'garland') . ' ' .t('(site default theme)'))) . '</p>';
+        }
+        themekey_ui_theme_select_form($form, t('Theme configuration for this node'), $description);
       }
     }
   }
@@ -154,30 +161,26 @@ function themekey_ui_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
         if (!empty($node->vid)) {
           $theme = db_result(db_query('SELECT theme FROM {themekey_ui_node_theme} WHERE nid = %d AND vid = %d', $node->nid, $node->vid));
           if ($theme) {
-            $node->theme = $theme;
+            $node->themekey_ui_theme = $theme;
           }
           else {
-            $node->theme = 'default';
+            $node->themekey_ui_theme = 'default';
           }
         }
       }
       break;
 
     case 'insert':
-      if (!empty($node->theme)) {
-        $item = array('nid' => $node->nid, 'vid' => $node->vid, 'theme' => $node->theme);
-        if (drupal_write_record('themekey_ui_node_theme', $item)) {
-          $themes[$node->vid] = $node->theme;
-        }
+      if (!empty($node->themekey_ui_theme)) {
+        $item = array('nid' => $node->nid, 'vid' => $node->vid, 'theme' => $node->themekey_ui_theme);
+        drupal_write_record('themekey_ui_node_theme', $item);
       }
       break;
 
     case 'update':
-      if (!empty($node->theme)) {
-        $item = array('nid' => $node->nid, 'vid' => $node->vid, 'theme' => $node->theme);
-        if (drupal_write_record('themekey_ui_node_theme', $item, array('nid', 'vid'))) {
-          $themes[$node->vid] = $node->theme;
-        }
+      if (!empty($node->themekey_ui_theme)) {
+        $item = array('nid' => $node->nid, 'vid' => $node->vid, 'theme' => $node->themekey_ui_theme);
+        drupal_write_record('themekey_ui_node_theme', $item, array('nid', 'vid'));
       }
       break;
 

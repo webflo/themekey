@@ -3,6 +3,7 @@
 ThemeKey 6.x-2.0-rc1, 2009-xx-xx
 --------------------------------
 [       ] mkalkbrenner: Introduced new right 'assign path alias themes' for ThemeKey UI
+[#669376] mkalkbrenner: ThemeKey UI is incompatible to Organic Groups (Illegal choice when I select a theme using themekey)
 
 
 ThemeKey 6.x-2.0-beta4, 2009-01-04
@@ -16,7 +17,7 @@ ThemeKey 6.x-2.0-beta4, 2009-01-04
 [#669994] mkalkbrenner: wrong detection of "identical theme switching rules in the chain"
 [       ] mkalkbrenner: themekey_ui_get_path_theme() should only return themes assigened to rules without children
 [       ] mkalkbrenner: lock table to prevent race condition in function themekey_properties_del()
-[#670086] mkalkbrenner: ThemeKey UI: Unable to set differnt themes for differnt path aliases
+[#670086] mkalkbrenner: ThemeKey UI: Unable to set different themes for different path aliases
 [#301904] Carsten Müller: Meaning of propertys: added help texts for properties
 [       ] mkalkbrenner: always add new rules at the end of the chain
 [       ] mkalkbrenner: introduced hook_themekey_load_validators()

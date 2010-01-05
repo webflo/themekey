@@ -98,32 +98,69 @@ function themekey_ui_settings_form_submit($form, &$form_state) {
 
 
 /**
- * Adds theme select box to node create and edit form
+ * Adds theme selector to a form
  *
- * @see node_form()
+ * @see system_theme_select_form()
  *
- * @ingroup forms
+ * @param $form
+ *   form array
+ *
+ * @param $title
+ *   title as string
+ *
+ * @param $description
+ *   description as string
+ *
+ * @param $weight
+ *   integer
+ *
+ * @param $collapsed
+ *   boolean
  */
-function themekey_ui_nodeform(&$form, &$form_state) {
-  $theme = !empty($form['#node']->theme) ? $form['#node']->theme : 'default';
+function themekey_ui_theme_select_form(&$form, $title, $description, $weight = 0, $collapsed = TRUE) {
+  $themes = list_themes();
+  $theme_options = themekey_theme_options();
 
-  $form['nodeform_theme'] = array(
+  $form['themekey_ui_themes'] = array(
     '#type' => 'fieldset',
-    '#title' => t('Theme'),
+    '#title' => $title,
+    '#description' => $description,
     '#collapsible' => TRUE,
-    '#collapsed' => TRUE
+    '#collapsed' => TRUE,
+    '#theme' => 'themekey_ui_theme_select_form'
   );
 
-  $form['nodeform_theme']['theme'] = array(
-    '#type' => 'select',
-    '#default_value' => $theme,
-    '#options' => themekey_theme_options(),
-    '#description' => t('Theme to be assigned to current node. If you select "System Default" ThemeKey applies his rules for paths and properties.'),
-  );
 
-  if (!themekey_check_theme_enabled($theme, TRUE)) {
-    $form['nodeform_theme']['theme']['#attributes'] = array('class' => 'error');
+  $form['themekey_ui_themes']['default']['screenshot'] = array();
+  $form['themekey_ui_themes']['default']['description'] = array('#type' => 'item', '#value' => t("don't switch the theme"));
+
+  $options = array('default' => '');
+
+  foreach ($themes as $info) {
+    if (!array_key_exists($info->name, $theme_options)) {
+      continue;
+    }
+
+    $options[$info->name] = '';
+
+    $screenshot = NULL;
+    $theme_key = $info->name;
+    while ($theme_key) {
+      if (file_exists($themes[$theme_key]->info['screenshot'])) {
+        $screenshot = $themes[$theme_key]->info['screenshot'];
+        break;
+      }
+      $theme_key = isset($themes[$theme_key]->info['base theme']) ? $themes[$theme_key]->info['base theme'] : NULL;
+    }
+
+    $screenshot = $screenshot ? theme('image', $screenshot, t('Screenshot for %theme theme', array('%theme' => $info->name)), '', array('class' => 'screenshot'), FALSE) : t('no screenshot');
+
+    $form['themekey_ui_themes'][$info->name]['screenshot'] = array('#value' => $screenshot);
+    $form['themekey_ui_themes'][$info->name]['description'] = array('#type' => 'item', '#title' => $info->info['name'], '#value' => dirname($info->filename));
   }
+
+  $form['themekey_ui_themes']['themekey_ui_theme'] = array('#type' => 'radios', '#options' => $options, '#default_value' => !empty($form['#node']->themekey_ui_theme) ? $form['#node']->themekey_ui_theme : 'default');
+  $form['#weight'] = $weight;
 }
 
 
@@ -201,4 +238,31 @@ function theme_themekey_ui_table($form) {
   }
 
   return count($rows) ? theme('table', $header, $rows, $attributes) : '';
+}
+
+
+/**
+ * Theme the theme select form.
+ *
+ * @see theme_system_theme_select_form()
+ *
+ * @param $form
+ *   An associative array containing the structure of the form.
+ *
+ * @ingroup themeable
+ */
+function theme_themekey_ui_theme_select_form($form) {
+  foreach (element_children($form) as $key) {
+    $row = array();
+    if (isset($form[$key]['description']) && is_array($form[$key]['description'])) {
+      $row[] = drupal_render($form[$key]['screenshot']);
+      $row[] = drupal_render($form[$key]['description']);
+      $row[] = drupal_render($form['themekey_ui_theme'][$key]);
+    }
+    $rows[] = $row;
+  }
+
+  $header = array(t('Screenshot'), t('Name'), t('Selected'));
+  $output = theme('table', $header, $rows);
+  return $output;
 }

@@ -39,9 +39,9 @@ function themekey_theme_options($default = TRUE) {
   if ($default) {
     $options_themes['default'] = t('System default');
   }
-  foreach ($themes as $themex) {
-    if ($themex->status || variable_get('themekey_allthemes', 0)) {
-      $options_themes[$themex->name] = $themex->info['name'];
+  foreach ($themes as $theme) {
+    if ($theme->status || variable_get('themekey_allthemes', 0)) {
+      $options_themes[$theme->name] = $theme->info['name'];
     }
   }
 
