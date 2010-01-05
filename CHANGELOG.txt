@@ -1,5 +1,10 @@
 // $Id$
 
+ThemeKey 6.x-2.0-rc1, 2009-xx-xx
+--------------------------------
+[       ] mkalkbrenner: Introduced new right 'assign path alias themes' for ThemeKey UI
+
+
 ThemeKey 6.x-2.0-beta4, 2009-01-04
 -----------------------------------
 [#665710] mkalkbrenner: wrong strategy for checking multi valued properties for some operators

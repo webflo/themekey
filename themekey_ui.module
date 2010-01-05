@@ -96,7 +96,7 @@ function themekey_ui_theme() {
  * Implements hook_perm().
  */
 function themekey_ui_perm() {
-  return array('assign node themes');
+  return array('assign node themes', 'assign path alias themes');
 }
 
 
@@ -124,26 +124,23 @@ function themekey_ui_menu() {
  * Implements hook_form_alter().
  */
 function themekey_ui_form_alter(&$form, $form_state, $form_id) {
-  // Node form
-  if (variable_get('themekey_ui_nodeform', 0) && user_access('assign node themes')) {
-    $type = isset($form['type']['#value']) ? $form['type']['#value'] : FALSE;
-    if ($form_id == $type .'_node_form' && variable_get('themekey_ui_nodeform|'. $type, 1)) {
-      require_once(drupal_get_path('module', 'themekey_ui') .'/themekey_ui_admin.inc');
-      themekey_ui_nodeform($form, $form_state);
+  if ($form_id == 'path_admin_form') {
+    // path aliases form
+    if (user_access('assign path alias themes') && variable_get('themekey_ui_pathalias', 0)) {
+      module_load_include('inc', 'themekey_ui', 'themekey_ui_admin');
+      themekey_ui_pathalias($form, $form_state);
     }
   }
-  // Path aliases
-  if ($form_id == 'path_admin_form' && variable_get('themekey_ui_pathalias', 0)) {
-    require_once(drupal_get_path('module', 'themekey_ui') .'/themekey_ui_admin.inc');
-    themekey_ui_pathalias($form, $form_state);
+  else {
+    // node form?
+    if (variable_get('themekey_ui_nodeform', 0) && user_access('assign node themes')) {
+      $type = isset($form['type']['#value']) ? $form['type']['#value'] : FALSE;
+      if ($form_id == $type .'_node_form' && variable_get('themekey_ui_nodeform|'. $type, 1)) {
+        module_load_include('inc', 'themekey_ui', 'themekey_ui_admin');
+        themekey_ui_nodeform($form, $form_state);
+      }
+    }
   }
-// REVIEW seems to be dead code
-//  // Views
-//  if ($form_id == 'views_ui_edit_display_form' && $form_state['#section'] == 'page-path'
-//    && variable_get('themekey_ui_views', 0) && user_access('administer views')) {
-//    require_once(drupal_get_path('module', 'themekey_ui') .'/themekey_ui_admin.inc');
-//    _themekey_ui_views($form, $form_state);
-//  }
 }
 
 
