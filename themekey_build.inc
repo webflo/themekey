@@ -326,8 +326,11 @@ function themekey_rule_set(&$item) {
   }
 
   if (empty($item['id'])) {
-    // new entry should be added at the end of the chain
+    // prevent table lock issues with drupal_write_record
+    // see http://drupal.org/node/372308#comment-2442664
+    drupal_get_schema(FALSE);
     db_lock_table('themekey_properties');
+    // new entry should be added at the end of the chain
     $weight = db_result(db_query("SELECT MAX(weight) FROM {themekey_properties}"));
     // if query fails $weight will be FALSE which will cause $item['weight'] to be set to '1'
     $item['weight'] = 1 + $weight;
