@@ -69,8 +69,12 @@ function themekey_rule_chain_form() {
 
     $property = $item['property'];
     $wildcard = '';
+    $static = FALSE;
+
     if (!in_array($property, $properties)) {
       if (!empty($attributes[$property]['static'])) {
+        $static = TRUE;
+
         $form['old_items'][$item['id']]['property'] = array(
           '#type' => 'hidden',
           '#default_value' => $property,
@@ -160,7 +164,7 @@ function themekey_rule_chain_form() {
     );
 
     $form['old_items'][$item['id']]['delete'] = array(
-      '#value' => l(t('delete'), 'admin/settings/themekey/properties/delete/' . $item['id']),
+      '#value' => $static ? '' : l(t('delete'), 'admin/settings/themekey/properties/delete/' . $item['id']),
     );
   }
 
