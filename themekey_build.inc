@@ -374,6 +374,29 @@ function themekey_rule_del($id) {
 
 
 /**
+ * Loads ThemeKey rule from database.
+ *
+ * @param $id
+ *   id of the rule to be loaded from database
+ *
+ * @return
+ *   the rule as associative array or NULL
+ */
+function themekey_rule_get($id) {
+  if ($result = db_query('SELECT * FROM {themekey_properties} WHERE id = %d', $id)) {
+    if ($item = db_fetch_array($result)) {
+      if ('drupal:path' == $item['property']) {
+        themekey_complete_path($item);
+      }
+      return $item;
+    }
+  }
+
+  return NULL;
+}
+
+
+/**
  * Adds or modifies a so called static rule in the
  * database. Static rules could be moved around in the chain
  * and enabled or disabled by the site administrator but the values
