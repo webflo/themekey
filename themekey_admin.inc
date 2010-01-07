@@ -505,7 +505,7 @@ function theme_themekey_rule_chain_form($form) {
 
     foreach ($form['old_items'] as $key => $item) {
       if (isset($item['property'])) {
-      $row = is_array($form['old_items'][$key]['#attributes']) ? $form['old_items'][$key]['#attributes'] : array();
+        $row = is_array($form['old_items'][$key]['#attributes']) ? $form['old_items'][$key]['#attributes'] : array();
 
         // Add special classes to be used for tabledrag.js.
         $form['old_items'][$key]['id']['#attributes']['class'] = 'themekey-property-id';
@@ -518,12 +518,20 @@ function theme_themekey_rule_chain_form($form) {
         $form['old_items'][$key]['value']['#attributes']['class'] = 'themekey-fadeable';
         $form['old_items'][$key]['enabled']['#attributes']['class'] = 'themekey-property-enabled';
         $form['old_items'][$key]['theme']['#attributes']['class'] = 'themekey-property-theme themekey-fadeable';
+
+        // form items of type markup don't have attributes
+        $form['old_items'][$key]['delete']['#value'] = str_replace('<a', '<a class="themekey-rule-delete-link"', $form['old_items'][$key]['delete']['#value']);
+
         if ('drupal:path:wildcard' != $item['property']['#value']) {
           $form['old_items'][$key]['wildcard']['#attributes']['style'] = 'display: none';
         }
+
         if ($num_childs[$key]) {
           $form['old_items'][$key]['theme']['#attributes']['style'] = 'display: none';
+          // form items of type markup don't have attributes
+          $form['old_items'][$key]['delete']['#value'] = str_replace('<a', '<a style="display: none"', $form['old_items'][$key]['delete']['#value']);
         }
+
         if ($parents_disabled[$item['parent']['#value']]) {
           $form['old_items'][$key]['enabled']['#attributes']['style'] = 'display: none';
           $form['old_items'][$key]['enabled']['#default_value'] = 0;

@@ -3,6 +3,7 @@
 ThemeKey 6.x-2.0-rc1, 2009-xx-xx
 --------------------------------
 [       ] mkalkbrenner: improved validator for drupal:path
+[       ] mkalkbrenner: hide delete link if active rule has child
 
 
 ThemeKey 6.x-2.0-beta5, 2009-01-06

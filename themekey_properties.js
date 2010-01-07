@@ -7,11 +7,14 @@ if (Drupal.jsEnabled) {
   ThemeKey.adjustChildCounter = function (parentId, adjust) {
     var childCounter = $('#themekey-num-childs-' + parentId);
     childCounter.val(parseInt(childCounter.val()) + adjust);
+    var propertiesRow = $('#themekey-properties-row-' + parentId);
     if (1 == adjust) {
-      $('.themekey-property-theme', $('#themekey-properties-row-' + parentId)).css('display', 'none');
+      $('.themekey-property-theme', propertiesRow).css('display', 'none');
+      $('.themekey-rule-delete-link', propertiesRow).css('display', 'none');
     }
     else if (childCounter.val() < 1) {
-      $('.themekey-property-theme', $('#themekey-properties-row-' + parentId)).css('display', 'block');
+      $('.themekey-property-theme', propertiesRow).css('display', 'block');
+      $('.themekey-rule-delete-link', propertiesRow).css('display', 'block');
     }
   };
 
