@@ -6,6 +6,7 @@ ThemeKey 6.x-2.0-rc1, 2009-xx-xx
 [       ] mkalkbrenner: hide delete link if active rule has child
 [       ] mkalkbrenner: repeat ThemeKey rule on delete confirm page
 [       ] mkalkbrenner: don't offer delete link for static rules
+[#676322] mkalkbrenner: wildcard handling for path aliases is broken
 
 
 ThemeKey 6.x-2.0-beta5, 2009-01-06

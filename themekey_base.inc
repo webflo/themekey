@@ -186,7 +186,7 @@ function themekey_match_rule_childs(&$parameters, $parent = 0) {
           if (!empty($wildcards)) {
             $path = $_GET['q'];
             if (!empty($parameters['internal:path_alias']) && !empty($parameters['internal:alias_uri'])) {
-              if (in_array($value, $parameters['internal:path_alias'])) {
+              if (in_array($item['value'], $parameters['internal:path_alias'])) {
                 $path = $parameters['internal:alias_uri'];
               }
             }

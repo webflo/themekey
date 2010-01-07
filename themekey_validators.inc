@@ -447,7 +447,7 @@ function themekey_validator_http_host($rule) {
 
 /**
  * Validates a Theme Switichng Rule.
- * Allowed Operators: "=", "!", <", "<=", ">", ">=", "~"
+ * Allowed Operators: all
  * Allowed values: any string without whitespaces
  *
  *
@@ -472,16 +472,10 @@ function themekey_validator_http_host($rule) {
  */
 function themekey_validator_no_whitespace($rule) {
   $errors = array();
-  switch ($rule['operator']) {
-    case '~':
-      $errors['operator'] = t('Possible operators are "=", "!", <", "<=", ">", ">=" and "~"');
-      break;
 
-    default:
-      if (preg_match("/\s/", $rule['value'])) {
-        $errors['value'] = t('Value could not contain white spaces');
-      }
-    }
+  if (preg_match("/\s/", $rule['value'])) {
+    $errors['value'] = t('Value must not contain white spaces');
+  }
 
   return $errors;
 }
