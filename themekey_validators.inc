@@ -569,3 +569,66 @@ function themekey_validator_regex($rule) {
 
   return $errors;
 }
+/**
+ * @file
+ * Provides set of validators which could be used to validate
+ * ThemeKey Theme Switching Rules.
+ * @see themekey_admin.inc
+ *
+ * @author Markus Kalkbrenner | Cocomore AG
+ *   @see http://drupal.org/user/124705
+ *
+ * @author Carsten Müller | Cocomore AG
+ *   @see http://drupal.org/user/124707
+ */
+
+
+/**
+ * Validates a Theme Switichng Rule.
+ * Allowed Operators: "=", "!"
+ * Allowed values: paths without whitespaces
+ *
+ *
+ * @param $rule
+ *   A Theme Switching Rule as associative array:
+ *   - property: ThemeKey property as string (p.e. "drupal:path")
+ *   - wildcard: optional string, only used if property is "drupal:path:wildcard"
+ *   - operator: ThemeKey operator as string ("=", "!", "<". "<=", ">", ">=", "~")
+ *   - value: ThemeKey property value as string
+ *
+ * @return
+ *   An associative array of errors:
+ *   - property: translated error message as string
+ *     describing a problem with the property
+ *   - wildcard: translated error message as string
+ *     describing a problem with the wildcard
+ *   - operator: translated error message as string
+ *     describing a problem with the operator
+ *   - value: translated error message as string
+ *     describing a problem with the value
+ *   If no errors detected the array is empty.
+ */
+function themekey_validator_drupal_path($rule) {
+  $errors = themekey_validator_no_whitespace($rule);
+
+  switch ($rule['operator']) {
+    case '=':
+    case '!':
+      if (strpos($rule['value'], '/') === 0) {
+        $errors['value'] = t('A drupal path must not start with "/"');
+      }
+      if (preg_match("@[^/][%#]@", $rule['value'])) {
+        $errors['value'] = t('A wildcard could only be used to replace part(s) of the path but not for parts of a word');
+      }
+      if (strpos($rule['value'], '?') !== FALSE) {
+        $errors['value'] = t('Query strings will be striped before a drupal path is precessed. Maybe you want to chain drupal:path and system:query_string or system:query_param (both provided by additional module ThemeKey Properties).');
+      }
+      break;
+
+    default:
+      $errors['operator'] = t('Possible operators are "=" and "!"');
+  }
+
+  return $errors;
+}
+

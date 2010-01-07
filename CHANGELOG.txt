@@ -1,5 +1,10 @@
 // $Id$
 
+ThemeKey 6.x-2.0-rc1, 2009-xx-xx
+--------------------------------
+[       ] mkalkbrenner: improved validator for drupal:path
+
+
 ThemeKey 6.x-2.0-beta5, 2009-01-06
 ----------------------------------
 [       ] mkalkbrenner: Introduced new right 'assign path alias themes' for ThemeKey UI

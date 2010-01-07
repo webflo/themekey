@@ -38,7 +38,7 @@ against a certain part, use an identifier with the wildcard. For example: Path =
 You can then specify conditions for every wildcard argument using the following syntax:
 "id=value;id2=value2;...", e.g. "xyz=123". Supported operators are "=" (equal), "!" (not equal),
 "<" (smaller), ">" (greater) and "~" (regex match).</del>'),
-    'validator' => 'themekey_validator_no_whitespace',
+    'validator' => 'themekey_validator_drupal_path',
   );
   $attributes['drupal:path:wildcard'] = array(
     'description' => t('wildcard of drupal:path'), // TODO DESCRIPTION
