@@ -1,5 +1,11 @@
 // $Id$
 
+ThemeKey 6.x-2.0-rc1, 2009-xx-xx
+----------------------------------
+[       ] mkalkbrenner: improved ThemeKey's help
+[       ] mkalkbrenner: added a tutorial about Rule Chaining
+
+
 ThemeKey 6.x-2.0-beta6, 2009-01-07
 ----------------------------------
 [       ] mkalkbrenner: improved validator for drupal:path
