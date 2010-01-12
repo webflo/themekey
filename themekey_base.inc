@@ -196,10 +196,17 @@ function themekey_match_rule_childs(&$parameters, $parent = 0) {
           }
         }
 
+        if (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
+          themekey_set_debug_message('Match: %rule', array('%rule' => themekey_format_rule_as_string($item['id'])));
+        }
+
         $child_lookups[$parent] = themekey_match_rule_childs($parameters, $item['id']);
 
         if (FALSE === $child_lookups[$parent]) {
           if (!themekey_check_theme_enabled($item['theme'])) {
+            if (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
+              themekey_set_debug_message('Theme disabled: %theme', array('%theme' => $item['theme']));
+            }
             continue;
           }
 
@@ -208,6 +215,9 @@ function themekey_match_rule_childs(&$parameters, $parent = 0) {
 
         // return own theme or theme from child property or NULL in case of a database error
         return $child_lookups[$parent];
+      }
+      elseif (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
+        themekey_set_debug_message('No match: %rule', array('%rule' => themekey_format_rule_as_string($item['id'])));
       }
     }
 
@@ -241,6 +251,8 @@ function themekey_match_rule_childs(&$parameters, $parent = 0) {
  *   boolean
  */
 function themekey_match_condition($condition, &$parameters) {
+  global $custom_theme;
+
   if (is_array($condition) && count($condition)) {
     // Default operator is 'equal'
     if (empty($condition['operator'])) {
@@ -248,6 +260,13 @@ function themekey_match_condition($condition, &$parameters) {
     }
 
     $value = themekey_property_value($parameters, $condition['property']);
+
+    if ('static' === $value && $custom_theme) {
+      if (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
+        themekey_set_debug_message('A static rule set custom theme %custom_theme', array('%custom_theme' => $custom_theme));
+      }
+      return TRUE;
+    }
 
     if (!is_array($value)) {
       $value = array($value);
@@ -410,11 +429,33 @@ function themekey_check_theme_enabled($theme, $settings_page = FALSE) {
     global $user;
 
     if (!$warned && 1 == $user->uid) {
-      drupal_set_message(t('A matching Theme Switching Rule to select theme %theme was not applied because this theme is disabled. You can enable this theme at !build_themes or remove this Theme Switching Rule at !themekey_properties or edit current node if the theme was selected using ThemeKey UI.',
-        array('%theme' => $theme, '!build_themes' => l('admin/build/themes', 'admin/build/themes'), '!themekey_properties' => l('admin/settings/themekey/properties', 'admin/settings/themekey/properties'))), 'warning');
+      themekey_set_debug_message('A matching Theme Switching Rule to select theme %theme was not applied because this theme is disabled. You can enable this theme at !build_themes or remove this Theme Switching Rule at !themekey_properties or edit current node if the theme was selected using ThemeKey UI.',
+        array('%theme' => $theme, '!build_themes' => l('admin/build/themes', 'admin/build/themes'), '!themekey_properties' => l('admin/settings/themekey/properties', 'admin/settings/themekey/properties')));
       $warned = TRUE;
     }
   }
 
   return FALSE;
+}
+
+function themekey_format_rule_as_string($themekey_property_id) {
+    // fallback title
+  $title = $themekey_property_id;
+
+  $item = themekey_rule_get($themekey_property_id);
+  if (!empty($item)) {
+    $properties = variable_get('themekey_properties', array());
+    if (!in_array($item['property'], $properties)) {
+      $item['wildcard'] = $item['property'];
+      $item['property'] = 'drupal:path:wildcard';
+    }
+
+    $title = '"' . $item['property'] . ' ';
+    if (!empty($item['wildcard'])) {
+      $title .= $item['wildcard'] . ' ';
+    }
+    $title .= $item['operator'] . ' ' . $item['value'] . ' >>> ' . $item['theme'] . '"';
+  }
+
+  return $title;
 }

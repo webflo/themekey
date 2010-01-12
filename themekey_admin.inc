@@ -677,23 +677,7 @@ function themekey_admin_delete_rule_confirm(&$form_state, $arg, $themekey_proper
     '#value' => $themekey_property_id,
   );
 
-  // fallback title
-  $title = $themekey_property_id;
-
-  $item = themekey_rule_get($themekey_property_id);
-  if (!empty($item)) {
-    $properties = variable_get('themekey_properties', array());
-    if (!in_array($item['property'], $properties)) {
-      $item['wildcard'] = $item['property'];
-      $item['property'] = 'drupal:path:wildcard';
-    }
-
-    $title = '"' . $item['property'] . ' ';
-    if (!empty($item['wildcard'])) {
-      $title .= $item['wildcard'] . ' ';
-    }
-    $title .= $item['operator'] . ' ' . $item['value'] . ' >>> ' . $item['theme'] . '"';
-  }
+  $title = themekey_format_rule_as_string($themekey_property_id);
 
   return confirm_form($form,
     t('Are you sure you want to delete ThemeKey rule %title?', array('%title' => $title)),

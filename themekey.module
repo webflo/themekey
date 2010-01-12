@@ -138,6 +138,9 @@ function themekey_init() {
     if (!$theme && !empty($_SESSION['themekey_theme'])
         && (!$custom_theme || $custom_theme == variable_get('theme_default', 'garland'))) {
       $custom_theme = $_SESSION['themekey_theme'];
+      if (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
+        themekey_set_debug_message('ThemeKey Debug: No rule triggered a different theme. Reusing last theme from users session: %custom_theme', array('%custom_theme' => $custom_theme));
+      }
     }
 
     // We have a theme, apply it
@@ -150,8 +153,34 @@ function themekey_init() {
         unset($_SESSION['themekey_theme']);
       }
       $custom_theme = $theme;
+      if (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
+        themekey_set_debug_message('Switching theme to %custom_theme.', array('%custom_theme' => $custom_theme));
+      }
+    }
+    elseif (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
+      if ($custom_theme) {
+        // static rules set $theme to 'default and $cutom_theme directly
+        themekey_set_debug_message('$custom_theme has been set to %custom_theme during rule matching.', array('%custom_theme' => $custom_theme));
+      }
+      else {
+        themekey_set_debug_message('Using default theme.');
+      }
     }
   }
+  elseif (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
+    if ($custom_theme) {
+      themekey_set_debug_message('Skipped rule checking because $custom_theme already set to %custom_theme by another module.', array('%custom_theme' => $custom_theme));
+    }
+    elseif (strpos($_GET['q'], 'admin/build/block') !== 0) {
+      themekey_set_debug_message('Rule checking disabled on block configuration.');
+    }
+  }
+
+  if (variable_get('themekey_debug_show_property_values', FALSE)) {
+    themekey_debug_properties();
+  }
+
+  themekey_set_debug_message('flush');
 }
 
 
@@ -183,5 +212,41 @@ function themekey_help($path, $arg) {
       return '<p>' . $text_1 . '<br />' . t('To get an idea how to get started you might have a look at the !tutorials_link.', array('!tutorials_link' => l(t('tutorials'), 'admin/help/themekey'))) . '</p> ' .
              drupal_get_form('themekey_help_examples_form', FALSE) .
              drupal_get_form('themekey_help_properties_form', FALSE);
+  }
+}
+
+
+/**
+ * Replacement for drupal_set_message() during ThemeKey's initialization.
+ * drupal_set_message() might call init_theme() to early which causes ThemeKey
+ * to not switch the theme.
+ *
+ * themekey_set_debug_message() put the untranslated messages on a stack and
+ * hands them over to drupal_set_message() on demand.
+ *
+ * @param $msg
+ *   the message as string. If the message is 'flush'
+ *   all messages stored on the stack will be printed using
+ *   drupal_set_message()
+ *
+ * @param $placeholder
+ *   associative array of string replacments for $msg
+ *   @see t()
+ *
+ * @param $translate
+ *   boolean, if set to TRUE $msg will be handled by t()
+ *   when handed over to drupal_set_message()
+ */
+function themekey_set_debug_message($msg, $placeholder = array(), $translate = TRUE) {
+  static $msg_stack = array();
+
+  if ('flush' == $msg) {
+    foreach ($msg_stack as $key => $msg) {
+      drupal_set_message(t('ThemeKey Debug: ') . ($msg['translate'] ? t($msg['msg'], $msg['placeholder']) : $msg['msg']), 'warning');
+      unset($msg_stack[$key]);
+    }
+  }
+  else {
+    $msg_stack[] = array('msg' => $msg, 'placeholder' => $placeholder, 'translate' => $translate);
   }
 }

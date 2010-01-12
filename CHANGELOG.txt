@@ -4,6 +4,9 @@ ThemeKey 6.x-2.0-rc1, 2009-xx-xx
 ----------------------------------
 [       ] mkalkbrenner: improved ThemeKey's help
 [       ] mkalkbrenner: added a tutorial about Rule Chaining
+[       ] mkalkbrenner: integrated ThemeKey Properties Debug into ThemeKey
+[#681358] mkalkbrenner: debug messages might stop ThemeKey to switch themes
+[       ] mkalkbrenner: added rule matching debugging
 
 
 ThemeKey 6.x-2.0-beta6, 2009-01-07

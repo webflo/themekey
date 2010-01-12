@@ -380,6 +380,6 @@ function _themekey_node_callback(&$item, &$parameters) {
   global $user;
 
   if (1 == $user->uid) {
-    drupal_set_message(t('You uploaded a new version of ThemeKey. Please !link your site!', l(t('update'), '/update.php')));
+    drupal_set_message(t('You uploaded a new version of ThemeKey. Please !link your site!', array('!link' => l(t('update'), '/update.php'))));
   }
 }
