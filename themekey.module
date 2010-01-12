@@ -239,14 +239,17 @@ function themekey_help($path, $arg) {
  */
 function themekey_set_debug_message($msg, $placeholder = array(), $translate = TRUE) {
   static $msg_stack = array();
+  global $user;
 
-  if ('flush' == $msg) {
-    foreach ($msg_stack as $key => $msg) {
-      drupal_set_message(t('ThemeKey Debug: ') . ($msg['translate'] ? t($msg['msg'], $msg['placeholder']) : $msg['msg']), 'warning');
-      unset($msg_stack[$key]);
+  if (1 == $user->uid) {
+    if ('flush' == $msg) {
+      foreach ($msg_stack as $key => $msg) {
+        drupal_set_message(t('ThemeKey Debug: ') . ($msg['translate'] ? t($msg['msg'], $msg['placeholder']) : $msg['msg']), 'warning');
+        unset($msg_stack[$key]);
+      }
     }
-  }
-  else {
-    $msg_stack[] = array('msg' => $msg, 'placeholder' => $placeholder, 'translate' => $translate);
+    else {
+      $msg_stack[] = array('msg' => $msg, 'placeholder' => $placeholder, 'translate' => $translate);
+    }
   }
 }

@@ -22,7 +22,8 @@ function themekey_debug_settings_form() {
     '#type' => 'fieldset',
     '#title' => t('Debug Settings'),
     '#collapsible' => FALSE,
-    '#collapsed' => FALSE
+    '#collapsed' => FALSE,
+    '#description' => t("Debug information will only be visible for site's administrator."),
   );
 
   $form['themekey_debug']['themekey_debug_show_property_values'] = array(
