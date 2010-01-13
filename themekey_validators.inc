@@ -147,7 +147,7 @@ function themekey_validator_ctype_digit($rule) {
  * Validates a Theme Switichng Rule.
  * Allowed Operators: any
  * Allowed values:
- * - configured drupal language as string if operator is "="
+ * - configured drupal language as string or 'neutral' if operator is "="
  * - valid regular expression if operator is "~"
  * - any string for different operators
  *
@@ -176,6 +176,8 @@ function themekey_validator_language($rule) {
   switch ($rule['operator']) {
     case '=':
       $languages = language_list();
+      // add 'neutral' to the list of languages
+      $languages['neutral'] = TRUE;
       if (!array_key_exists($rule['value'], $languages)) {
         $errors['value'] = t('Possible values are %languages', array('%languages' => '"' . implode('", "', array_keys($languages)) . '"'));
       }

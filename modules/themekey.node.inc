@@ -56,7 +56,7 @@ function themekey_node_themekey_properties() {
     'validator' => 'themekey_validator_date',
   );
   $attributes['node:language'] = array(
-    'description' => t('Node: Language - The code of the selected language of a node, formatted like "en" or "de". See !link for the codes of your enabled languages',
+    'description' => t('Node: Language - The code of the selected language of a node (formatted like "en" or "de") or "neutral". See !link for the codes of your enabled languages',
       array('!link' => l('admin/settings/language', 'admin/settings/language'))),
     'validator' => 'themekey_validator_language',
   );
@@ -219,7 +219,11 @@ function themekey_node_nid2created($nid) {
  *   or NULL if no value could be mapped
  */
 function themekey_node_nid2language($nid) {
-  return themekey_node_get_simple_node_property($nid, 'language');
+  $language = themekey_node_get_simple_node_property($nid, 'language');
+  if (empty($language)) {
+    $language = 'neutral';
+  }
+  return $language;
 }
 
 

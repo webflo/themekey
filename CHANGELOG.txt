@@ -3,6 +3,7 @@
 ThemeKey 6.x-2.0-rc1, 2009-xx-xx
 ----------------------------------
 [#682626] mkalkbrenner: added setting to treat paths case sensitive or case insensitive
+[       ] mkalkbrenner: added possible value 'neutral' to property node:language
 
 
 ThemeKey 6.x-2.0-beta7, 2009-01-12
