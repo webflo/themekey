@@ -62,6 +62,12 @@ function themekey_get_path_ancestors($path) {
        $ancestors = array_unique(array_merge($ancestors, themekey_add_path_ancestors($ancestors[$i])));
     }
 
+    if (!variable_get('themekey_path_case_sensitive', 0)) {
+      foreach (array_keys($ancestors) as $key) {
+        $ancestors[$key] = strtolower($ancestors[$key]);
+      }
+    }
+
     $path_ancestors[$path] = array($ancestors, array_fill(0, count($ancestors), "'%s'"));
   }
 
@@ -257,6 +263,10 @@ function themekey_match_condition($condition, &$parameters) {
     // Default operator is 'equal'
     if (empty($condition['operator'])) {
       $condition['operator'] = '=';
+    }
+
+    if ('drupal:path' == $condition['property'] && !variable_get('themekey_path_case_sensitive', 0)) {
+      $condition['value'] = strtolower($condition['value']);
     }
 
     $value = themekey_property_value($parameters, $condition['property']);

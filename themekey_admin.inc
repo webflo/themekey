@@ -430,6 +430,13 @@ function themekey_settings_form() {
     '#collapsed' => FALSE
   );
 
+  $form['settings']['themekey_path_case_sensitive'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Property drupal:path is case sensitive'),
+    '#default_value' => variable_get('themekey_path_case_sensitive', 0),
+    '#description' => t('Drupal paths are case insesitive by default. Modules like Global Redirect might change this behavior.')
+  );
+
   $form['settings']['themekey_allthemes'] = array(
     '#type' => 'checkbox',
     '#title' => t('Provide all themes for selection'),

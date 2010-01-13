@@ -35,7 +35,7 @@ function themekey_debug_settings_form() {
 
   $form['themekey_debug']['themekey_debug_trace_rule_switching'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Trace ThemeKey rule switching '),
+    '#title' => t('Trace ThemeKey rule switching'),
     '#default_value' => variable_get('themekey_debug_trace_rule_switching', FALSE),
     '#description' => t('Prints out detailed information about matching or non matching rules.'),
   );
