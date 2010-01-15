@@ -69,11 +69,18 @@ function themekey_ui_themekey_properties() {
 function themekey_ui_nid2theme($nid) {
   global $custom_theme;
 
-  if ($node = node_load($nid)) {
-    if (!empty($node->themekey_ui_theme) && themekey_check_theme_enabled($node->themekey_ui_theme)) {
-      $custom_theme = $node->themekey_ui_theme;
-      return 'static';
-    }
+  // node_load() must not be called from hook_init().
+  // Therefor we have to execute SQL here using hook_nodeapi().
+  $node = new stdClass();
+  $node->nid = $nid;
+  $node->vid = themekey_node_get_simple_node_property($nid, 'vid');
+  $node->type = themekey_node_get_simple_node_property($nid, 'type');
+
+  themekey_ui_nodeapi($node, 'load');
+
+  if (!empty($node->themekey_ui_theme) && themekey_check_theme_enabled($node->themekey_ui_theme)) {
+    $custom_theme = $node->themekey_ui_theme;
+    return 'static';
   }
 
   return NULL;

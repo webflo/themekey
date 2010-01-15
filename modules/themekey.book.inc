@@ -57,13 +57,7 @@ function themekey_book_themekey_properties() {
  *   or NULL if no value could be mapped
  */
 function themekey_book_nid2bid($nid, $object = NULL) {
-  if ($node = node_load($nid)) {
-    if (!empty($node->book['bid'])) {
-      return $node->book['bid'];
-    }
-  }
-
-  return NULL;
+  return themekey_book_get_simple_book_property($nid, 'bid');
 }
 
 
@@ -83,11 +77,43 @@ function themekey_book_nid2bid($nid, $object = NULL) {
  *   or NULL if no value could be mapped
  */
 function themekey_book_nid2has_children($nid, $object = NULL) {
-  if ($node = node_load($nid)) {
-    if (!empty($node->book['has_children'])) {
-      return $node->book['has_children'];
+  return themekey_book_get_simple_book_property($nid, 'has_children');
+}
+
+
+/**
+ * Helper function that loads a book and returns the
+ * value of a book's property.
+ *
+ * @param $nid
+ *   a node id
+ *
+ * @param $property
+ *   name of a nodes attribute as string
+ *
+ * @return
+ *   the value of the property or NULL
+ */
+function themekey_book_get_simple_book_property($nid, $property) {
+  static $books = array();
+
+  if (!isset($books[$nid])) {
+    $node = new stdClass();
+    $node->nid = $nid;
+
+    // node_load() must not be called from hook_init().
+    // Therefor we have to execute SQL here using book's hook_nodeapi().
+    $info = book_nodeapi($node, 'load', NULL, NULL);
+
+    if (!empty($info['book'])) {
+      $books[$nid] = $info['book'];
     }
   }
 
-  return NULL;
+  if (isset($books[$nid][$property])) {
+    return $books[$nid][$property];
+  }
+  else {
+    return NULL;
+  }
 }

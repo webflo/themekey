@@ -155,11 +155,19 @@ function themekey_node_themekey_paths() {
  *   the value of the property or NULL
  */
 function themekey_node_get_simple_node_property($nid, $property) {
-  // node should already be returned from cache at this point
-  if ($node = node_load($nid)) {
-    return $node->$property;
+  static $nodes = array();
+
+  if (!isset($nodes[$nid])) {
+    // node_load() must not be called from hook_init(). Therefor we have to execute SQL here
+    $nodes[$nid] = db_fetch_array(db_query('SELECT * FROM {node} WHERE nid = %d', $nid));
   }
-  return NULL;
+
+  if (isset($nodes[$nid][$property])) {
+    return $nodes[$nid][$property];
+  }
+  else {
+    return NULL;
+  }
 }
 
 
