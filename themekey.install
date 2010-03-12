@@ -70,7 +70,7 @@ function themekey_uninstall() {
   // Drop tables
   drupal_uninstall_schema('themekey');
   // Remove variables
-  db_query("DELETE FROM {variable} WHERE name LIKE 'themekey_%'");
+  db_query("DELETE FROM {variable} WHERE name LIKE 'themekey_%%'");
   cache_clear_all('variables', 'cache');
 }
 
