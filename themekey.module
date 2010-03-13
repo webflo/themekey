@@ -128,51 +128,53 @@ function themekey_themekey_paths() {
 function themekey_init() {
   global $custom_theme;
 
-  // don't change theme when another module already set a $custom_theme like system.module does (administration theme)
   // don't change theme when administer blocks
-  if (!$custom_theme && strpos($_GET['q'], 'admin/build/block') !== 0) {
-    $theme = themekey_match_rules();
+  if (strpos($_GET['q'], 'admin/build/block') !== 0) {
+    // don't change theme when another module already set a $custom_theme like system.module does (administration theme) until administrator turned on this feature
+    if (!$custom_theme || variable_get('themekey_override_custom_theme', 0)) {
+      $theme = themekey_match_rules();
 
-    // If no theme has been triggered but a theme
-    // is in the user's session, use that theme.
-    if (!$theme && !empty($_SESSION['themekey_theme'])
-        && (!$custom_theme || $custom_theme == variable_get('theme_default', 'garland'))) {
-      $custom_theme = $_SESSION['themekey_theme'];
-      if (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
-        themekey_set_debug_message('ThemeKey Debug: No rule triggered a different theme. Reusing last theme from users session: %custom_theme', array('%custom_theme' => $custom_theme));
+      // If no theme has been triggered but a theme
+      // is in the user's session, use that theme.
+      if (!$theme && !empty($_SESSION['themekey_theme'])
+          && (!$custom_theme || $custom_theme == variable_get('theme_default', 'garland'))) {
+        $custom_theme = $_SESSION['themekey_theme'];
+        if (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
+          themekey_set_debug_message('ThemeKey Debug: No rule triggered a different theme. Reusing last theme from users session: %custom_theme', array('%custom_theme' => $custom_theme));
+        }
       }
-    }
 
-    // We have a theme, apply it
-    if (!empty($theme) && $theme != 'default') {
-      if ((user_is_logged_in() && variable_get('themekey_theme_maintain', 0)) ||
-          (!user_is_logged_in() && variable_get('themekey_theme_maintain_anonymous', 0))) {
-        $_SESSION['themekey_theme'] = $theme;
+      // We have a theme, apply it
+      if (!empty($theme) && $theme != 'default') {
+        if ((user_is_logged_in() && variable_get('themekey_theme_maintain', 0)) ||
+            (!user_is_logged_in() && variable_get('themekey_theme_maintain_anonymous', 0))) {
+          $_SESSION['themekey_theme'] = $theme;
+        }
+        else {
+          unset($_SESSION['themekey_theme']);
+        }
+        $custom_theme = $theme;
+        if (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
+          themekey_set_debug_message('Switching theme to %custom_theme.', array('%custom_theme' => $custom_theme));
+        }
       }
-      else {
-        unset($_SESSION['themekey_theme']);
-      }
-      $custom_theme = $theme;
-      if (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
-        themekey_set_debug_message('Switching theme to %custom_theme.', array('%custom_theme' => $custom_theme));
+      elseif (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
+        if ($custom_theme) {
+          // static rules set $theme to 'default and $cutom_theme directly
+          themekey_set_debug_message('$custom_theme has been set to %custom_theme during rule matching.', array('%custom_theme' => $custom_theme));
+        }
+        else {
+          themekey_set_debug_message('Using default theme.');
+        }
       }
     }
     elseif (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
       if ($custom_theme) {
-        // static rules set $theme to 'default and $cutom_theme directly
-        themekey_set_debug_message('$custom_theme has been set to %custom_theme during rule matching.', array('%custom_theme' => $custom_theme));
+        themekey_set_debug_message('Skipped rule checking because $custom_theme already set to %custom_theme by another module.', array('%custom_theme' => $custom_theme));
       }
-      else {
-        themekey_set_debug_message('Using default theme.');
+      elseif (strpos($_GET['q'], 'admin/build/block') !== 0) {
+        themekey_set_debug_message('Rule checking disabled on block configuration.');
       }
-    }
-  }
-  elseif (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
-    if ($custom_theme) {
-      themekey_set_debug_message('Skipped rule checking because $custom_theme already set to %custom_theme by another module.', array('%custom_theme' => $custom_theme));
-    }
-    elseif (strpos($_GET['q'], 'admin/build/block') !== 0) {
-      themekey_set_debug_message('Rule checking disabled on block configuration.');
     }
   }
 
