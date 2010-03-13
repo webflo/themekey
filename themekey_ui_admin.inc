@@ -254,6 +254,8 @@ function theme_themekey_ui_table($form) {
  * @ingroup themeable
  */
 function theme_themekey_ui_theme_select_form($form) {
+  $rows = array();
+
   foreach (element_children($form) as $key) {
     $row = array();
     if (isset($form[$key]['description']) && is_array($form[$key]['description'])) {
@@ -264,7 +266,9 @@ function theme_themekey_ui_theme_select_form($form) {
     $rows[] = $row;
   }
 
-  $header = array(t('Screenshot'), t('Name'), t('Selected'));
-  $output = theme('table', $header, $rows);
-  return $output;
+  if (empty($rows)) {
+    $header = array(t('Screenshot'), t('Name'), t('Selected'));
+    $output = theme('table', $header, $rows);
+    return $output;
+  }
 }
