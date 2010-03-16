@@ -9,6 +9,7 @@ ThemeKey 6.x-2.0-rc1, 2009-xx-xx
 [#741268] mkalkbrenner: added switch for custom theme overriding
 [#730254] mkalkbrenner: made theme_themekey_ui_theme_select_form more robust
 [       ] mkalkbrenner: fixed default value of checkbox "Retain the theme until a new theme is set for anonymous users"
+[       ] mkalkbrenner: fixed layout of theme selection form element of ThemeKey UI
 
 
 ThemeKey 6.x-2.0-beta7, 2009-01-12

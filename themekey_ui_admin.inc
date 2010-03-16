@@ -266,7 +266,7 @@ function theme_themekey_ui_theme_select_form($form) {
     $rows[] = $row;
   }
 
-  if (empty($rows)) {
+  if (!empty($rows)) {
     $header = array(t('Screenshot'), t('Name'), t('Selected'));
     $output = theme('table', $header, $rows);
     return $output;
