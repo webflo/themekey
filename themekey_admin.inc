@@ -461,7 +461,7 @@ function themekey_settings_form() {
   $form['settings']['themekey_theme_maintain_anonymous'] = array(
     '#type' => 'checkbox',
     '#title' => t('Retain the theme until a new theme is set for anonymous users'),
-    '#default_value' => variable_get('themekey_theme_maintain', 0),
+    '#default_value' => variable_get('themekey_theme_maintain_anonymous', 0),
     '#description' => t('Select this option to have anonymous users stay in the same theme until they browse to a new page with an explicit theme set.
 <br /><b>Warning: This feature is only working correctly if you turn off caching!</b>'),
   );

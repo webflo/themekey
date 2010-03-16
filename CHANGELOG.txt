@@ -8,6 +8,7 @@ ThemeKey 6.x-2.0-rc1, 2009-xx-xx
 [#740412] AlexisWilke: DELETE variables must use %% instead of %
 [#741268] mkalkbrenner: added switch for custom theme overriding
 [#730254] mkalkbrenner: made theme_themekey_ui_theme_select_form more robust
+[       ] mkalkbrenner: fixed default value of checkbox "Retain the theme until a new theme is set for anonymous users"
 
 
 ThemeKey 6.x-2.0-beta7, 2009-01-12
