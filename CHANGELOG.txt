@@ -1,7 +1,7 @@
 // $Id$
 
-ThemeKey 6.x-2.0-rc1, 2009-xx-xx
-----------------------------------
+ThemeKey 6.x-2.0-rc1, 2010-03-16
+--------------------------------
 [#682626] mkalkbrenner: added setting to treat paths case sensitive or case insensitive
 [       ] mkalkbrenner: added possible value 'neutral' to property node:language
 [#684868] mkalkbrenner: Imagecache breaks, avoid node_load() in hook_init()
