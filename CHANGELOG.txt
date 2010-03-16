@@ -11,6 +11,7 @@ ThemeKey 6.x-2.0-rc1, 2009-xx-xx
 [       ] mkalkbrenner: fixed default value of checkbox "Retain the theme until a new theme is set for anonymous users"
 [       ] mkalkbrenner: fixed layout of theme selection form element of ThemeKey UI
 [#701642] will_in_wi, emueller, mkalkbrenner: Editing a node removes theme defined
+[#685108] butler360, mkalkbrenner: ThemeKey won't work correctly until you click 'Save configuration' at ThemeKey settings
 
 
 ThemeKey 6.x-2.0-beta7, 2009-01-12
