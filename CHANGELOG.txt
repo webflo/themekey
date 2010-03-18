@@ -1,5 +1,11 @@
 // $Id$
 
+ThemeKey 6.x-2.0-rc2, 2010-xx-xx
+--------------------------------
+[#745932] mkalkbrenner: property node:type should be set at node/add/XYZ
+[       ] mkalkbrenner: introduced new property drupal:get_q to solve #745932
+
+
 ThemeKey 6.x-2.0-rc1, 2010-03-16
 --------------------------------
 [#682626] mkalkbrenner: added setting to treat paths case sensitive or case insensitive

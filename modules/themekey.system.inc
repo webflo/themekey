@@ -44,6 +44,10 @@ You can then specify conditions for every wildcard argument using the following 
     'description' => t('wildcard of drupal:path'), // TODO DESCRIPTION
     'validator' => 'themekey_validator_wildcard',
   );
+  $attributes['drupal:get_q'] = array(
+    'description' => t('Drupal: $_GET[\'q\'] - Current value of drupal\'s query parameter "q"'),
+    'validator' => '',
+  );
 
 
   return array('attributes' => $attributes);
@@ -58,6 +62,7 @@ function themekey_system_themekey_global() {
 
   $parameters = array();
   $parameters['system:host'] = $_SERVER['HTTP_HOST'];
+  $parameters['drupal:get_q'] = $_GET['q'];
 
   list($ancestors, $placeholders) = themekey_get_path_ancestors($_GET['q']);
   foreach ($ancestors as $ancestor) {

@@ -125,6 +125,9 @@ function themekey_node_themekey_properties() {
   $maps[] = array('src'       => 'node:nid',
                   'dst'       => 'node:title',
                   'callback'  => 'themekey_node_nid2title');
+  $maps[] = array('src'       => 'drupal:get_q',
+                  'dst'       => 'node:type',
+                  'callback'  => 'themekey_node_get_q2type');
 
   return array('attributes' => $attributes, 'maps' => $maps);
 }
@@ -372,6 +375,29 @@ function themekey_node_timestamp2datetime($timestamp) {
  */
 function themekey_node_timestamp2date($timestamp) {
   return date('Y-m-d', $timestamp);
+}
+
+
+/**
+ * ThemeKey mapping function to set a
+ * ThemeKey property's value (destination)
+ * with the aid of another ThemeKey property (source).
+ *
+ * src: drupal path
+ * dst: node type
+ *
+ * @param $patch
+ *   a drupal path
+ *
+ * @return
+ *   string
+ *   or NULL if no value could be mapped
+ */
+function themekey_node_get_q2type($q) {
+  if (strpos($q, 'node/add/') === 0) {
+    return str_replace('-', '_', str_replace('node/add/', '', $q));
+  }
+  return NULL;
 }
 
 
