@@ -128,8 +128,8 @@ function themekey_themekey_paths() {
 function themekey_init() {
   global $custom_theme;
 
-  // don't change theme when administer blocks
-  if (strpos($_GET['q'], 'admin/build/block') !== 0) {
+  // don't change theme when administer blocks or during cron run
+  if (strpos($_GET['q'], 'admin/build/block') !== 0 && strpos($_SERVER['SCRIPT_NAME'], 'cron.php') === FALSE) {
     // don't change theme when another module already set a $custom_theme like system.module does (administration theme) until administrator turned on this feature
     if (!$custom_theme || variable_get('themekey_override_custom_theme', 0)) {
       $theme = themekey_match_rules();
