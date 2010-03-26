@@ -1,10 +1,11 @@
 // $Id$
 
-ThemeKey 6.x-2.0-rc2, 2010-xx-xx
+ThemeKey 6.x-2.0-rc2, 2010-03-26
 --------------------------------
 [#745932] mkalkbrenner: property node:type should be set at node/add/XYZ
 [       ] mkalkbrenner: introduced new property drupal:get_q to solve #745932
 [#707208] mkalkbrenner: Out of Memory - turn off ThemeKey when cron runs
+[#754210] mkalkbrenner: Fatal error when turning off module themekey_debug with debug options enabled
 
 
 ThemeKey 6.x-2.0-rc1, 2010-03-16

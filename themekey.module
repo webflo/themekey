@@ -178,7 +178,7 @@ function themekey_init() {
     }
   }
 
-  if (variable_get('themekey_debug_show_property_values', FALSE)) {
+  if (variable_get('themekey_debug_show_property_values', FALSE) && module_exists('themekey_debug')) {
     themekey_debug_properties();
   }
 
