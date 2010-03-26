@@ -3,7 +3,7 @@
 
 /**
  * @file
- * Database schema of @see themekey.module
+ * Cleans up variables when unistalling  @see themekey_debug.module
  *
  * @author Markus Kalkbrenner | Cocomore AG
  *   @see http://drupal.org/user/124705
