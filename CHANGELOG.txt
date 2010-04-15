@@ -1,5 +1,10 @@
 // $Id$
 
+ThemeKey 6.x-2.0-rc3, 2010-xx-xx
+--------------------------------
+[#771686] AlexisWilke: Errors with E_NOTICE turned on
+
+
 ThemeKey 6.x-2.0-rc2, 2010-03-26
 --------------------------------
 [#745932] mkalkbrenner: property node:type should be set at node/add/XYZ

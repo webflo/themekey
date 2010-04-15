@@ -59,7 +59,7 @@ function themekey_get_path_ancestors($path) {
 
     // REVIEW Is there a more efficient algorithm?
     for ($i = 0; $i < count($ancestors); $i++) {
-       $ancestors = array_unique(array_merge($ancestors, themekey_add_path_ancestors($ancestors[$i])));
+      $ancestors = array_unique(array_merge($ancestors, themekey_add_path_ancestors($ancestors[$i])));
     }
 
     if (!variable_get('themekey_path_case_sensitive', 0)) {
@@ -130,7 +130,7 @@ function themekey_get_global_parameters() {
     while ($item = db_fetch_array($result)) {
       $wildcards = unserialize($item['wildcards']);
       foreach ($wildcards as $index => $wildcard) {
-        $global_parameters[$wildcard] = arg($index, $path);
+        $global_parameters[$wildcard] = arg($index);
       }
 
       $callbacks = unserialize($item['callbacks']);
