@@ -120,14 +120,11 @@ function themekey_match_path($condition, &$parameters) {
  *   whereas a part could be a wildcard
  *
  * @return
- *   boolean
+ *   FALSE if paths doesn't match or array containing
+ *   the wildcards if paths matched
  */
 function themekey_match_path_parts($path_parts, $condition_parts) {
   if (count($path_parts) < count($condition_parts)) {
-    return FALSE;
-  }
-
-  if (count($path_parts) > count($condition_parts) && '%' != $condition_parts[count($condition_parts) - 1]) {
     return FALSE;
   }
 
