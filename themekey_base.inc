@@ -42,71 +42,124 @@ function themekey_invoke_modules($hook) {
 
 
 /**
- * Creates all variants / ancestors of a given path
- * describing this path with unnamed wildcards.
+ * Detects if a ThemeKey rule for property drupal:path
+ * matches to the current page request.
  *
- * @param $path
- *   path as string
+ * @param $condition
+ *   ThemeKey rule as associative array:
+ *   - property (must be "drupal:path")
+ *   - operator
+ *   - value
+ *
+ * @param $parameters
+ *   reference to an array containing all
+ *   ThemeKey properties an their values
  *
  * @return
- *   an array of all path variants / ancestors
+ *   boolean
  */
-function themekey_get_path_ancestors($path) {
-  static $path_ancestors = array();
+function themekey_match_path($condition, &$parameters) {
+  static $alias_uri = '';
 
-  if (empty($path_ancestors[$path])) {
-    $ancestors = array($path);
+  if ('drupal:path' != $condition['property']) {
+    return FALSE;
+  }
 
-    // REVIEW Is there a more efficient algorithm?
-    for ($i = 0; $i < count($ancestors); $i++) {
-      $ancestors = array_unique(array_merge($ancestors, themekey_add_path_ancestors($ancestors[$i])));
-    }
+  if (!variable_get('themekey_path_case_sensitive', 0)) {
+    $condition['value'] = strtolower($condition['value']);
+  }
 
-    if (!variable_get('themekey_path_case_sensitive', 0)) {
-      foreach (array_keys($ancestors) as $key) {
-        $ancestors[$key] = strtolower($ancestors[$key]);
+  $condition_parts = explode('/', $condition['value']);
+
+  $get_q_parts = explode('/', $_GET['q']);
+
+  $wildcards = themekey_match_path_parts($get_q_parts, $condition_parts);
+  if (FALSE === $wildcards && module_exists('path')) {
+    if (empty($alias_uri)) {
+      // Derive path from request_uri
+      $offset = (variable_get('clean_url', 0) ? 0 : 3) + strlen(base_path());
+      $alias_uri = substr(request_uri(), $offset);
+      if (strpos($alias_uri, '?') !== FALSE) {
+        // Remove query string from request uri
+        $alias_uri_parts = explode('?', $alias_uri);
+        $alias_uri = $alias_uri_parts[0];
+      }
+      // For $alias_uri != $_GET['q'] the page was requested using an
+      // aliased path, otherwise get the path alias internally
+      if ($alias_uri == $_GET['q']) {
+        $alias_uri = drupal_get_path_alias($_GET['q']);
       }
     }
 
-    $path_ancestors[$path] = array($ancestors, array_fill(0, count($ancestors), "'%s'"));
+    if ($alias_uri != $_GET['q']) {
+      $alias_parts = explode('/', $alias_uri);
+
+      $wildcards = themekey_match_path_parts($alias_parts, $condition_parts);
+    }
   }
 
-  return $path_ancestors[$path];
+  if (is_array($wildcards)) {
+    $parameters['internal:temp_wildcards'] = $wildcards;
+    return TRUE;
+  }
+
+  $parameters['internal:temp_wildcards'] = array();
+  return FALSE;
 }
 
 
 /**
- * Helper function of @see themekey_get_path_ancestors()
+ * Compares if two paths are identical accepting
+ * wildcards "%" and "#".
  *
- * @param $path
- *   path as string
+ * @param $path_parts
+ *   array containg single parts of a path
+ *
+ * @param $condition_parts
+ *   array containg single parts of a path
+ *   whereas a part could be a wildcard
  *
  * @return
- *   an array of all path variants / ancestors
+ *   boolean
  */
-function themekey_add_path_ancestors($path) {
-  $ancestors = array();
-  $parts = explode('/', $path, PATH_MAX_PARTS);
-  foreach ($parts as $key => $part) {
-    if ('#' == $part || '%' == $part) {
+function themekey_match_path_parts($path_parts, $condition_parts) {
+  if (count($path_parts) < count($condition_parts)) {
+    return FALSE;
+  }
+
+  if (count($path_parts) > count($condition_parts) && '%' != $condition_parts[count($condition_parts) - 1]) {
+    return FALSE;
+  }
+
+  $wildcards = array();
+
+  foreach ($condition_parts as $key => $part) {
+    if ('#' == $part) {
+      if (ctype_digit($path_parts[$key])) {
+        $wildcards[$key] = $path_parts[$key];
+        continue;
+      }
+      return FALSE;
+    }
+
+    if ('%' == $part) {
+      if (isset($path_parts[$key])) {
+        $wildcards[$key] = $path_parts[$key];
+        continue;
+      }
+      return FALSE;
+    }
+
+    if ($part == $path_parts[$key]) {
       continue;
     }
 
-    $slices = array_slice($parts, 0, $key);
-    if (!empty($slices)) {
-      $ancestors[] = implode('/', $slices);
-    }
-
-    if (is_numeric($part) && $part == (int) $part) {
-      $ancestors[] = implode('/', array_merge($slices, array('#'), array_slice($parts, $key + 1)));
-    }
-
-    $slices[] = '%';
-    $ancestors[] = implode('/', $slices);
-    $ancestors[] = implode('/', array_merge($slices, array_slice($parts, $key + 1)));
+    return FALSE;
   }
-  return array_unique($ancestors);
+
+  return $wildcards;
 }
+
 
 
 /**
@@ -123,20 +176,24 @@ function themekey_get_global_parameters() {
   if (is_null($global_parameters)) {
     $global_parameters = module_invoke_all('themekey_global');
 
-    list($ancestors, $placeholders) = themekey_get_path_ancestors($_GET['q']);
+    // TODO don't store paths in database. maybe use a variable.
+    if ($result = db_query('SELECT * FROM {themekey_paths} ORDER BY fit DESC, weight DESC')) {
+      $get_q_parts = explode('/', $_GET['q']);
+      while ($item = db_fetch_array($result)) {
+        $item_parts = explode('/', $item['path']);
+        $wildcards = themekey_match_path_parts($get_q_parts, $item_parts);
+        if (!empty($wildcards)) {
+          $item_wildcards = unserialize($item['wildcards']);
+          foreach ($item_wildcards as $index => $item_wildcard) {
+            $global_parameters[$item_wildcard] = $wildcards[$index];
+          }
 
-    // TODO don't store paths in database. mayby use a variable.
-    $result = db_query('SELECT * FROM {themekey_paths} WHERE path IN ('. implode(',', $placeholders) .') ORDER BY fit DESC, weight DESC', $ancestors);
-    while ($item = db_fetch_array($result)) {
-      $wildcards = unserialize($item['wildcards']);
-      foreach ($wildcards as $index => $wildcard) {
-        $global_parameters[$wildcard] = arg($index);
-      }
-
-      $callbacks = unserialize($item['callbacks']);
-      if (count($callbacks)) {
-        foreach ($callbacks as $callback) {
-          $callback($item, $global_parameters);
+          $callbacks = unserialize($item['callbacks']);
+          if (count($callbacks)) {
+            foreach ($callbacks as $callback) {
+              $callback($item, $global_parameters);
+            }
+          }
         }
       }
     }
@@ -187,17 +244,11 @@ function themekey_match_rule_childs(&$parameters, $parent = 0) {
     while ($item = db_fetch_array($result)) {
       $num_childs++;
       if (themekey_match_condition($item, $parameters)) {
-        if ('drupal:path' == $item['property']) {
+        if ('drupal:path' == $item['property'] && !empty($parameters['internal:temp_wildcards'])) {
           $wildcards = unserialize($item['wildcards']);
           if (!empty($wildcards)) {
-            $path = $_GET['q'];
-            if (!empty($parameters['internal:path_alias']) && !empty($parameters['internal:alias_uri'])) {
-              if (in_array($item['value'], $parameters['internal:path_alias'])) {
-                $path = $parameters['internal:alias_uri'];
-              }
-            }
             foreach ($wildcards as $index => $wildcard) {
-              $parameters[$wildcard] = arg($index, $path);
+              $parameters[$wildcard] = $parameters['internal:temp_wildcards'][$index];
             }
           }
         }
@@ -265,8 +316,8 @@ function themekey_match_condition($condition, &$parameters) {
       $condition['operator'] = '=';
     }
 
-    if ('drupal:path' == $condition['property'] && !variable_get('themekey_path_case_sensitive', 0)) {
-      $condition['value'] = strtolower($condition['value']);
+    if ('drupal:path' == $condition['property']) {
+      return themekey_match_path($condition, $parameters);
     }
 
     $value = themekey_property_value($parameters, $condition['property']);

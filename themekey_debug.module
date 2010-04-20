@@ -30,7 +30,12 @@ function themekey_debug_properties() {
 
       $value = '';
       if (is_null($parameters[$property])) {
-        $value = '<em>empty</em>';
+        if ('drupal:path' == $property) {
+          $value = '<em>no debug information</em>';
+        }
+        else {
+          $value = '<em>empty</em>';
+        }
       }
       else {
         $values = is_array($parameters[$property]) ?  $parameters[$property] : array($parameters[$property]);
