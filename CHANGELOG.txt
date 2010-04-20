@@ -4,6 +4,7 @@ ThemeKey 6.x-2.0-rc3, 2010-xx-xx
 --------------------------------
 [#771686] AlexisWilke: Errors with E_NOTICE turned on
 [#707208] mkalkbrenner: Out of Memory - more effective algorithm to check property drupal:path
+[       ] mkalkbrenner: documented property drupal:path
 
 
 ThemeKey 6.x-2.0-rc2, 2010-03-26
