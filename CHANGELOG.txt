@@ -1,6 +1,11 @@
 // $Id$
 
-ThemeKey 6.x-2.0-rc3, 2010-xx-xx
+ThemeKey 6.x-2.0, 2010-xx-xx
+----------------------------
+[#707208] kfritsche: Out of Memory - removed obsolete constant PATH_MAX_PARTS
+
+
+ThemeKey 6.x-2.0-rc3, 2010-04-20
 --------------------------------
 [#771686] AlexisWilke: Errors with E_NOTICE turned on
 [#707208] mkalkbrenner: Out of Memory - more effective algorithm to check property drupal:path

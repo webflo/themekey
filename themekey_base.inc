@@ -12,8 +12,6 @@
  *   @see http://drupal.org/user/35192
  */
 
-define('PATH_MAX_PARTS', 10);
-
 
 /**
  * Invokes a hook on all modules stored in the global
