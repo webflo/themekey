@@ -19,7 +19,6 @@
  *   @see http://drupal.org/user/35192
  */
 
-require_once(drupal_get_path('module', 'themekey') .'/themekey_base.inc');
 
 /**
  * Implements hook_theme().
@@ -126,17 +125,24 @@ function themekey_themekey_paths() {
  * the current request and sets the global variable $custom_theme.
  */
 function themekey_init() {
-  global $custom_theme;
+  global $theme, $custom_theme;
 
+  if (isset($theme)) {
+    if (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
+      themekey_set_debug_message('Skipped rule checking because another module already initialized the theme engine. $theme has been set to %theme.<br />This seems to be a bug. Visit !link and help us improving other modules.', array('%theme' => $theme, '!link' => l('drupal.org/node/754970', 'http://drupal.org/node/754970')));
+    }
+  }
   // don't change theme when administer blocks or during cron run
-  if (strpos($_GET['q'], 'admin/build/block') !== 0 && strpos($_SERVER['SCRIPT_NAME'], 'cron.php') === FALSE) {
+  elseif (strpos($_GET['q'], 'admin/build/block') !== 0 && strpos($_SERVER['SCRIPT_NAME'], 'cron.php') === FALSE) {
     // don't change theme when another module already set a $custom_theme like system.module does (administration theme) until administrator turned on this feature
     if (!$custom_theme || variable_get('themekey_override_custom_theme', 0)) {
-      $theme = themekey_match_rules();
+      require_once(drupal_get_path('module', 'themekey') .'/themekey_base.inc');
+
+      $theme_candidate = themekey_match_rules();
 
       // If no theme has been triggered but a theme
       // is in the user's session, use that theme.
-      if (!$theme && !empty($_SESSION['themekey_theme'])
+      if (!$theme_candidate && !empty($_SESSION['themekey_theme'])
           && (!$custom_theme || $custom_theme == variable_get('theme_default', 'garland'))) {
         $custom_theme = $_SESSION['themekey_theme'];
         if (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
@@ -145,22 +151,22 @@ function themekey_init() {
       }
 
       // We have a theme, apply it
-      if (!empty($theme) && $theme != 'default') {
+      if (!empty($theme_candidate) && $theme_candidate != 'default') {
         if ((user_is_logged_in() && variable_get('themekey_theme_maintain', 0)) ||
             (!user_is_logged_in() && variable_get('themekey_theme_maintain_anonymous', 0))) {
-          $_SESSION['themekey_theme'] = $theme;
+          $_SESSION['themekey_theme'] = $theme_candidate;
         }
         else {
           unset($_SESSION['themekey_theme']);
         }
-        $custom_theme = $theme;
+        $custom_theme = $theme_candidate;
         if (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
           themekey_set_debug_message('Switching theme to %custom_theme.', array('%custom_theme' => $custom_theme));
         }
       }
       elseif (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
         if ($custom_theme) {
-          // static rules set $theme to 'default and $cutom_theme directly
+          // static rules set $theme_candidate to 'default and $cutom_theme directly
           themekey_set_debug_message('$custom_theme has been set to %custom_theme during rule matching.', array('%custom_theme' => $custom_theme));
         }
         else {
