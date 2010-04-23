@@ -175,7 +175,7 @@ function themekey_rule_chain_form() {
   );
   $form['new_item']['wildcard'] = array(
     '#type' => 'textfield',
-    '#default_value' => $wildcard,
+    '#default_value' => '',
     '#size' => 10,
     '#maxlength' => 255,
   );
