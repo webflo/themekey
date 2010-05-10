@@ -1,6 +1,6 @@
 // $Id$
 
-ThemeKey 6.x-2.0-rc4, 2010-xx-xx
+ThemeKey 6.x-2.0-rc4, 2010-05-10
 --------------------------------
 [#707208] kfritsche: Out of Memory - removed obsolete constant PATH_MAX_PARTS
 [#777312] AlexisWilke, mkalkbrenner: Theme silently not changed when there is a conflict...
