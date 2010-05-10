@@ -222,8 +222,9 @@ function themekey_match_rules() {
  *
  * @return
  *   NULL in case of an error
- *   string name of the theme
- *   FALSE if no more child prperties in the chain
+ *   string name of the theme if child rule matched
+ *   FALSE if no child rule matches
+ *   TRUE if no child properties in the chain
  */
 function themekey_match_rule_childs(&$parameters, $parent = 0) {
   static $child_lookups = array();
@@ -255,6 +256,9 @@ function themekey_match_rule_childs(&$parameters, $parent = 0) {
         $child_lookups[$parent] = themekey_match_rule_childs($parameters, $item['id']);
 
         if (FALSE === $child_lookups[$parent]) {
+          continue;
+        }
+        elseif (TRUE  === $child_lookups[$parent]) {
           if (!themekey_check_theme_enabled($item['theme'])) {
             if (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
               themekey_set_debug_message('Theme disabled: %theme', array('%theme' => $item['theme']));
@@ -273,11 +277,8 @@ function themekey_match_rule_childs(&$parameters, $parent = 0) {
       }
     }
 
-    // No more child properties in the chain
-    if (0 == $num_childs) {
-      $child_lookups[$parent] = FALSE;
-      return $child_lookups[$parent];
-    }
+    $child_lookups[$parent] = (!$num_childs);
+    return $child_lookups[$parent];
   }
 
   $child_lookups[$parent] = NULL;

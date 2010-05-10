@@ -1,11 +1,12 @@
 // $Id$
 
-ThemeKey 6.x-2.0, 2010-xx-xx
-----------------------------
+ThemeKey 6.x-2.0-rc4, 2010-xx-xx
+--------------------------------
 [#707208] kfritsche: Out of Memory - removed obsolete constant PATH_MAX_PARTS
 [#777312] AlexisWilke, mkalkbrenner: Theme silently not changed when there is a conflict...
 [       ] mkalkbrenner: lazy loading of themekey_base.inc
 [#778556] AlexisWilke, mkalkbrenner: Fixed E_NOTICE about $wildcard
+[#756556] mkalkbrenner: Non matching child rules might terminate rule chain evaluation
 
 
 ThemeKey 6.x-2.0-rc3, 2010-04-20
