@@ -70,10 +70,9 @@ function themekey_rebuild() {
   $property_names = array();
   foreach ($attributes as $property_name => $attribute) {
     if (empty($attribute['static'])) {
-      $property_names[] = $property_name;
+      $property_names[$property_name] = $property_name;
     }
   }
-  $property_names = array_combine($property_names, $property_names);
   variable_set('themekey_properties', $property_names);
 
   // Property maps
