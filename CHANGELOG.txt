@@ -1,8 +1,10 @@
 // $Id$
 
-ThemeKey 6.x-2.0, 2010-xx-xx
-----------------------------
+ThemeKey 6.x-2.0-rc5, 2010-05-13
+--------------------------------
 [#796306] mkalkbrenner: fixed warning
+[#797318] mkalkbrenner: Can't configure Themekey - configuration page is blank
+[#797332] mkalkbrenner: undefined function
 
 
 ThemeKey 6.x-2.0-rc4, 2010-05-10
