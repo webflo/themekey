@@ -1,5 +1,10 @@
 // $Id$
 
+ThemeKey 6.x-2.0, 2010-05-14
+----------------------------
+[#797332] mkalkbrenner: undefined function - same in themekey_ui_admin.inc
+
+
 ThemeKey 6.x-2.0-rc5, 2010-05-13
 --------------------------------
 [#796306] mkalkbrenner: fixed warning

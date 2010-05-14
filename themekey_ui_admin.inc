@@ -15,6 +15,7 @@
  *   @see http://drupal.org/user/35192
  */
 
+require_once(drupal_get_path('module', 'themekey') .'/themekey_base.inc');
 require_once(drupal_get_path('module', 'themekey_ui') .'/themekey_ui_helper.inc');
 
 /**
