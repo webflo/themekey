@@ -111,7 +111,7 @@ function themekey_rebuild() {
  */
 function themekey_scan_modules() {
   $modules = array();
-  $files = file_scan_directory(dirname(__FILE__) . '/modules', '\themekey.[a-z]+.inc$');
+  $files = file_scan_directory(dirname(__FILE__) . '/modules', '^themekey.[a-z]+.inc$');
   foreach ($files as $file) {
     list( , $module) = explode('.', $file->name);
     if (module_exists($module)) {
