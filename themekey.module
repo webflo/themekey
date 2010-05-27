@@ -29,7 +29,11 @@ function themekey_theme() {
       'file' => 'themekey_admin.inc',
       'arguments' => array('form' => NULL),
     ),
-  );
+    'themekey_debug_messages' => array(
+      'template' => 'themekey-debug-messages',
+      'arguments' => array('messages' => array()),
+    ),
+    );
   return $items;
 }
 
@@ -187,8 +191,6 @@ function themekey_init() {
   if (variable_get('themekey_debug_show_property_values', FALSE) && module_exists('themekey_debug')) {
     themekey_debug_properties();
   }
-
-  themekey_set_debug_message('flush');
 }
 
 
@@ -251,13 +253,30 @@ function themekey_set_debug_message($msg, $placeholder = array(), $translate = T
 
   if (1 == $user->uid) {
     if ('flush' == $msg) {
+      $messages = array();
       foreach ($msg_stack as $key => $msg) {
-        drupal_set_message(t('ThemeKey Debug: ') . ($msg['translate'] ? t($msg['msg'], $msg['placeholder']) : $msg['msg']), 'warning');
+        $messages[] = $msg['translate'] ? t($msg['msg'], $msg['placeholder']) : $msg['msg'];
         unset($msg_stack[$key]);
+      }
+
+      if (!empty($messages)) {
+        return theme('themekey_debug_messages', $messages);
       }
     }
     else {
       $msg_stack[] = array('msg' => $msg, 'placeholder' => $placeholder, 'translate' => $translate);
     }
   }
+}
+
+
+/**
+ * Implements hook_footer().
+ *
+ * Prints out debug messages for admin user.
+ *
+ * @return string
+ */
+function themekey_footer() {
+  return themekey_set_debug_message('flush');
 }

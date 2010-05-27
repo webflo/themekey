@@ -3,6 +3,7 @@
 ThemeKey 6.x-2.1, 2010-xx-xx
 ----------------------------
 [#808858] mkalkbrenner: Scanning modules may not work
+[#807624] mkalkbrenner: Use of "t()" function can produce wrong theme when using theme_debug
 
 
 ThemeKey 6.x-2.0, 2010-05-14
