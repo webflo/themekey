@@ -148,9 +148,9 @@ function themekey_init() {
       // is in the user's session, use that theme.
       if (!$theme_candidate && !empty($_SESSION['themekey_theme'])
           && (!$custom_theme || $custom_theme == variable_get('theme_default', 'garland'))) {
-        $custom_theme = $_SESSION['themekey_theme'];
+        $theme_candidate = $_SESSION['themekey_theme'];
         if (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
-          themekey_set_debug_message('ThemeKey Debug: No rule triggered a different theme. Reusing last theme from users session: %custom_theme', array('%custom_theme' => $custom_theme));
+          themekey_set_debug_message('ThemeKey Debug: No rule triggered a different theme. Reusing last theme from users session: %custom_theme', array('%custom_theme' => $theme_candidate));
         }
       }
 
@@ -251,7 +251,7 @@ function themekey_set_debug_message($msg, $placeholder = array(), $translate = T
   static $msg_stack = array();
   global $user;
 
-  if (1 == $user->uid) {
+  if (1 == $user->uid || variable_get('themekey_debug_non_admin_users', FALSE)) {
     if ('flush' == $msg) {
       $messages = array();
       foreach ($msg_stack as $key => $msg) {

@@ -30,7 +30,7 @@ function themekey_debug_settings_form() {
     '#type' => 'checkbox',
     '#title' => t('Show ThemeKey properties values'),
     '#default_value' => variable_get('themekey_debug_show_property_values', FALSE),
-    '#description' => t('Shows current values of ThemeKey properties on every page in message box. Additionally you can start creating a corresponding Theme Switching Rule by clicking on a value.'),
+    '#description' => t('Shows current values of ThemeKey properties at the bottom of every page. Additionally you can start creating a corresponding Theme Switching Rule by clicking on a value.'),
   );
 
   $form['themekey_debug']['themekey_debug_trace_rule_switching'] = array(
@@ -38,6 +38,13 @@ function themekey_debug_settings_form() {
     '#title' => t('Trace ThemeKey rule switching'),
     '#default_value' => variable_get('themekey_debug_trace_rule_switching', FALSE),
     '#description' => t('Prints out detailed information about matching or non matching rules.'),
+  );
+
+  $form['themekey_debug']['themekey_debug_non_admin_users'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Show debug information to non admin users'),
+    '#default_value' => variable_get('themekey_debug_non_admin_users', FALSE),
+    '#description' => t('All debug output will be shown to all users including anonymous users. Be carefull in production environments and turn off page caching first!'),
   );
 
   $form['buttons']['submit'] = array(

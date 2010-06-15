@@ -4,6 +4,8 @@ ThemeKey 6.x-2.1, 2010-xx-xx
 ----------------------------
 [#808858] mkalkbrenner: Scanning modules may not work
 [#807624] mkalkbrenner: Use of "t()" function can produce wrong theme when using theme_debug
+[#825868] mkalkbrenner: "Retain the theme until a new theme is set for anonymous users" option is not working
+[       ] mkalkbrenner: Show debug information to non admin users
 
 
 ThemeKey 6.x-2.0, 2010-05-14
