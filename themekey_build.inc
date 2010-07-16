@@ -25,24 +25,30 @@
  *   );
  *
  * @param $default
- *   Boolean to indicate if options array hould contain
- *   'System default' theme. Default is TRUE
+ *   Boolean to indicate if options array should contain
+ *   'System default' theme. Default is TRUE.
+ * @param $admin
+ *   Boolean to indicate if options array should contain
+ *   'Administration theme'. Default is FALSE.
  *
  * @return
  *   options array for a theme select box
  */
-function themekey_theme_options($default = TRUE) {
+function themekey_theme_options($default = TRUE, $admin = FALSE) {
   $themes = list_themes();
   ksort($themes);
 
   $options_themes = array();
   if ($default) {
-    $options_themes['default'] = t('System default');
+    $options_themes['default'] = '=> ' . t('System default');
   }
   foreach ($themes as $theme) {
     if ($theme->status || variable_get('themekey_allthemes', 0)) {
       $options_themes[$theme->name] = $theme->info['name'];
     }
+  }
+  if ($admin) {
+    $options_themes['ThemeKeyAdminTheme'] = '=> ' . t('Administration theme');
   }
 
   return $options_themes;

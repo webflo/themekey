@@ -207,7 +207,12 @@ function themekey_get_global_parameters() {
 function themekey_match_rules() {
   $parameters = themekey_get_global_parameters();
 
-  return themekey_match_rule_childs($parameters);
+  $theme = themekey_match_rule_childs($parameters);
+  if ('ThemeKeyAdminTheme' == $theme) {
+    $theme = variable_get('admin_theme', '0');
+  }
+
+  return $theme;
 }
 
 /**
@@ -472,6 +477,9 @@ function themekey_check_theme_enabled($theme, $settings_page = FALSE) {
   }
 
   if (in_array($theme, $themes_enabled)) {
+    return TRUE;
+  }
+  elseif ('ThemeKeyAdminTheme' == $theme && variable_get('admin_theme', '0') && in_array(variable_get('admin_theme', '0'), $themes_enabled)) {
     return TRUE;
   }
 

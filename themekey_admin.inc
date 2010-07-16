@@ -40,7 +40,7 @@ function themekey_rule_chain_form() {
     drupal_goto('admin/settings/themekey/settings');
   }
 
-  $themes = themekey_theme_options();
+  $themes = themekey_theme_options(TRUE, TRUE);
   $attributes = variable_get('themekey_attributes', array());
   $operators = array(
     '=' => '=',

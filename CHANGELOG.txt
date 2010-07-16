@@ -4,6 +4,7 @@ ThemeKey 6.x-2.2, 2010-xx-xx
 ----------------------------
 [#445538] mkalkbrenner: allow the author himself to select a theme for all his nodes
 [#754978] mkalkbrenner: Completed Debug for non root users/visitors
+[#855026] mkalkbrenner: Add "administration theme", additionally to "System default" in theme select box
 
 
 ThemeKey 6.x-2.1, 2010-06-15
