@@ -18,7 +18,9 @@
 function themekey_debug_properties() {
   global $user;
 
-  if (1 == $user->uid) {
+  if (1 == $user->uid || variable_get('themekey_debug_non_admin_users', FALSE)) {
+    module_load_include('inc', 'themekey', 'themekey_base');
+
     $properties = variable_get('themekey_properties', array());
     $message = t('These are the current values of all available ThemeKey Properties. By clicking the value you can start creating a corresponding Theme Switching Rule.') . '<ul>';
     $parameters = themekey_get_global_parameters();

@@ -1,5 +1,10 @@
 // $Id$
 
+ThemeKey 6.x-2.2, 2010-xx-xx
+----------------------------
+[#754978] mkalkbrenner: Completed Debug for non root users/visitors
+
+
 ThemeKey 6.x-2.1, 2010-06-15
 ----------------------------
 [#808858] mkalkbrenner: Scanning modules may not work
