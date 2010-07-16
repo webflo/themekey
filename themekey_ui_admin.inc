@@ -69,6 +69,13 @@ function themekey_ui_settings_form() {
     }
   }
 
+  $form['themekey_ui']['themekey_ui_author'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Show theme option in user profile'),
+    '#default_value' => variable_get('themekey_ui_author', 0),
+    '#description' => t('Assign themes from create/edit node forms. This will show a \'Theme\' section on create/edit node pages.')
+  );
+
   $form['buttons']['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Save configuration'),
@@ -93,6 +100,7 @@ function themekey_ui_settings_form_submit($form, &$form_state) {
   }
 
   themekey_update_static_rule('themekey_ui:node_triggers_theme', $form_state['values']['themekey_ui_nodeform']);
+  themekey_update_static_rule('themekey_ui:node_author_triggers_theme', $form_state['values']['themekey_ui_author']);
 
   drupal_set_message(t('The configuration options have been saved.'));
 }
@@ -127,7 +135,7 @@ function themekey_ui_theme_select_form(&$form, $title, $description, $default = 
     '#title' => $title,
     '#description' => $description,
     '#collapsible' => TRUE,
-    '#collapsed' => TRUE,
+    '#collapsed' => $collapsed,
     '#theme' => 'themekey_ui_theme_select_form'
   );
 
@@ -164,7 +172,7 @@ function themekey_ui_theme_select_form(&$form, $title, $description, $default = 
 
   if (!is_null($weight)) {
     // if we always set weight to '0' array_splice in themekey_ui_pathalias() will not work
-    $form['#weight'] = $weight;
+    $form['themekey_ui_themes']['#weight'] = $weight;
   }
 }
 

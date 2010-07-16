@@ -11,6 +11,9 @@
  * ThemeKey UI adds a theme option to the 'URL aliases' administration
  * if module "Path" is enabled.
  *
+ * ThemeKey UI adds a form element to user profile for theming all
+ * nodes created by this user.
+ *
  * @see themekey.module
  *
  * @author Markus Kalkbrenner | Cocomore AG
@@ -41,12 +44,22 @@ function themekey_ui_themekey_properties() {
     'static' => TRUE,
   );
 
+  $attributes['themekey_ui:node_author_triggers_theme'] = array(
+    'description' => t("Property themekey_ui:node_author_triggers_theme could not be selected from the property drop down. You get this static property by activating !link. Afterwards you can move the property to any position in the rule chain. When done it triggers the switch to the theme the author selected for his nodes in his user profile.",
+                       array('!link' => l(t('Show theme option in user profile'), 'admin/settings/themekey/settings/ui'))),
+    'static' => TRUE,
+  );
+
   // Mapping functions
   $maps = array();
 
   $maps[] = array('src'       => 'node:nid',
                   'dst'       => 'themekey_ui:node_triggers_theme',
                   'callback'  => 'themekey_ui_nid2theme');
+
+  $maps[] = array('src'       => 'node:nid',
+                  'dst'       => 'themekey_ui:node_author_triggers_theme',
+                  'callback'  => 'themekey_ui_author2theme');
 
   return array('attributes' => $attributes, 'maps' => $maps);
 }
@@ -88,6 +101,36 @@ function themekey_ui_nid2theme($nid) {
 
 
 /**
+ * This function implements the interface of a ThemeKey
+ * mapping function but doesn't set a ThemeKey property's
+ * value. It sets the global variable $custom_theme to a
+ * theme directly which will cause ThemeKey to use this
+ * theme.
+ *
+ * @param $nid
+ *   a node id, current value of ThemeKey property node:nid
+ *
+ * @return
+ *   string "static" if global custom theme has been set
+ *   or NULL if no theme has been assigned to the node
+ */
+function themekey_ui_author2theme($nid) {
+  global $custom_theme;
+
+  // node_load() must not be called from hook_init().
+  // Therefor we have to execute SQL here.
+  if ($theme = db_result(db_query("SELECT theme FROM {node} JOIN {themekey_ui_author_theme} USING (uid) WHERE nid = %d", $nid))) {
+    if ('default' != $theme) {
+      $custom_theme = $theme;
+      return 'static';
+    }
+  }
+
+  return NULL;
+}
+
+
+/**
  * Implements hook_theme().
  */
 function themekey_ui_theme() {
@@ -106,7 +149,7 @@ function themekey_ui_theme() {
  * Implements hook_perm().
  */
 function themekey_ui_perm() {
-  return array('assign node themes', 'assign path alias themes');
+  return array('assign node themes', 'assign path alias themes', 'assign theme to own nodes');
 }
 
 
@@ -134,11 +177,24 @@ function themekey_ui_menu() {
  * Implements hook_form_alter().
  */
 function themekey_ui_form_alter(&$form, $form_state, $form_id) {
-  if ($form_id == 'path_admin_form') {
+  if ('path_admin_form' == $form_id) {
     // path aliases form
     if (user_access('assign path alias themes') && variable_get('themekey_ui_pathalias', 0)) {
       module_load_include('inc', 'themekey_ui', 'themekey_ui_admin');
       themekey_ui_pathalias($form);
+    }
+  }
+  elseif ('user_profile_form' == $form_id) {
+    if (user_access('assign theme to own nodes') && variable_get('themekey_ui_author', 0)) {
+      module_load_include('inc', 'themekey_ui', 'themekey_ui_admin');
+
+      // to avoid a sql query to load his nodes themes every time a user is loaded we do this query here
+      $theme = FALSE;
+      if (!empty($form['#uid'])) {
+        $theme = db_result(db_query("SELECT theme FROM {themekey_ui_author_theme} WHERE uid = %d", $form['#uid']));
+      }
+
+      themekey_ui_theme_select_form($form, t('Theme configuration for my nodes'), t('Every node I create will be shown to other users using this theme.'), $theme ? $theme : 'default', $form['theme_select']['#weight'], FALSE);
     }
   }
   else {
@@ -198,6 +254,36 @@ function themekey_ui_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
 
     case 'delete':
       db_query('DELETE FROM {themekey_ui_node_theme} WHERE nid = %d', $node->nid);
+      break;
+  }
+}
+
+/**
+ * Implements hook_user()
+ */
+function themekey_ui_user($op, &$edit, &$account, $category = NULL) {
+  switch ($op) {
+    case 'insert':
+    case 'update':
+      if (user_access('assign theme to own nodes') && variable_get('themekey_ui_author', 0) && !empty($edit['themekey_ui_theme'])) {
+        $author_theme = array(
+          'uid' => $account->uid,
+          'theme' => $edit['themekey_ui_theme'],
+        );
+
+        if (db_result(db_query("SELECT 1 FROM {themekey_ui_author_theme} WHERE uid = %d", $account->uid))) {
+          drupal_write_record('themekey_ui_author_theme', $author_theme, array('uid'));
+        }
+        else {
+          drupal_write_record('themekey_ui_author_theme', $author_theme);
+        }
+
+        $edit['themekey_ui_theme'] = NULL;
+      }
+      break;
+
+    case 'delete':
+      db_query("DELETE FROM {themekey_ui_author_theme} WHERE uid = %d", $account->uid);
       break;
   }
 }
