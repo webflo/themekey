@@ -69,7 +69,8 @@ function themekey_match_path($condition, &$parameters) {
 
   $condition_parts = explode('/', $condition['value']);
 
-  $get_q_parts = explode('/', $_GET['q']);
+  $get_q = themekey_get_q();
+  $get_q_parts = explode('/', $get_q);
 
   $wildcards = themekey_match_path_parts($get_q_parts, $condition_parts);
   if (FALSE === $wildcards && module_exists('path')) {
@@ -84,12 +85,12 @@ function themekey_match_path($condition, &$parameters) {
       }
       // For $alias_uri != $_GET['q'] the page was requested using an
       // aliased path, otherwise get the path alias internally
-      if ($alias_uri == $_GET['q']) {
-        $alias_uri = drupal_get_path_alias($_GET['q']);
+      if ($alias_uri == $get_q) {
+        $alias_uri = drupal_get_path_alias($get_q);
       }
     }
 
-    if ($alias_uri != $_GET['q']) {
+    if ($alias_uri != $get_q) {
       $alias_parts = explode('/', $alias_uri);
 
       $wildcards = themekey_match_path_parts($alias_parts, $condition_parts);
@@ -173,7 +174,7 @@ function themekey_get_global_parameters() {
 
     // TODO don't store paths in database. maybe use a variable.
     if ($result = db_query('SELECT * FROM {themekey_paths} ORDER BY fit DESC, weight DESC')) {
-      $get_q_parts = explode('/', $_GET['q']);
+      $get_q_parts = explode('/', themekey_get_q());
       while ($item = db_fetch_array($result)) {
         $item_parts = explode('/', $item['path']);
         $wildcards = themekey_match_path_parts($get_q_parts, $item_parts);

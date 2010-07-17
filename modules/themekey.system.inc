@@ -100,7 +100,7 @@ function themekey_system_themekey_global() {
 
   $parameters = array();
   $parameters['system:host'] = $_SERVER['HTTP_HOST'];
-  $parameters['drupal:get_q'] = $_GET['q'];
+  $parameters['drupal:get_q'] = themekey_get_q();
 
   return $parameters;
 }

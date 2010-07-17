@@ -6,6 +6,7 @@ ThemeKey 6.x-2.2, 2010-xx-xx
 [#754978] mkalkbrenner: Completed Debug for non root users/visitors
 [#855026] mkalkbrenner: Add "administration theme", additionally to "System default" in theme select box
 [       ] mkalkbrenner: fixed debug message on block configuration page
+[#567222] JMTorres, mkalkbrenner: ajax views do not work with the themekey module
 
 
 ThemeKey 6.x-2.1, 2010-06-15

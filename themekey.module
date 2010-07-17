@@ -282,3 +282,27 @@ function themekey_set_debug_message($msg, $placeholder = array(), $translate = T
 function themekey_footer() {
   return themekey_set_debug_message('flush');
 }
+
+
+/**
+ * Returns the content of $_GET['q'] as expected.
+ * Therefor $_GET['q'] gets transformed if necessary.
+ * P.e. ajax views rewrites the q parameter.
+ *
+ * @return string
+ */
+function themekey_get_q() {
+  static $get_q = '';
+
+  if (empty($get_q)) {
+    if ('views/ajax' == $_GET['q'] && !empty($_GET['view_path'])) {
+      // required for ajax views. see http://drupal.org/node/567222
+      $get_q = $_GET['view_path'];
+    }
+    else {
+      $get_q = $_GET['q'];
+    }
+  }
+
+  return $get_q;
+}
