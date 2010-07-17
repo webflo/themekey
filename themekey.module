@@ -182,9 +182,11 @@ function themekey_init() {
       if ($custom_theme) {
         themekey_set_debug_message('Skipped rule checking because $custom_theme already set to %custom_theme by another module.', array('%custom_theme' => $custom_theme));
       }
-      elseif (strpos($_GET['q'], 'admin/build/block') !== 0) {
-        themekey_set_debug_message('Rule checking disabled on block configuration.');
-      }
+    }
+  }
+  elseif (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
+    if (strpos($_GET['q'], 'admin/build/block') !== 0) {
+      themekey_set_debug_message('Rule checking disabled on block configuration.');
     }
   }
 
