@@ -1,6 +1,6 @@
 // $Id$
 
-ThemeKey 6.x-2.2, 2010-xx-xx
+ThemeKey 6.x-2.2, 2010-07-19
 ----------------------------
 [#445538] mkalkbrenner: allow the author himself to select a theme for all his nodes
 [#754978] mkalkbrenner: Completed Debug for non root users/visitors
