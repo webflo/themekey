@@ -26,13 +26,11 @@ function themekey_system_themekey_properties() {
     'validator' => 'themekey_validator_http_host',
   );
   $attributes['drupal:path'] = array(
-    'description' => t('Drupal: Drupal path like "node/add/story" or path alias with support for wildcards<br />
-Wildcard characters are "#" for numeric parts and "%" for all characters. To match conditions
-against a certain part, use an identifier with the wildcard. For example "comment/reply/#xyz" matches all paths with
-"comment/reply" and a numeric third argument. You can then specify conditions for every wildcard argument using
-the property "drupal:path:wildcard" and the identifier you choose ("xyz" in this example).<br />
-These are the possible wildcard replacements for foo/bar/42/test.html:
-<pre>
+    'description' => t('Drupal: Drupal path like "node/add/story" or path alias with support for wildcards.<br />
+Query parameters are stripped off before the path gets examined. P.e. "node/add/story?destination=node" becomes "node/add/story" first. If you want to access query parameters have a look at property system:query_param provided by !link.<br />
+Wildcard characters are "#" for numeric parts and "%" for all characters. To match conditions against a certain part, use an identifier with the wildcard. For example "comment/reply/#xyz" matches all paths with "comment/reply" and a numeric third argument. You can then specify conditions for every wildcard argument using the property "drupal:path:wildcard" and the identifier you choose ("xyz" in this example).<br />
+These are the possible wildcard replacements for foo/bar/42/test.html:', array('!link' => l('ThemeKey Properties', 'http://drupal.org/project/themekey_properties'))) .
+'<pre>
 foo/bar/42/test.html
 foo/bar/42/%
 foo/bar/42
@@ -75,7 +73,7 @@ foo
 %/%/#
 %/%
 %
-</pre>'),
+</pre>',
     'validator' => 'themekey_validator_drupal_path',
   );
   $attributes['drupal:path:wildcard'] = array(

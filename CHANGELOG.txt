@@ -1,5 +1,10 @@
 // $Id$
 
+ThemeKey 6.x-2.3, 2010-07-19
+----------------------------
+[       ] mkalkbrenner: improved some descriptions
+
+
 ThemeKey 6.x-2.2, 2010-07-19
 ----------------------------
 [#445538] mkalkbrenner: allow the author himself to select a theme for all his nodes
