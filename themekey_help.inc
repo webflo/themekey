@@ -136,6 +136,12 @@ Value: 1
  * @see themekey_help()
  */
 function themekey_help_properties_form($collapsed = TRUE) {
+  $page_cache = array(
+    THEMEKEY_PAGECACHE_UNSUPPORTED => t('Unsupported!<br />If you enable page caching on your system you have to ensure that any rule using this property is wrapped by a different rule that excludes anonymous users like "user:uid > 0".'),
+    THEMEKEY_PAGECACHE_SUPPORTED => t('Supported'),
+    THEMEKEY_PAGECACHE_TIMEBASED => t('Supported in combination with ThemeKey Cron that deletes the page cache automatically depending on your rules.<br />If you enable page caching on your system without having ThemeKey Cron activated you have to ensure that any rule using this property is wrapped by a different rule that excludes anonymous users like "user:uid > 0".'),
+  );
+
   $attributes = variable_get('themekey_attributes', array());
 
   $form['themekey_help_properties'] = array(
@@ -155,7 +161,14 @@ function themekey_help_properties_form($collapsed = TRUE) {
 
     $form['themekey_help_properties'][$property]['item'] = array(
       '#type' => 'item',
+      '#title' => t('Description'),
       '#value' => $attribute['description'],
+    );
+
+    $form['themekey_help_properties'][$property]['page_cache'] = array(
+      '#type' => 'item',
+      '#title' => t('Page Cache'),
+      '#value' => $page_cache[$attribute['page cache']],
     );
   }
 
