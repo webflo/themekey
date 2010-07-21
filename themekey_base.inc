@@ -170,25 +170,21 @@ function themekey_get_global_parameters() {
   static $global_parameters = NULL;
 
   if (is_null($global_parameters)) {
-    $global_parameters = module_invoke_all('themekey_global');
+    $global_parameters = array_merge_recursive(themekey_invoke_modules('themekey_global'), module_invoke_all('themekey_global'));
 
-    // TODO don't store paths in database. maybe use a variable.
-    if ($result = db_query('SELECT * FROM {themekey_paths} ORDER BY fit DESC, weight DESC')) {
-      $get_q_parts = explode('/', themekey_get_q());
-      while ($item = db_fetch_array($result)) {
-        $item_parts = explode('/', $item['path']);
-        $wildcards = themekey_match_path_parts($get_q_parts, $item_parts);
-        if (!empty($wildcards)) {
-          $item_wildcards = unserialize($item['wildcards']);
-          foreach ($item_wildcards as $index => $item_wildcard) {
-            $global_parameters[$item_wildcard] = $wildcards[$index];
-          }
+    $get_q_parts = explode('/', themekey_get_q());
+    $paths = variable_get('themekey_paths', array());
+    foreach ($paths as $item) {
+      $item_parts = explode('/', $item['path']);
+      $wildcards = themekey_match_path_parts($get_q_parts, $item_parts);
+      if (!empty($wildcards)) {
+        foreach ($item['wildcards'] as $index => $item_wildcard) {
+          $global_parameters[$item_wildcard] = $wildcards[$index];
+        }
 
-          $callbacks = unserialize($item['callbacks']);
-          if (count($callbacks)) {
-            foreach ($callbacks as $callback) {
-              $callback($item, $global_parameters);
-            }
+        if (count($item['callbacks'])) {
+          foreach ($item['callbacks'] as $callback) {
+            $callback($item, $global_parameters);
           }
         }
       }

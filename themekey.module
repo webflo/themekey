@@ -95,33 +95,6 @@ function themekey_menu() {
 
 
 /**
- * Implements hook_themekey_properties().
- */
-function themekey_themekey_properties() {
-  require_once(drupal_get_path('module', 'themekey') .'/themekey_build.inc');
-  return themekey_invoke_modules('themekey_properties');
-}
-
-
-/**
- * Implements hook_themekey_global().
- */
-function themekey_themekey_global() {
-  require_once(drupal_get_path('module', 'themekey') .'/themekey_build.inc');
-  return themekey_invoke_modules('themekey_global');
-}
-
-
-/**
- * Implements hook_themekey_paths().
- */
-function themekey_themekey_paths() {
-  require_once(drupal_get_path('module', 'themekey') .'/themekey_build.inc');
-  return themekey_invoke_modules('themekey_paths');
-}
-
-
-/**
  * Implements hook_init().
  *
  * Here happens all the magic of ThemeKey.

@@ -31,6 +31,8 @@ require_once(drupal_get_path('module', 'themekey') .'/themekey_build.inc');
  * @ingroup forms
  */
 function themekey_rule_chain_form() {
+  // scan for new properties provided by other modules
+  themekey_rebuild();
 
   themekey_admin_theme_warning();
 
@@ -423,10 +425,6 @@ function themekey_rule_chain_form_submit($form, &$form_state) {
  * @ingroup forms
  */
 function themekey_settings_form() {
-  // REVIEW rebuild is called to many times
-  // REVIEW isn't there a better place for this?
-  themekey_rebuild();
-
   $form['settings'] = array(
     '#type' => 'fieldset',
     '#title' => t('General Settings'),

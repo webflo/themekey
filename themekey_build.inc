@@ -66,7 +66,7 @@ function themekey_rebuild() {
   themekey_scan_modules();
 
   // Get property definitions (from internal and other modules)
-  $properties = module_invoke_all('themekey_properties');
+  $properties = array_merge_recursive(themekey_invoke_modules('themekey_properties'), module_invoke_all('themekey_properties'));
 
   // Attributes
   $attributes = isset($properties['attributes']) ? $properties['attributes'] : array();
@@ -85,24 +85,26 @@ function themekey_rebuild() {
   $maps = isset($properties['maps']) ? $properties['maps'] : array();
   variable_set('themekey_maps', $maps);
 
-  // Find all previous registered paths
-  $obsolete_paths = array();
-  $result = db_query('SELECT id, path FROM {themekey_paths}');
-  while ($item = db_fetch_array($result)) {
-    $obsolete_paths[$item['id']] = $item['path'];
-  }
   // Get (and register) paths from themekey modules
-  $paths = module_invoke_all('themekey_paths');
+  $paths = array_merge_recursive(themekey_invoke_modules('themekey_paths'), module_invoke_all('themekey_paths'));
+  // assign fit factor and wight to this item
+  array_walk($paths, 'themekey_path_set');
+
+  $paths_sort = array();
   foreach ($paths as $item) {
-    themekey_path_set($item);
-    if (isset($item['id'])) {
-      unset($obsolete_paths[$item['id']]);
+    $paths_sort[$item['fit']][$item['weight']][] = $item;
+  }
+  ksort($paths_sort, SORT_NUMERIC);
+
+  $paths = array();
+  foreach (array_reverse($paths_sort) as $same_weight) {
+    ksort($same_weight, SORT_NUMERIC);
+    foreach (array_reverse($same_weight) as $item) {
+      $paths[] = $item;
     }
   }
-  // Unregister obsolete paths
-  foreach (array_keys($obsolete_paths) as $id) {
-    themekey_path_del($id);
-  }
+
+  variable_set('themekey_paths', $paths);
 }
 
 
@@ -161,8 +163,9 @@ function themekey_complete_path(&$item) {
 
 
 /**
- * Stores ThemeKey paths created by modules
- * via hook_themekey_paths() in database.
+ * Examines ThemeKey paths created by modules
+ * via hook_themekey_paths() in database and
+ * assignes a fit factor and a wight.
  *
  * @see themekey_rebuild()
  *
@@ -174,22 +177,6 @@ function themekey_path_set(&$item) {
   $item['callbacks'] = (isset($item['callbacks']) && !empty($item['callbacks'])) ? $item['callbacks'] : array();
 
   list($item['fit'], $item['weight'], $item['wildcards']) = themekey_prepare_path($item['path']);
-
-  drupal_write_record('themekey_paths', $item, isset($item['id']) ? 'id' : array());
-}
-
-
-/**
- * Deletes a ThemeKey paths formally created by
- * modules via hook_themekey_paths() from database.
- *
- * @see themekey_rebuild()
- *
- * @param $id
- *   the id of a ThemeKey path
- */
-function themekey_path_del($id) {
-  db_query('DELETE FROM {themekey_paths} WHERE id = %d', $id);
 }
 
 
