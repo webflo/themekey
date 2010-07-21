@@ -24,6 +24,7 @@ function themekey_system_themekey_properties() {
   $attributes['system:host'] = array(
     'description' => t('System: HTTP_HOST - The hostname/domain of the site without http:// or https://, like "www.drupal.org" or "drupal.cocomore.com"'),
     'validator' => 'themekey_validator_http_host',
+    'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
   $attributes['drupal:path'] = array(
     'description' => t('Drupal: Drupal path like "node/add/story" or path alias with support for wildcards.<br />
@@ -75,14 +76,17 @@ foo
 %
 </pre>',
     'validator' => 'themekey_validator_drupal_path',
+    'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
   $attributes['drupal:path:wildcard'] = array(
     'description' => t('Wildcard of "drupal:path". See explaination of "drupal:path" for details.'),
     'validator' => 'themekey_validator_wildcard',
+    'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
   $attributes['drupal:get_q'] = array(
     'description' => t('Drupal: $_GET[\'q\'] - Current value of drupal\'s query parameter "q"'),
     'validator' => '',
+    'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
 
 

@@ -25,14 +25,17 @@ function themekey_taxonomy_themekey_properties() {
     'description' => t('Taxonomy: Vocabulary - The vocabulary id (vid) of a taxonomy vocabulary. See !link for your vocabularies.',
       array('!link' => l('admin/content/taxonomy', 'admin/content/taxonomy'))),
     'validator' => 'themekey_validator_ctype_digit',
+    'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
   $attributes['taxonomy:tid'] = array(
     'description' => t('Taxonomy: Term - The term id (tid) of a taxonomy term.'),
     'validator' => 'themekey_validator_ctype_digit',
+    'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
   $attributes['taxonomy:tid_and_childs'] = array(
     'description' => t('Taxonomy: Term and its childs - The term id (tid) of a taxonomy term. If set all child terms of this term will be used too.'),
     'validator' => 'themekey_validator_ctype_digit',
+    'page cache' => THEMEKEY_PAGECACHE_UNSUPPORTED,
   );
 
   // Mapping functions

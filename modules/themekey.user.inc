@@ -26,20 +26,24 @@ function themekey_user_themekey_properties() {
     'description' => t("User: Hostname - The user hostname property which is the IP address of client machine, adjusted for reverse proxy. Text from Drupal bootstrap.inc:
       If Drupal is behind a reverse proxy, we use the X-Forwarded-For header instead of \$_SERVER['REMOTE_ADDR'], which would be the IP address of the proxy server, and not the client's."),
     'validator' => 'themekey_validator_http_host',
+    'page cache' => THEMEKEY_PAGECACHE_UNSUPPORTED,
   );
   $attributes['user:language'] = array(
     'description' => t('User: Language - The language the user has set in the settings of his profile page.
       Format is the language code (for example "en" for english or "de" for german) that can be found on !link.',
       array('!link' => l('admin/settings/language', 'admin/settings/language'))),
     'validator' => 'themekey_validator_language',
+    'page cache' => THEMEKEY_PAGECACHE_UNSUPPORTED,
   );
   $attributes['user:name'] = array(
     'description' => t('User: Name - The username of the user. See !link for your users.', array('!link' => l('admin/user/user/list', 'admin/user/user/list'))),
+    'page cache' => THEMEKEY_PAGECACHE_UNSUPPORTED,
   );
   $attributes['user:uid'] = array(
     'description' => t('User: ID - The id of the user (uid). The user id can be found in the URL of the users profile page, "user/23" or "user/23/edit" (23 = uid). See !link for your users.',
       array('!link' => l('admin/user/user/list', 'admin/user/user/list'))),
     'validator' => 'themekey_validator_ctype_digit',
+    'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
 
   return array('attributes' => $attributes);

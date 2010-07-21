@@ -34,57 +34,70 @@ function themekey_node_themekey_properties() {
   $attributes['node:changed'] = array(
     'description' => t('Node: Changed date - The date when the node was last edited/updated, formatted as unix timestamp like "1248873565".'),
     'validator' => 'themekey_validator_ctype_digit',
+    'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
   $attributes['node:created'] = array(
     'description' => t('Node: Created date - The date when the node was created, formatted as unix timestamp like "1248873565".'),
     'validator' => 'themekey_validator_ctype_digit',
+    'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
   $attributes['node:changed_date_time'] = array(
     'description' => t('Node: Changed date - The date including the time when the node was last edited/updated, formatted like "2009-12-24 18:13:24"'),
     'validator' => 'themekey_validator_date_time',
+    'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
   $attributes['node:created_date_time'] = array(
     'description' => t('Node: Created date - The date including the time when the node was created, formatted like "2009-12-24 18:13:24"'),
     'validator' => 'themekey_validator_date_time',
+    'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
   $attributes['node:changed_date'] = array(
     'description' => t('Node: Changed date - The date without the time when the node was last edited/updated, formatted like "2009-12-24"'),
     'validator' => 'themekey_validator_date',
+    'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
   $attributes['node:created_date'] = array(
     'description' => t('Node: Created date - The date without the time when the node was created, formatted like "2009-12-24"'),
     'validator' => 'themekey_validator_date',
+    'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
   $attributes['node:language'] = array(
     'description' => t('Node: Language - The code of the selected language of a node (formatted like "en" or "de") or "neutral". See !link for the codes of your enabled languages',
       array('!link' => l('admin/settings/language', 'admin/settings/language'))),
     'validator' => 'themekey_validator_language',
+    'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
   $attributes['node:nid'] = array(
     'description' => t('Node: ID - The id of a node (nid), can be found in the URL of the node, "node/23" or "node/23/edit" (23 = nid)'),
     'validator' => 'themekey_validator_ctype_digit',
+    'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
   $attributes['node:promote'] = array(
     'description' => t('Node: Promoted - If the node is promoted to the front page. Possible values are "0" for true and "1" for false.'),
     'validator' => 'themekey_validator_nummeric_boolean',
+    'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
   $attributes['node:sticky'] = array(
     'description' => t('Node: Sticky - If the node is set "Sticky at top of lists". Possible values are "0" for true and "1" for false.'),
     'validator' => 'themekey_validator_nummeric_boolean',
+    'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
   $attributes['node:type'] = array(
     'description' => t('Node: Type - The machine readable content type of the node. See !link for your content types (use column "Type"). Drupal default types are "page" and "story".',
       array('!link' => l('admin/content/types', 'admin/content/types'))),
     'validator' => 'themekey_validator_node_type',
+    'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
   $attributes['node:uid'] = array(
     'description' => t('Node: User ID - The user id (uid) of the author of the node. The user id can be found in the URL of the users profile page, "user/23" or "user/23/edit" (23 = uid). See !link for your users.',
       array('!link' => l('admin/user/user/list', 'admin/user/user/list'))),
     'validator' => 'themekey_validator_ctype_digit',
+    'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
   $attributes['node:title'] = array(
     'description' => t('Node: Title - The title of the node.'),
     'validator' => '',
+    'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
 
   // Mapping functions

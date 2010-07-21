@@ -23,6 +23,7 @@ function themekey_locale_themekey_properties() {
     'description' => t('Locale: Language - The code of the current site language, formatted like "en" or "de". See !link for your the codes of the enabled languages',
       array('!link' => l('admin/settings/language', 'admin/settings/language'))),
     'validator' => 'themekey_validator_language',
+    'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
 
   return array('attributes' => $attributes);
