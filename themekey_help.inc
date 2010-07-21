@@ -23,7 +23,13 @@ function themekey_help_tutorials_form($collapsed = TRUE) {
     '#type' => 'fieldset',
     '#title' => t('Rule Chaining: Using a special theme for content creation depending on user roles'),
     '#collapsible' => TRUE,
-    '#collapsed' => $form['themekey_help_tutorials']['#collapsed'],
+    '#collapsed' => TRUE,
+  );
+
+  $form['themekey_help_tutorials']['Rule Chaining: Using a special theme for content creation depending on user roles']['author'] = array(
+    '#type' => 'item',
+    '#title' => t('Author'),
+    '#value' => l('mkalkbrenner', 'http://drupal.org/user/124705'),
   );
 
   $img_path = base_path() . drupal_get_path('module', 'themekey') . '/img/tutorials/';
@@ -54,6 +60,24 @@ function themekey_help_tutorials_form($collapsed = TRUE) {
 '<img src="' . $img_path . 'iphone_create_content_pages.png" alt="' . t('Sophisticated ThemeKey rule chain') . '" /></p>' .
 '<p>' . t('Have Fun!') . '</p>',
     );
+
+  $form['themekey_help_tutorials']['Rule Chaining: Using a special theme for content creation depending on user roles']['versions'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Versions used to create this tutorial'),
+    '#collapsible' => FALSE,
+  );
+
+  $form['themekey_help_tutorials']['Rule Chaining: Using a special theme for content creation depending on user roles']['versions']['themekey'] = array(
+    '#type' => 'item',
+    '#title' => t('ThemeKey'),
+    '#value' => '6.x-2.0',
+  );
+
+  $form['themekey_help_tutorials']['Rule Chaining: Using a special theme for content creation depending on user roles']['versions']['themekey_ui'] = array(
+    '#type' => 'item',
+    '#title' => t('ThemeKey Properties'),
+    '#value' => '6.x-2.0',
+  );
 
   return $form;
 }

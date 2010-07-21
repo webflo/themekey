@@ -197,6 +197,10 @@ function themekey_ui_form_alter(&$form, $form_state, $form_id) {
       themekey_ui_theme_select_form($form, t('Theme configuration for my nodes'), t('Every node I create will be shown to other users using this theme.'), $theme ? $theme : 'default', $form['theme_select']['#weight'], FALSE);
     }
   }
+  elseif ('themekey_help_tutorials_form' == $form_id) {
+    module_load_include('inc', 'themekey_ui', 'themekey_ui_help');
+    themekey_ui_help_tutorials($form);
+  }
   else {
     // node form?
     if (variable_get('themekey_ui_nodeform', 0) && user_access('assign node themes')) {
