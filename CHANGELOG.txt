@@ -10,6 +10,7 @@ ThemeKey 6.x-3.0-alpha1, 2010-xx-xx
 [#812114] mkalkbrenner: fast deletion of page cache after modifications to user profile theme setting
 [#812114] mkalkbrenner: wildcard deletion of page cache after modifications to path alias theme setting
 [#812114] mkalkbrenner: introduced classification of page cache support for themekey properties
+[       ] mkalkbrenner: allow '0' as value when creating a new rule
 
 
 ThemeKey 6.x-2.2, 2010-07-19

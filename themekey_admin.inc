@@ -397,7 +397,7 @@ function themekey_rule_chain_form_submit($form, &$form_state) {
     }
   }
 
-  if (!empty($form_state['values']['new_item']['value'])) {
+  if (!empty($form_state['values']['new_item']['value']) || '0' === $form_state['values']['new_item']['value']) {
     $item = $form_state['values']['new_item'];
 
     $item['parent'] = 0;
