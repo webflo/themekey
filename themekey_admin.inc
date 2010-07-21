@@ -411,6 +411,9 @@ function themekey_rule_chain_form_submit($form, &$form_state) {
   }
 
   drupal_set_message(t('The configuration options have been saved.'));
+
+  // fast deletion of page cache (truncate)
+  cache_clear_all('*', 'cache_page', TRUE);
 }
 
 
