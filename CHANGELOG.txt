@@ -4,6 +4,7 @@ ThemeKey 6.x-2.3, 2010-xx-xx
 ----------------------------
 [       ] mkalkbrenner: improved some descriptions
 [#445538] Sansui, mkalkbrenner: added new tutorial to help section: "Allowing users to select a theme for all content they create"
+[       ] mkalkbrenner: allow '0' as value when creating a new rule
 
 
 ThemeKey 6.x-2.2, 2010-07-19
