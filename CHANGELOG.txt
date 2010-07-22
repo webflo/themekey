@@ -1,6 +1,6 @@
 // $Id$
 
-ThemeKey 6.x-3.0-alpha1, 2010-xx-xx
+ThemeKey 6.x-3.0-alpha1, 2010-07-22
 -----------------------------------
 [       ] mkalkbrenner: improved some descriptions
 [#445538] Sansui, mkalkbrenner: added new tutorial to help section: "Allowing users to select a theme for all content they create"
