@@ -131,6 +131,10 @@ function themekey_themekey_paths() {
 function themekey_init() {
   global $theme, $custom_theme;
 
+  define('THEMEKEY_PAGECACHE_UNSUPPORTED', 0);
+  define('THEMEKEY_PAGECACHE_SUPPORTED', 1);
+  define('THEMEKEY_PAGECACHE_TIMEBASED', 2);
+
   if (isset($theme)) {
     if (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
       themekey_set_debug_message('Skipped rule checking because another module already initialized the theme engine. $theme has been set to %theme.<br />This seems to be a bug. Visit !link and help us improving other modules.', array('%theme' => $theme, '!link' => l('drupal.org/node/754970', 'http://drupal.org/node/754970')));
