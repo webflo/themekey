@@ -3,7 +3,7 @@
 
 /**
  * @file
- * provides a debug mode for module ThemeKey.
+ * Provides a debug mode for module ThemeKey.
  * @see themekey.module
  *
  * @author Markus Kalkbrenner | Cocomore AG

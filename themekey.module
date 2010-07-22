@@ -283,3 +283,14 @@ function themekey_get_q() {
 
   return $get_q;
 }
+
+
+/**
+ * Implements hook_cron().
+ */
+function themekey_cron() {
+  if (variable_get('themekey_cron_page_cache', 1)) {
+    module_load_include('inc', 'themekey', 'themekey_cron');
+    themekey_cron_clear_page_cache();
+  }
+}

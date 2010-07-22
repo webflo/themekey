@@ -4,6 +4,12 @@
 /**
  * @file
  * Provides some comment attributes as ThemeKey properties.
+ *
+ * @author Markus Kalkbrenner | Cocomore AG
+ *   @see http://drupal.org/user/124705
+ *
+ * @author profix898
+ *   @see http://drupal.org/user/35192
  */
 
 

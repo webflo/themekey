@@ -5,7 +5,6 @@
  * @file
  * Contains all form manipulations to required by ThemeKey.
  *
- *
  * @author Markus Kalkbrenner | Cocomore AG
  *   @see http://drupal.org/user/124705
  *
@@ -478,15 +477,12 @@ function themekey_settings_form() {
     );
   }
 
-// TODO Integration of Taxonomy Menu outdated. See http://drupal.org/node/616946
-//  if (module_exists('taxonomy_menu')) {
-//    $form['settings']['themekey_module_taxonomy_menu_triggers_taxonomy_tid'] = array(
-//      '#type' => 'checkbox',
-//      '#title' => t('Module <em>Taxonomy Menu</em> triggers property taxonomy:tid'),
-//      '#default_value' => variable_get('themekey_module_taxonomy_menu_triggers_taxonomy_tid', 0),
-//      '#description' => t('Property taxonomy:tid is set when a single node is shown (p.e. /node/17). If this option is selected, pages created by module Taxonomy Menu like /category/31 will set taxonomy:tid as well.')
-//    );
-//  }
+  $form['settings']['themekey_cron_page_cache'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Cron cleans up page cache'),
+    '#default_value' => variable_get('themekey_cron_page_cache', 1),
+    '#description' => t('Select this option if ThemeKey should check rules containing time based properties when cron runs. ThemeKey will carefully clean up the page cache if necessary to provide the right theme to anonymous users automatically, p.e. a Christmas theme.'),
+  );
 
   return system_settings_form($form);
 }

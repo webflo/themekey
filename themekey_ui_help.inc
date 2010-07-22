@@ -3,6 +3,10 @@
 
 /**
  * @file
+ * Provides content for help pages.
+ *
+ * @author Markus Kalkbrenner | Cocomore AG
+ *   @see http://drupal.org/user/124705
  */
 
 

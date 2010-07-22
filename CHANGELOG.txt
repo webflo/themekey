@@ -11,6 +11,8 @@ ThemeKey 6.x-3.0-alpha1, 2010-xx-xx
 [#812114] mkalkbrenner: wildcard deletion of page cache after modifications to path alias theme setting
 [#812114] mkalkbrenner: introduced classification of page cache support for themekey properties
 [       ] mkalkbrenner: allow '0' as value when creating a new rule
+[#812114] mkalkbrenner: introduced themekey cron to clean up page cache depending on rules containing time based properties
+[       ] mkalkbrenner: aded some documentation
 
 
 ThemeKey 6.x-2.2, 2010-07-19

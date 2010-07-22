@@ -71,14 +71,18 @@ function themekey_rebuild() {
   // Attributes
   $attributes = isset($properties['attributes']) ? $properties['attributes'] : array();
   ksort($attributes);
-  variable_set('themekey_attributes', $attributes);
 
   $property_names = array();
   foreach ($attributes as $property_name => $attribute) {
     if (empty($attribute['static'])) {
       $property_names[$property_name] = $property_name;
     }
+
+    if (!isset($attribute['page cache'])) {
+      $attributes[$property_name]['page cache'] = THEMEKEY_PAGECACHE_UNSUPPORTED;
+    }
   }
+  variable_set('themekey_attributes', $attributes);
   variable_set('themekey_properties', $property_names);
 
   // Property maps
