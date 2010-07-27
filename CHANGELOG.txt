@@ -1,5 +1,10 @@
 // $Id$
 
+ThemeKey 6.x-3.0-alpha2, 2010-xx-xx
+-----------------------------------
+[       ] mkalkbrenner: ThemeKey Debug: fixed fatal error: Call to undefined function themekey_rule_get()
+
+
 ThemeKey 6.x-3.0-alpha1, 2010-07-22
 -----------------------------------
 [       ] mkalkbrenner: improved some descriptions

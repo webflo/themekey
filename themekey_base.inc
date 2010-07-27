@@ -501,7 +501,9 @@ function themekey_check_theme_enabled($theme, $settings_page = FALSE) {
 }
 
 function themekey_format_rule_as_string($themekey_property_id) {
-    // fallback title
+  module_load_include('inc', 'themekey', 'themekey_build');
+
+  // fallback title
   $title = $themekey_property_id;
 
   $item = themekey_rule_get($themekey_property_id);
