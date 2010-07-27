@@ -91,6 +91,7 @@ function themekey_rebuild() {
 
   // Get (and register) paths from themekey modules
   $paths = array_merge_recursive(themekey_invoke_modules('themekey_paths'), module_invoke_all('themekey_paths'));
+
   // assign fit factor and wight to this item
   array_walk($paths, 'themekey_path_set');
 
@@ -101,10 +102,12 @@ function themekey_rebuild() {
   ksort($paths_sort, SORT_NUMERIC);
 
   $paths = array();
-  foreach (array_reverse($paths_sort) as $same_weight) {
-    ksort($same_weight, SORT_NUMERIC);
-    foreach (array_reverse($same_weight) as $item) {
-      $paths[] = $item;
+  foreach (array_reverse($paths_sort) as $same_fit) {
+    ksort($same_fit, SORT_NUMERIC);
+    foreach (array_reverse($same_fit) as $same_weight) {
+      foreach ($same_weight as $item) {
+        $paths[] = $item;
+      }
     }
   }
 
