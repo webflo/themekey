@@ -2,7 +2,8 @@
 
 ThemeKey 6.x-3.0-alpha3, 2010-xx-xx
 -----------------------------------
-[       ] mkalkbrenner: added icons to Theme Switching Rule Chain that shows the page cache compatibility of this rule
+[       ] mkalkbrenner: added icons to Theme Switching Rule Chain that show the page cache compatibility of this rule
+[       ] mkalkbrenner: check names of new properties added via hook_themekey_properties()
 
 
 ThemeKey 6.x-3.0-alpha2, 2010-07-27

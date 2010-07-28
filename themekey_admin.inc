@@ -722,12 +722,22 @@ function themekey_admin_delete_rule_confirm_submit($form, &$form_state) {
 
 
 function theme_themekey_page_cache_icon($page_cache_support) {
-  static $module_path = '';
+  static $module_path = '', $page_cache_support_desriptions = array();
 
   if (empty($module_path)) {
     $module_path = drupal_get_path('module', 'themekey');
+    $page_cache_support_desriptions = themekey_get_page_cache_support_desriptions();
   }
 
-  return '<img src="/' . $module_path .'/img/page_cache_' . $page_cache_support . '.png" width="16" height="16"></img>';
+  return '<img src="/' . $module_path .'/img/page_cache_' . $page_cache_support . '.png" width="16" height="16" title="' . htmlentities($page_cache_support_desriptions[$page_cache_support], ENT_COMPAT, 'UTF-8') . '"></img>';
 
+}
+
+
+function themekey_get_page_cache_support_desriptions() {
+  return array(
+    THEMEKEY_PAGECACHE_UNSUPPORTED => t('Unsupported! If you enable page caching on your system you have to ensure that any rule using this property is wrapped by a different rule that excludes anonymous users like "user:uid > 0".'),
+    THEMEKEY_PAGECACHE_SUPPORTED => t('Supported'),
+    THEMEKEY_PAGECACHE_TIMEBASED => t('Supported if you run your cron that deletes the page cache automatically depending on your Theme Switching Rules.'),
+  );
 }

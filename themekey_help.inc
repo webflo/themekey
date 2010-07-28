@@ -140,11 +140,7 @@ Value: 1
  * @see themekey_help()
  */
 function themekey_help_properties_form($collapsed = TRUE) {
-  $page_cache = array(
-    THEMEKEY_PAGECACHE_UNSUPPORTED => t('Unsupported!<br />If you enable page caching on your system you have to ensure that any rule using this property is wrapped by a different rule that excludes anonymous users like "user:uid > 0".'),
-    THEMEKEY_PAGECACHE_SUPPORTED => t('Supported'),
-    THEMEKEY_PAGECACHE_TIMEBASED => t('Supported in combination with ThemeKey Cron that deletes the page cache automatically depending on your rules.<br />If you enable page caching on your system without having ThemeKey Cron activated you have to ensure that any rule using this property is wrapped by a different rule that excludes anonymous users like "user:uid > 0".'),
-  );
+  $page_cache_support_desriptions = themekey_get_page_cache_support_desriptions();
 
   $attributes = variable_get('themekey_attributes', array());
 
@@ -172,7 +168,7 @@ function themekey_help_properties_form($collapsed = TRUE) {
     $form['themekey_help_properties'][$property]['page_cache'] = array(
       '#type' => 'item',
       '#title' => t('Page Cache'),
-      '#value' => '<div id="themekey-page-cache-' . str_replace(array(':', '_'), array('-', '-'), $property) . '">' . theme('themekey_page_cache_icon', $attribute['page cache']) . '</div> ' . $page_cache[$attribute['page cache']],
+      '#value' => '<div id="themekey-page-cache-' . str_replace(array(':', '_'), array('-', '-'), $property) . '" style="display: none">' . theme('themekey_page_cache_icon', $attribute['page cache']) . '</div>' . $page_cache_support_desriptions[$attribute['page cache']],
     );
   }
 

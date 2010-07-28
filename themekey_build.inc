@@ -75,7 +75,12 @@ function themekey_rebuild() {
   $property_names = array();
   foreach ($attributes as $property_name => $attribute) {
     if (empty($attribute['static'])) {
-      $property_names[$property_name] = $property_name;
+      if (preg_match("/^[\w-]+:[:\w-]+$/", $property_name)) {
+        $property_names[$property_name] = $property_name;
+      }
+      else {
+        drupal_set_message(t('%property is not a valid ThemeKey property name.', array('%property' => $property_name)), 'error');
+      }
     }
 
     if (!isset($attribute['page cache'])) {
