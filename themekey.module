@@ -33,7 +33,11 @@ function themekey_theme() {
       'template' => 'themekey-debug-messages',
       'arguments' => array('messages' => array()),
     ),
-    );
+    'themekey_page_cache_icon' => array(
+      'file' => 'themekey_admin.inc',
+      'arguments' => array('page_cache_support' => 0),
+    ),
+  );
   return $items;
 }
 

@@ -172,7 +172,7 @@ function themekey_help_properties_form($collapsed = TRUE) {
     $form['themekey_help_properties'][$property]['page_cache'] = array(
       '#type' => 'item',
       '#title' => t('Page Cache'),
-      '#value' => $page_cache[$attribute['page cache']],
+      '#value' => '<div id="themekey-page-cache-' . str_replace(array(':', '_'), array('-', '-'), $property) . '">' . theme('themekey_page_cache_icon', $attribute['page cache']) . '</div> ' . $page_cache[$attribute['page cache']],
     );
   }
 

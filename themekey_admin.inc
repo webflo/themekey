@@ -501,6 +501,7 @@ function theme_themekey_rule_chain_form($form) {
   if (!empty($form['old_items'])) {
     $num_childs = array();
     $parents_disabled = array();
+    $attributes = variable_get('themekey_attributes', array());
 
     foreach ($form['old_items'] as $key => $item) {
       if (isset($item['property'])) {
@@ -580,6 +581,11 @@ function theme_themekey_rule_chain_form($form) {
         $elements[] = array('data' =>
           drupal_render($form['old_items'][$key]['weight']));
 
+        $elements[] = array('data' =>
+          '<div id="edit-old-items-' . $key . '-page-cache-icon">' .
+          theme('themekey_page_cache_icon', $attributes[$form['old_items'][$key]['property']['#default_value']]['page cache']) .
+          '</div>');
+
         $row['class'] = !empty($row['class']) ? $row['class'] .' draggable' : 'draggable';
         if (!$form['old_items'][$key]['enabled']['#value']) {
           $row['class'] .= ' themekey-fade-out';
@@ -607,7 +613,8 @@ function theme_themekey_rule_chain_form($form) {
       array('data' => t('Operation')),
       array('data' => t('Parent')),
       array('data' => t('Weight')),
-    );
+      array('data' => t('Page<br />Cache')),
+      );
 
     $output .= theme('table', $header, $rows, array('id' => 'themekey-properties'));
 
@@ -711,4 +718,16 @@ function themekey_admin_delete_rule_confirm_submit($form, &$form_state) {
   }
 
   $form_state['redirect'] = 'admin/settings/themekey/properties';
+}
+
+
+function theme_themekey_page_cache_icon($page_cache_support) {
+  static $module_path = '';
+
+  if (empty($module_path)) {
+    $module_path = drupal_get_path('module', 'themekey');
+  }
+
+  return '<img src="/' . $module_path .'/img/page_cache_' . $page_cache_support . '.png" width="16" height="16"></img>';
+
 }

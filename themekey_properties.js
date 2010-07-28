@@ -106,6 +106,10 @@ if (Drupal.jsEnabled) {
         else {
           wildcardElement.css('display', 'none');
         }
+        
+        var pageCacheIconElement = $('#' + $(this).attr('id').replace('property', 'page-cache-icon'));
+        pageCacheIconElement.empty();
+        pageCacheIconElement.append($('#themekey-page-cache-' + $(this).val().replace(':', '-').replace('_', '-')).html());
       }
     );
 

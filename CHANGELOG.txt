@@ -1,5 +1,10 @@
 // $Id$
 
+ThemeKey 6.x-3.0-alpha3, 2010-xx-xx
+-----------------------------------
+[       ] mkalkbrenner: added icons to Theme Switching Rule Chain that shows the page cache compatibility of this rule
+
+
 ThemeKey 6.x-3.0-alpha2, 2010-07-27
 -----------------------------------
 [       ] mkalkbrenner: ThemeKey Debug: fixed fatal error: Call to undefined function themekey_rule_get()
