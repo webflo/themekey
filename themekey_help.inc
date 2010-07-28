@@ -140,6 +140,8 @@ Value: 1
  * @see themekey_help()
  */
 function themekey_help_properties_form($collapsed = TRUE) {
+  module_load_include('inc', 'themekey', 'themekey_admin');
+
   $page_cache_support_desriptions = themekey_get_page_cache_support_desriptions();
 
   $attributes = variable_get('themekey_attributes', array());
