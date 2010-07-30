@@ -209,7 +209,10 @@ function themekey_match_rules() {
   $parameters = themekey_get_global_parameters();
 
   $theme = themekey_match_rule_childs($parameters);
-  if ('ThemeKeyAdminTheme' == $theme) {
+  if (FALSE === $theme || TRUE === $theme) {
+    $theme = NULL;
+  }
+  elseif ('ThemeKeyAdminTheme' === $theme) {
     $theme = variable_get('admin_theme', '0');
   }
 
@@ -264,7 +267,7 @@ function themekey_match_rule_childs(&$parameters, $parent = 0) {
         if (FALSE === $child_lookups[$parent]) {
           continue;
         }
-        elseif (TRUE  === $child_lookups[$parent]) {
+        elseif (TRUE === $child_lookups[$parent]) {
           if (!themekey_check_theme_enabled($item['theme'])) {
             if (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
               themekey_set_debug_message('Theme disabled: %theme', array('%theme' => $item['theme']));
