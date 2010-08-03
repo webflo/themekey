@@ -1,5 +1,10 @@
 // $Id$
 
+ThemeKey 6.x-3.0-beta1, 2010-xx-xx
+----------------------------------
+[       ] mkalkbrenner: fixed warning: Undefined variable: object
+
+
 ThemeKey 6.x-3.0-alpha3, 2010-07-30
 -----------------------------------
 [       ] mkalkbrenner: added icons to Theme Switching Rule Chain that show the page cache compatibility of this rule
