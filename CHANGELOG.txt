@@ -1,5 +1,10 @@
 // $Id$
 
+ThemeKey 6.x-2.5, 2010-xx-x
+----------------------------
+[       ] mkalkbrenner: fixed warning: Undefined variable: object
+
+
 ThemeKey 6.x-2.4, 2010-07-30
 ----------------------------
 [#863252] mkalkbrenner: Administration theme overrides the default theme if Rule Chain is empty

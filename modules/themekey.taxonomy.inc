@@ -179,7 +179,7 @@ function themekey_taxonomy_nid2tid($nid) {
  *   or NULL if no value could be mapped
  */
 function themekey_taxonomy_nid2tid_and_parents($nid) {
-  $node_tids = themekey_taxonomy_nid2tid($nid, $object);
+  $node_tids = themekey_taxonomy_nid2tid($nid);
   if (!is_array($node_tids)) {
     return FALSE;
   }

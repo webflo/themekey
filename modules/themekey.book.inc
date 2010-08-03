@@ -56,7 +56,7 @@ function themekey_book_themekey_properties() {
  *   a book id
  *   or NULL if no value could be mapped
  */
-function themekey_book_nid2bid($nid, $object = NULL) {
+function themekey_book_nid2bid($nid) {
   return themekey_book_get_simple_book_property($nid, 'bid');
 }
 
@@ -76,7 +76,7 @@ function themekey_book_nid2bid($nid, $object = NULL) {
  *   boolean
  *   or NULL if no value could be mapped
  */
-function themekey_book_nid2has_children($nid, $object = NULL) {
+function themekey_book_nid2has_children($nid) {
   return themekey_book_get_simple_book_property($nid, 'has_children');
 }
 
