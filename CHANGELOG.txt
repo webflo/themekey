@@ -3,6 +3,7 @@
 ThemeKey 6.x-3.0-beta1, 2010-xx-xx
 ----------------------------------
 [       ] mkalkbrenner: fixed warning: Undefined variable: object
+[       ] mkalkbrenner: fixed warnings in rule chain form
 
 
 ThemeKey 6.x-3.0-alpha3, 2010-07-30

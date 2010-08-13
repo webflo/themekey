@@ -523,7 +523,7 @@ function theme_themekey_rule_chain_form($form) {
 
     foreach ($form['old_items'] as $key => $item) {
       if (isset($item['property'])) {
-        $row = is_array($form['old_items'][$key]['#attributes']) ? $form['old_items'][$key]['#attributes'] : array();
+        $row = (isset($form['old_items'][$key]['#attributes']) && is_array($form['old_items'][$key]['#attributes'])) ? $form['old_items'][$key]['#attributes'] : array();
 
         // Add special classes to be used for tabledrag.js.
         $form['old_items'][$key]['id']['#attributes']['class'] = 'themekey-property-id';
@@ -550,7 +550,7 @@ function theme_themekey_rule_chain_form($form) {
           $form['old_items'][$key]['delete']['#value'] = str_replace('<a', '<a style="display: none"', $form['old_items'][$key]['delete']['#value']);
         }
 
-        if ($parents_disabled[$item['parent']['#value']]) {
+        if (!empty($parents_disabled[$item['parent']['#value']])) {
           $form['old_items'][$key]['enabled']['#attributes']['style'] = 'display: none';
           $form['old_items'][$key]['enabled']['#default_value'] = 0;
         }
@@ -627,7 +627,7 @@ function theme_themekey_rule_chain_form($form) {
 
   if (!empty($form['new_item'])) {
     if (isset($form['new_item']['property'])) {
-      $row = is_array($form['new_item']['#attributes']) ? $form['new_item']['#attributes'] : array();
+      $row = (isset($form['new_item']['#attributes']) && is_array($form['new_item']['#attributes'])) ? $form['new_item']['#attributes'] : array();
 
       // Add special classes to be used for themekey-properties.js.
       $form['new_item']['property']['#attributes']['class'] = 'themekey-property-property';
