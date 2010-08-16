@@ -3,7 +3,8 @@
 
 /**
  * @file
- * Database schema of @see themekey.module
+ * Database schema of
+ * @see themekey.module
  *
  * @author Markus Kalkbrenner | Cocomore AG
  *   @see http://drupal.org/user/124705

@@ -214,7 +214,8 @@ function themekey_rule_chain_form() {
 /**
  * Implements hook_form_alter().
  *
- * Alters @see themekey_rule_chain_form().
+ * Alters
+ * @see themekey_rule_chain_form()
 
  * Validation will happen here when the form displays the stored configuration.
  * Otherwise all the drag'n'drop stuff will not work.
@@ -235,7 +236,7 @@ function themekey_form_alter(&$form, $form_state, $form_id) {
             themekey_rule_chain_form_set_error($form, $key_1, 'theme', t('Theme is not activated'));
           }
 
-          if (0 == strlen($value_1['value']['#default_value'])) {
+          if (0 == drupal_strlen($value_1['value']['#default_value'])) {
             themekey_rule_chain_form_set_error($form, $key_1, 'value', t('You must enter a value'));
           }
           elseif (!empty($attributes[$value_1['property']['#default_value']]['validator'])) {
@@ -264,12 +265,12 @@ function themekey_form_alter(&$form, $form_state, $form_id) {
             }
 
             if ($value_2['enabled']['#default_value'] &&
-                !empty($value_1['value']['#default_value']) &&
-                $value_2['property']['#default_value'] == $value_1['property']['#default_value'] &&
-                $value_2['operator']['#default_value'] == $value_1['operator']['#default_value'] &&
-                $value_2['value']['#default_value'] == $value_1['value']['#default_value'] &&
-                ($value_2['parent']['#default_value'] == $value_1['parent']['#default_value'] ||
-                 $value_2['parent']['#default_value'] == $value_1['id']['#value'])) {
+              !empty($value_1['value']['#default_value']) &&
+              $value_2['property']['#default_value'] == $value_1['property']['#default_value'] &&
+              $value_2['operator']['#default_value'] == $value_1['operator']['#default_value'] &&
+              $value_2['value']['#default_value'] == $value_1['value']['#default_value'] &&
+              ($value_2['parent']['#default_value'] == $value_1['parent']['#default_value'] ||
+              $value_2['parent']['#default_value'] == $value_1['id']['#value'])) {
 
               if ('drupal:path:wildcard' != $value_2['property']['#default_value'] ||
                   ('drupal:path:wildcard' == $value_2['property']['#default_value'] && $value_2['wildcard']['#default_value'] == $value_1['wildcard']['#default_value'])) {
@@ -465,7 +466,7 @@ function themekey_settings_form() {
     '#default_value' => variable_get('themekey_theme_maintain_anonymous', 0),
     '#description' => t('Select this option to have anonymous users stay in the same theme until they browse to a new page with an explicit theme set.
 <br /><b>Warning: This feature is only working correctly if you turn off page caching or use a drupal core that supports lazy session initialization like !cdclink or !pflink.</b>',
-      array('!cdclink' => l('Cocomore Drupal Core', 'http://drupal.cocomore.com/node/175', array('attributes' => array('target' => '_blank'))), '!pflink' => l('Pressflow', 'https://launchpad.net/pressflow/6.x/', array('attributes' => array('target' => '_blank'))))),
+      array('!cdclink' => l(t('%path', array('%path' => 'Cocomore Drupal Core')), 'http://drupal.cocomore.com/node/175', array('attributes' => array('target' => '_blank'))), '!pflink' => l(t('%path', array('%path' => 'Pressflow')), 'https://launchpad.net/pressflow/6.x/', array('attributes' => array('target' => '_blank'))))),
   );
 
   if (module_exists('forum')) {
@@ -679,10 +680,10 @@ function theme_themekey_rule_chain_form($form) {
 function themekey_admin_theme_warning() {
   if (variable_get('admin_theme', '0')) {
     drupal_set_message(t('Note: %admin_theme is configured as administration theme at !link. This setting is more powerful than a corresponding ThemeKey rule.',
-      array('%admin_theme' => variable_get('admin_theme', '0'), '!link' => l('admin/settings/admin', 'admin/settings/admin'))), 'warning');
+      array('%admin_theme' => variable_get('admin_theme', '0'), '!link' => l(t('%path', array('%path' => 'admin/settings/admin')), 'admin/settings/admin'))), 'warning');
     if (variable_get('node_admin_theme', '0')) {
       drupal_set_message(t('Note: As configured at !link adding or editing a node will use the administration theme %admin_theme.',
-        array('%admin_theme' => variable_get('admin_theme', '0'), '!link' => l('admin/settings/admin', 'admin/settings/admin'))), 'warning');
+        array('%admin_theme' => variable_get('admin_theme', '0'), '!link' => l(t('%path', array('%path' => 'admin/settings/admin')), 'admin/settings/admin'))), 'warning');
     }
   }
 }
@@ -738,6 +739,6 @@ function themekey_get_page_cache_support_desriptions() {
   return array(
     THEMEKEY_PAGECACHE_UNSUPPORTED => t('Unsupported! If you enable page caching on your system you have to ensure that any rule using this property is wrapped by a different rule that excludes anonymous users like "user:uid > 0".'),
     THEMEKEY_PAGECACHE_SUPPORTED => t('Supported'),
-    THEMEKEY_PAGECACHE_TIMEBASED => t('Supported if enable "Cron cleans up page cache" at !link and run your cron frequently enough. During the cron run ThemeKey deletes the page cache if necessary depending on your Theme Switching Rules.', array('!link' => l('/admin/settings/themekey/settings', 'admin/settings/themekey/settings'))),
+    THEMEKEY_PAGECACHE_TIMEBASED => t('Supported if enable "Cron cleans up page cache" at !link and run your cron frequently enough. During the cron run ThemeKey deletes the page cache if necessary depending on your Theme Switching Rules.', array('!link' => l(t('%path', array('%path' => '/admin/settings/themekey/settings')), 'admin/settings/themekey/settings'))),
   );
 }

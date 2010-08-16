@@ -194,17 +194,17 @@ function themekey_help($path, $arg) {
   switch ($path) {
     case 'admin/help#themekey':
       module_load_include('inc', 'themekey', 'themekey_help');
-      return '<p>' . t('ThemeKey allows you to define simple or sophisticated Theme Switching Rules. Using these rules you are able to use a different theme depending on current path, taxonomy terms, language, node type and many many more properties. It can also be easily extended to support additional properties as exposed by other modules.'). '</p>' .
-             '<p>' . $text_1 . '</p>'.
-             drupal_get_form('themekey_help_tutorials_form', FALSE) .
-             drupal_get_form('themekey_help_examples_form', FALSE) .
-             drupal_get_form('themekey_help_properties_form', FALSE);
+      return '<p>' . t('ThemeKey allows you to define simple or sophisticated Theme Switching Rules. Using these rules you are able to use a different theme depending on current path, taxonomy terms, language, node type and many many more properties. It can also be easily extended to support additional properties as exposed by other modules.') . '</p>' .
+        '<p>' . $text_1 . '</p>'.
+        drupal_get_form('themekey_help_tutorials_form', FALSE) .
+        drupal_get_form('themekey_help_examples_form', FALSE) .
+        drupal_get_form('themekey_help_properties_form', FALSE);
 
     case 'admin/settings/themekey':
       module_load_include('inc', 'themekey', 'themekey_help');
       return '<p>' . $text_1 . '<br />' . t('To get an idea how to get started you might have a look at the !tutorials_link.', array('!tutorials_link' => l(t('tutorials'), 'admin/help/themekey'))) . '</p> ' .
-             drupal_get_form('themekey_help_examples_form', FALSE) .
-             drupal_get_form('themekey_help_properties_form', FALSE);
+        drupal_get_form('themekey_help_examples_form', FALSE) .
+        drupal_get_form('themekey_help_properties_form', FALSE);
   }
 }
 

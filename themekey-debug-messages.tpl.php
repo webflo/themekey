@@ -1,3 +1,11 @@
+<?php
+// $Id$
+
+/**
+ * @file
+ * template to format ThemeKey Debug Messages
+ */
+?>
 <table border="1">
   <tr><th><?php print t('ThemeKey Debug Messages'); ?></th></tr>
   <?php foreach ($messages as $message) {?>

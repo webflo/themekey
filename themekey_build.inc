@@ -152,8 +152,8 @@ function themekey_scan_modules() {
  * administartion interface.
  *
  * It's the counterpart of these functions:
- * @see themekey_prepare_path().
- * @see themekey_prepare_custom_path().
+ * @see themekey_prepare_path()
+ * @see themekey_prepare_custom_path()
  *
  * @see themekey_load_rules()
  *
