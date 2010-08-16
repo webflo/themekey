@@ -1,8 +1,9 @@
 // $Id$
 
-ThemeKey 6.x-2.5, 2010-xx-x
+ThemeKey 6.x-2.5, 2010-08-16
 ----------------------------
 [       ] mkalkbrenner: fixed warning: Undefined variable: object
+[#847204] mkalkbrenner: ThemeKey UI: Unable to change themes for nodes already created
 
 
 ThemeKey 6.x-2.4, 2010-07-30
