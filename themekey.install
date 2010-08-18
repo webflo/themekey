@@ -354,10 +354,33 @@ function themekey_update_6203() {
  * Implements hook_update_N().
  */
 function themekey_update_6300() {
+  if (!defined('THEMEKEY_PAGECACHE_UNSUPPORTED')) {
+    define('THEMEKEY_PAGECACHE_UNSUPPORTED', 0);
+    define('THEMEKEY_PAGECACHE_SUPPORTED', 1);
+    define('THEMEKEY_PAGECACHE_TIMEBASED', 2);
+  }
+
   module_load_include('inc', 'themekey', 'themekey_build');
   themekey_rebuild();
 
   $ret = array();
   db_drop_table($ret, 'themekey_paths');
   return $ret;
+}
+
+
+/**
+ * Implements hook_update_N().
+ */
+function themekey_update_6301() {
+  if (!defined('THEMEKEY_PAGECACHE_UNSUPPORTED')) {
+    define('THEMEKEY_PAGECACHE_UNSUPPORTED', 0);
+    define('THEMEKEY_PAGECACHE_SUPPORTED', 1);
+    define('THEMEKEY_PAGECACHE_TIMEBASED', 2);
+  }
+
+  module_load_include('inc', 'themekey', 'themekey_build');
+  themekey_rebuild();
+
+  return array();
 }

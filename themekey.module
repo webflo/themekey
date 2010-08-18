@@ -108,9 +108,11 @@ function themekey_menu() {
 function themekey_init() {
   global $theme, $custom_theme;
 
-  define('THEMEKEY_PAGECACHE_UNSUPPORTED', 0);
-  define('THEMEKEY_PAGECACHE_SUPPORTED', 1);
-  define('THEMEKEY_PAGECACHE_TIMEBASED', 2);
+  if (!defined('THEMEKEY_PAGECACHE_UNSUPPORTED')) {
+    define('THEMEKEY_PAGECACHE_UNSUPPORTED', 0);
+    define('THEMEKEY_PAGECACHE_SUPPORTED', 1);
+    define('THEMEKEY_PAGECACHE_TIMEBASED', 2);
+  }
 
   if (isset($theme)) {
     if (variable_get('themekey_debug_trace_rule_switching', FALSE)) {

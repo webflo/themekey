@@ -78,6 +78,11 @@ function themekey_node_themekey_properties() {
     'validator' => 'themekey_validator_ctype_digit',
     'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
+  $attributes['node:vid'] = array(
+    'description' => t('Node: The version id of a node (vid), mostly for internal use within ThemeKey. In most cases it\'s better to use node:nid within your rule chains.'),
+    'validator' => 'themekey_validator_ctype_digit',
+    'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
+  );
   $attributes['node:promote'] = array(
     'description' => t('Node: Promoted - If the node is promoted to the front page. Possible values are "0" for true and "1" for false.'),
     'validator' => 'themekey_validator_nummeric_boolean',
@@ -130,6 +135,9 @@ function themekey_node_themekey_properties() {
                   'dst'       => 'node:language',
                   'callback'  => 'themekey_node_nid2language');
   $maps[] = array('src'       => 'node:nid',
+                  'dst'       => 'node:vid',
+                  'callback'  => 'themekey_node_nid2vid');
+  $maps[] = array('src'       => 'node:nid',
                   'dst'       => 'node:promote',
                   'callback'  => 'themekey_node_nid2promote');
   $maps[] = array('src'       => 'node:nid',
@@ -158,7 +166,7 @@ function themekey_node_themekey_properties() {
 function themekey_node_themekey_paths() {
   $paths = array();
   $paths[] = array('path' => 'node/#node:nid');
-
+  $paths[] = array('path' => 'node/#node:nid/revisions/#node:vid/view');
   return $paths;
 }
 
@@ -263,6 +271,28 @@ function themekey_node_nid2language($nid) {
  * with the aid of another ThemeKey property (source).
  *
  * src: node:nid
+ * dst: node:vid
+ *
+ * @param $nid
+ *   a node id
+ *
+ * @return
+ *   string
+ *   or NULL if no value could be mapped
+ */
+function themekey_node_nid2vid($nid) {
+  return themekey_node_get_simple_node_property($nid, 'vid');
+}
+
+
+
+
+/**
+ * ThemeKey mapping function to set a
+ * ThemeKey property's value (destination)
+ * with the aid of another ThemeKey property (source).
+ *
+ * src: node:nid
  * dst: node:promote
  *
  * @param $nid
@@ -275,8 +305,6 @@ function themekey_node_nid2language($nid) {
 function themekey_node_nid2promote($nid) {
   return themekey_node_get_simple_node_property($nid, 'promote');
 }
-
-
 /**
  * ThemeKey mapping function to set a
  * ThemeKey property's value (destination)
