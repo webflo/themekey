@@ -3,7 +3,7 @@
 ThemeKey 6.x-3.0-beta2, 2010-xx-xx
 ----------------------------------
 [#884862] flamingvan, mkalkbrenner: taxonomy properties and node revisions
-
+[       ] mkalkbrenner: improved comment
 
 ThemeKey 6.x-3.0-beta1, 2010-08-16
 ----------------------------------

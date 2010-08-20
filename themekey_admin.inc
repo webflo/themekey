@@ -375,7 +375,7 @@ function themekey_rule_chain_form_set_error(&$form, $rule_id = 0, $element = '',
 /**
  * Form submission handler for themekey_rule_chain_form().
  *
- * @see hemekey_rule_chain_form()
+ * @see themekey_rule_chain_form()
  */
 function themekey_rule_chain_form_submit($form, &$form_state) {
   $max_weight = 0;
