@@ -1,9 +1,11 @@
 // $Id$
 
-ThemeKey 6.x-3.0-beta2, 2010-xx-xx
+ThemeKey 6.x-3.0-beta2, 2010-08-20
 ----------------------------------
 [#884862] flamingvan, mkalkbrenner: taxonomy properties and node revisions
-[       ] mkalkbrenner: improved comment
+[       ] mkalkbrenner: improved comments
+[       ] mkalkbrenner: don't execute rule chain when cron has been started by drush
+
 
 ThemeKey 6.x-3.0-beta1, 2010-08-16
 ----------------------------------
