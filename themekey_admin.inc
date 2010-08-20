@@ -5,7 +5,6 @@
  * @file
  * Contains all form manipulations to required by ThemeKey.
  *
- *
  * @author Markus Kalkbrenner | Cocomore AG
  *   @see http://drupal.org/user/124705
  *
@@ -31,6 +30,8 @@ require_once(drupal_get_path('module', 'themekey') .'/themekey_build.inc');
  * @ingroup forms
  */
 function themekey_rule_chain_form() {
+  // scan for new properties provided by other modules
+  themekey_rebuild();
 
   themekey_admin_theme_warning();
 
@@ -213,7 +214,8 @@ function themekey_rule_chain_form() {
 /**
  * Implements hook_form_alter().
  *
- * Alters @see themekey_rule_chain_form().
+ * Alters
+ * @see themekey_rule_chain_form()
 
  * Validation will happen here when the form displays the stored configuration.
  * Otherwise all the drag'n'drop stuff will not work.
@@ -234,7 +236,7 @@ function themekey_form_alter(&$form, $form_state, $form_id) {
             themekey_rule_chain_form_set_error($form, $key_1, 'theme', t('Theme is not activated'));
           }
 
-          if (0 == strlen($value_1['value']['#default_value'])) {
+          if (0 == drupal_strlen($value_1['value']['#default_value'])) {
             themekey_rule_chain_form_set_error($form, $key_1, 'value', t('You must enter a value'));
           }
           elseif (!empty($attributes[$value_1['property']['#default_value']]['validator'])) {
@@ -263,12 +265,12 @@ function themekey_form_alter(&$form, $form_state, $form_id) {
             }
 
             if ($value_2['enabled']['#default_value'] &&
-                !empty($value_1['value']['#default_value']) &&
-                $value_2['property']['#default_value'] == $value_1['property']['#default_value'] &&
-                $value_2['operator']['#default_value'] == $value_1['operator']['#default_value'] &&
-                $value_2['value']['#default_value'] == $value_1['value']['#default_value'] &&
-                ($value_2['parent']['#default_value'] == $value_1['parent']['#default_value'] ||
-                 $value_2['parent']['#default_value'] == $value_1['id']['#value'])) {
+              !empty($value_1['value']['#default_value']) &&
+              $value_2['property']['#default_value'] == $value_1['property']['#default_value'] &&
+              $value_2['operator']['#default_value'] == $value_1['operator']['#default_value'] &&
+              $value_2['value']['#default_value'] == $value_1['value']['#default_value'] &&
+              ($value_2['parent']['#default_value'] == $value_1['parent']['#default_value'] ||
+              $value_2['parent']['#default_value'] == $value_1['id']['#value'])) {
 
               if ('drupal:path:wildcard' != $value_2['property']['#default_value'] ||
                   ('drupal:path:wildcard' == $value_2['property']['#default_value'] && $value_2['wildcard']['#default_value'] == $value_1['wildcard']['#default_value'])) {
@@ -373,7 +375,7 @@ function themekey_rule_chain_form_set_error(&$form, $rule_id = 0, $element = '',
 /**
  * Form submission handler for themekey_rule_chain_form().
  *
- * @see hemekey_rule_chain_form()
+ * @see themekey_rule_chain_form()
  */
 function themekey_rule_chain_form_submit($form, &$form_state) {
   $max_weight = 0;
@@ -395,7 +397,7 @@ function themekey_rule_chain_form_submit($form, &$form_state) {
     }
   }
 
-  if (!empty($form_state['values']['new_item']['value'])) {
+  if (!empty($form_state['values']['new_item']['value']) || '0' === $form_state['values']['new_item']['value']) {
     $item = $form_state['values']['new_item'];
 
     $item['parent'] = 0;
@@ -411,6 +413,9 @@ function themekey_rule_chain_form_submit($form, &$form_state) {
   }
 
   drupal_set_message(t('The configuration options have been saved.'));
+
+  // fast deletion of page cache (truncate)
+  cache_clear_all('*', 'cache_page', TRUE);
 }
 
 
@@ -420,10 +425,6 @@ function themekey_rule_chain_form_submit($form, &$form_state) {
  * @ingroup forms
  */
 function themekey_settings_form() {
-  // REVIEW rebuild is called to many times
-  // REVIEW isn't there a better place for this?
-  themekey_rebuild();
-
   $form['settings'] = array(
     '#type' => 'fieldset',
     '#title' => t('General Settings'),
@@ -465,7 +466,7 @@ function themekey_settings_form() {
     '#default_value' => variable_get('themekey_theme_maintain_anonymous', 0),
     '#description' => t('Select this option to have anonymous users stay in the same theme until they browse to a new page with an explicit theme set.
 <br /><b>Warning: This feature is only working correctly if you turn off page caching or use a drupal core that supports lazy session initialization like !cdclink or !pflink.</b>',
-      array('!cdclink' => l('Cocomore Drupal Core', 'http://drupal.cocomore.com/node/175', array('attributes' => array('target' => '_blank'))), '!pflink' => l('Pressflow', 'https://launchpad.net/pressflow/6.x/', array('attributes' => array('target' => '_blank'))))),
+      array('!cdclink' => l(t('%path', array('%path' => 'Cocomore Drupal Core')), 'http://drupal.cocomore.com/node/175', array('attributes' => array('target' => '_blank'))), '!pflink' => l(t('%path', array('%path' => 'Pressflow')), 'https://launchpad.net/pressflow/6.x/', array('attributes' => array('target' => '_blank'))))),
   );
 
   if (module_exists('forum')) {
@@ -477,15 +478,12 @@ function themekey_settings_form() {
     );
   }
 
-// TODO Integration of Taxonomy Menu outdated. See http://drupal.org/node/616946
-//  if (module_exists('taxonomy_menu')) {
-//    $form['settings']['themekey_module_taxonomy_menu_triggers_taxonomy_tid'] = array(
-//      '#type' => 'checkbox',
-//      '#title' => t('Module <em>Taxonomy Menu</em> triggers property taxonomy:tid'),
-//      '#default_value' => variable_get('themekey_module_taxonomy_menu_triggers_taxonomy_tid', 0),
-//      '#description' => t('Property taxonomy:tid is set when a single node is shown (p.e. /node/17). If this option is selected, pages created by module Taxonomy Menu like /category/31 will set taxonomy:tid as well.')
-//    );
-//  }
+  $form['settings']['themekey_cron_page_cache'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Cron cleans up page cache'),
+    '#default_value' => variable_get('themekey_cron_page_cache', 1),
+    '#description' => t('Select this option if ThemeKey should check rules containing time based properties when cron runs. ThemeKey will carefully clean up the page cache if necessary to provide the right theme to anonymous users automatically, p.e. a Christmas theme.'),
+  );
 
   return system_settings_form($form);
 }
@@ -504,6 +502,7 @@ function theme_themekey_rule_chain_form($form) {
   if (!empty($form['old_items'])) {
     $num_childs = array();
     $parents_disabled = array();
+    $attributes = variable_get('themekey_attributes', array());
 
     foreach ($form['old_items'] as $key => $item) {
       if (isset($item['property'])) {
@@ -525,7 +524,7 @@ function theme_themekey_rule_chain_form($form) {
 
     foreach ($form['old_items'] as $key => $item) {
       if (isset($item['property'])) {
-        $row = is_array($form['old_items'][$key]['#attributes']) ? $form['old_items'][$key]['#attributes'] : array();
+        $row = (isset($form['old_items'][$key]['#attributes']) && is_array($form['old_items'][$key]['#attributes'])) ? $form['old_items'][$key]['#attributes'] : array();
 
         // Add special classes to be used for tabledrag.js.
         $form['old_items'][$key]['id']['#attributes']['class'] = 'themekey-property-id';
@@ -552,7 +551,7 @@ function theme_themekey_rule_chain_form($form) {
           $form['old_items'][$key]['delete']['#value'] = str_replace('<a', '<a style="display: none"', $form['old_items'][$key]['delete']['#value']);
         }
 
-        if ($parents_disabled[$item['parent']['#value']]) {
+        if (!empty($parents_disabled[$item['parent']['#value']])) {
           $form['old_items'][$key]['enabled']['#attributes']['style'] = 'display: none';
           $form['old_items'][$key]['enabled']['#default_value'] = 0;
         }
@@ -583,6 +582,11 @@ function theme_themekey_rule_chain_form($form) {
         $elements[] = array('data' =>
           drupal_render($form['old_items'][$key]['weight']));
 
+        $elements[] = array('data' =>
+          '<div id="edit-old-items-' . $key . '-page-cache-icon">' .
+          theme('themekey_page_cache_icon', $attributes[$form['old_items'][$key]['property']['#default_value']]['page cache']) .
+          '</div>');
+
         $row['class'] = !empty($row['class']) ? $row['class'] .' draggable' : 'draggable';
         if (!$form['old_items'][$key]['enabled']['#value']) {
           $row['class'] .= ' themekey-fade-out';
@@ -610,7 +614,8 @@ function theme_themekey_rule_chain_form($form) {
       array('data' => t('Operation')),
       array('data' => t('Parent')),
       array('data' => t('Weight')),
-    );
+      array('data' => t('Page<br />Cache')),
+      );
 
     $output .= theme('table', $header, $rows, array('id' => 'themekey-properties'));
 
@@ -623,7 +628,7 @@ function theme_themekey_rule_chain_form($form) {
 
   if (!empty($form['new_item'])) {
     if (isset($form['new_item']['property'])) {
-      $row = is_array($form['new_item']['#attributes']) ? $form['new_item']['#attributes'] : array();
+      $row = (isset($form['new_item']['#attributes']) && is_array($form['new_item']['#attributes'])) ? $form['new_item']['#attributes'] : array();
 
       // Add special classes to be used for themekey-properties.js.
       $form['new_item']['property']['#attributes']['class'] = 'themekey-property-property';
@@ -675,10 +680,10 @@ function theme_themekey_rule_chain_form($form) {
 function themekey_admin_theme_warning() {
   if (variable_get('admin_theme', '0')) {
     drupal_set_message(t('Note: %admin_theme is configured as administration theme at !link. This setting is more powerful than a corresponding ThemeKey rule.',
-      array('%admin_theme' => variable_get('admin_theme', '0'), '!link' => l('admin/settings/admin', 'admin/settings/admin'))), 'warning');
+      array('%admin_theme' => variable_get('admin_theme', '0'), '!link' => l(t('%path', array('%path' => 'admin/settings/admin')), 'admin/settings/admin'))), 'warning');
     if (variable_get('node_admin_theme', '0')) {
       drupal_set_message(t('Note: As configured at !link adding or editing a node will use the administration theme %admin_theme.',
-        array('%admin_theme' => variable_get('admin_theme', '0'), '!link' => l('admin/settings/admin', 'admin/settings/admin'))), 'warning');
+        array('%admin_theme' => variable_get('admin_theme', '0'), '!link' => l(t('%path', array('%path' => 'admin/settings/admin')), 'admin/settings/admin'))), 'warning');
     }
   }
 }
@@ -714,4 +719,26 @@ function themekey_admin_delete_rule_confirm_submit($form, &$form_state) {
   }
 
   $form_state['redirect'] = 'admin/settings/themekey/properties';
+}
+
+
+function theme_themekey_page_cache_icon($page_cache_support) {
+  static $module_path = '', $page_cache_support_desriptions = array();
+
+  if (empty($module_path)) {
+    $module_path = drupal_get_path('module', 'themekey');
+    $page_cache_support_desriptions = themekey_get_page_cache_support_desriptions();
+  }
+
+  return '<img src="/' . $module_path .'/img/page_cache_' . $page_cache_support . '.png" width="16" height="16" title="' . htmlentities(strip_tags($page_cache_support_desriptions[$page_cache_support]), ENT_COMPAT, 'UTF-8') . '"></img>';
+
+}
+
+
+function themekey_get_page_cache_support_desriptions() {
+  return array(
+    THEMEKEY_PAGECACHE_UNSUPPORTED => t('Unsupported! If you enable page caching on your system you have to ensure that any rule using this property is wrapped by a different rule that excludes anonymous users like "user:uid > 0".'),
+    THEMEKEY_PAGECACHE_SUPPORTED => t('Supported'),
+    THEMEKEY_PAGECACHE_TIMEBASED => t('Supported if enable "Cron cleans up page cache" at !link and run your cron frequently enough. During the cron run ThemeKey deletes the page cache if necessary depending on your Theme Switching Rules.', array('!link' => l(t('%path', array('%path' => '/admin/settings/themekey/settings')), 'admin/settings/themekey/settings'))),
+  );
 }

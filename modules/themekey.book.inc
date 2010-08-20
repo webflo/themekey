@@ -4,6 +4,12 @@
 /**
  * @file
  * Provides some comment attributes as ThemeKey properties.
+ *
+ * @author Markus Kalkbrenner | Cocomore AG
+ *   @see http://drupal.org/user/124705
+ *
+ * @author profix898
+ *   @see http://drupal.org/user/35192
  */
 
 
@@ -21,12 +27,14 @@ function themekey_book_themekey_properties() {
   // Attributes for properties
   $attributes = array();
   $attributes['book:bid'] = array(
-    'description' => t('Book: ID - The id of the book (bid). This is the node id (nid) of the top book page. See !link for your books', array('!link' => l('admin/content/book', 'admin/content/book'))),
+    'description' => t('Book: ID - The id of the book (bid). This is the node id (nid) of the top book page. See !link for your books', array('!link' => l(t('%path', array('%path' => 'admin/content/book')), 'admin/content/book'))),
     'validator' => 'themekey_validator_ctype_digit',
+    'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
   $attributes['book:has_children'] = array(
     'description' => t('Book: Has Children - Wheter the book has child pages or not. Possible values are "0" for false and "1" for true.'),
     'validator' => 'themekey_validator_nummeric_boolean',
+    'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
 
   $maps = array();
@@ -56,7 +64,7 @@ function themekey_book_themekey_properties() {
  *   a book id
  *   or NULL if no value could be mapped
  */
-function themekey_book_nid2bid($nid, $object = NULL) {
+function themekey_book_nid2bid($nid) {
   return themekey_book_get_simple_book_property($nid, 'bid');
 }
 
@@ -76,7 +84,7 @@ function themekey_book_nid2bid($nid, $object = NULL) {
  *   boolean
  *   or NULL if no value could be mapped
  */
-function themekey_book_nid2has_children($nid, $object = NULL) {
+function themekey_book_nid2has_children($nid) {
   return themekey_book_get_simple_book_property($nid, 'has_children');
 }
 

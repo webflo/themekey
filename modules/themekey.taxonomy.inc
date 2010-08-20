@@ -4,6 +4,12 @@
 /**
  * @file
  * Provides some taxonomy stuff as ThemeKey properties.
+ *
+ * @author Markus Kalkbrenner | Cocomore AG
+ *   @see http://drupal.org/user/124705
+ *
+ * @author profix898
+ *   @see http://drupal.org/user/35192
  */
 
 
@@ -23,16 +29,19 @@ function themekey_taxonomy_themekey_properties() {
   $attributes = array();
   $attributes['taxonomy:vid'] = array(
     'description' => t('Taxonomy: Vocabulary - The vocabulary id (vid) of a taxonomy vocabulary. See !link for your vocabularies.',
-      array('!link' => l('admin/content/taxonomy', 'admin/content/taxonomy'))),
+      array('!link' => l(t('%path', array('%path' => 'admin/content/taxonomy')), 'admin/content/taxonomy'))),
     'validator' => 'themekey_validator_ctype_digit',
+    'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
   $attributes['taxonomy:tid'] = array(
     'description' => t('Taxonomy: Term - The term id (tid) of a taxonomy term.'),
     'validator' => 'themekey_validator_ctype_digit',
+    'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
   $attributes['taxonomy:tid_and_childs'] = array(
     'description' => t('Taxonomy: Term and its childs - The term id (tid) of a taxonomy term. If set all child terms of this term will be used too.'),
     'validator' => 'themekey_validator_ctype_digit',
+    'page cache' => THEMEKEY_PAGECACHE_UNSUPPORTED,
   );
 
   // Mapping functions
@@ -43,15 +52,15 @@ function themekey_taxonomy_themekey_properties() {
   $maps[] = array('src'       => 'taxonomy:tid',
                   'dst'       => 'taxonomy:tid_and_childs',
                   'callback'  => 'themekey_taxonomy_tid2tid_and_parents');
-  $maps[] = array('src'       => 'node:nid',
+  $maps[] = array('src'       => 'node:vid',
                   'dst'       => 'taxonomy:vid',
-                  'callback'  => 'themekey_taxonomy_nid2vid');
-  $maps[] = array('src'       => 'node:nid',
+                  'callback'  => 'themekey_taxonomy_vid2vid');
+  $maps[] = array('src'       => 'node:vid',
                   'dst'       => 'taxonomy:tid',
-                  'callback'  => 'themekey_taxonomy_nid2tid');
-  $maps[] = array('src'       => 'node:nid',
+                  'callback'  => 'themekey_taxonomy_vid2tid');
+  $maps[] = array('src'       => 'node:vid',
                   'dst'       => 'taxonomy:tid_and_childs',
-                  'callback'  => 'themekey_taxonomy_nid2tid_and_parents');
+                  'callback'  => 'themekey_taxonomy_vid2tid_and_parents');
 
   return array('attributes' => $attributes, 'maps' => $maps);
 }
@@ -68,15 +77,6 @@ function themekey_taxonomy_themekey_paths() {
   if (module_exists('forum') && variable_get('themekey_module_forum_triggers_taxonomy_vid', 0)) {
     $paths[] = array('path' => 'forum/#taxonomy:vid');
   }
-// TODO Integration of Taxonomy Menu outdated. See http://drupal.org/node/616946
-//  // Add support for 'taxonomy_menu' paths
-//  if (module_exists('taxonomy_menu') && variable_get('themekey_module_taxonomy_menu_triggers_taxonomy_tid', 0)) {
-//    $prefix = variable_get('taxonomy_menu_display_page', 'category');
-//    $paths[] = array('path' => $prefix .'/#taxonomy:vid/#taxonomy:tid');
-//    for ($i=1; $i<=MENU_MAX_PARTS-3; $i++) {
-//      $paths[] = array('path' => $prefix .'/#taxonomy:vid/'. implode('/', array_fill(0, $i, '#')) .'/#taxonomy:tid');
-//    }
-//  }
 
   return $paths;
 }
@@ -99,7 +99,8 @@ function themekey_taxonomy_themekey_paths() {
  */
 function themekey_taxonomy_tid2vid($tids) {
   $vid = array();
-  // TODO use taxonomy API instead of SQL
+  // Use SQL instead taxonomy API because this code runs during hook_init() stage.
+  // Using taxonomy API will require to load the node using node_load() which is not allowed in this stage.
   $tids = is_array($tids) ? $tids : array($tids);
   foreach ($tids as $tid) {
     $vid[] = db_result(db_query('SELECT vid FROM {term_data} WHERE tid = %d', $tid));
@@ -114,20 +115,21 @@ function themekey_taxonomy_tid2vid($tids) {
  * ThemeKey property's value (destination)
  * with the aid of another ThemeKey property (source).
  *
- * src: node:nid
+ * src: node:vid
  * dst: taxonomy:vid
  *
- * @param $nid
- *   node id
+ * @param $node_vid
+ *   node version id
  *
  * @return
  *   array of taxonomy vocabulary ids
  *   or NULL if no value could be mapped
  */
-function themekey_taxonomy_nid2vid($nid) {
+function themekey_taxonomy_vid2vid($node_vid) {
   $vid = array();
-  // TODO use taxonomy API instead of SQL
-  $result = db_query('SELECT td.vid FROM {term_data} td INNER JOIN {term_node} tn ON td.tid = tn.tid WHERE tn.nid = %d', $nid);
+  // Use SQL instead taxonomy API because this code runs during hook_init() stage.
+  // Using taxonomy API will require to load the node using node_load() which is not allowed in this stage.
+  $result = db_query('SELECT td.vid FROM {term_data} td INNER JOIN {term_node} tn ON td.tid = tn.tid WHERE tn.vid = %d', $node_vid);
   while ($term = db_fetch_object($result)) {
     $vid[] = $term->vid;
   }
@@ -141,20 +143,21 @@ function themekey_taxonomy_nid2vid($nid) {
  * ThemeKey property's value (destination)
  * with the aid of another ThemeKey property (source).
  *
- * src: node:nid
+ * src: node:vid
  * dst: taxonomy:tid
  *
- * @param $nid
- *   node id
+ * @param $node_vid
+ *   node version id
  *
  * @return
  *   array of taxonomy term ids
  *   or NULL if no value could be mapped
  */
-function themekey_taxonomy_nid2tid($nid) {
+function themekey_taxonomy_vid2tid($node_vid) {
   $tid = array();
-  // TODO use taxonomy API instead of SQL
-  $result = db_query('SELECT tid FROM {term_node} WHERE nid = %d', $nid);
+  // Use SQL instead taxonomy API because this code runs during hook_init() stage.
+  // Using taxonomy API will require to load the node using node_load() which is not allowed in this stage.
+  $result = db_query('SELECT tid FROM {term_node} WHERE vid = %d', $node_vid);
   while ($term = db_fetch_object($result)) {
     $tid[] = $term->tid;
   }
@@ -168,18 +171,18 @@ function themekey_taxonomy_nid2tid($nid) {
  * ThemeKey property's value (destination)
  * with the aid of another ThemeKey property (source).
  *
- * src: node:nid
+ * src: node:vid
  * dst: taxonomy:tid_and_parents
  *
- * @param $nid
- *   node id
+ * @param $node_vid
+ *   node version id
  *
  * @return
  *   array of taxonomy term ids
  *   or NULL if no value could be mapped
  */
-function themekey_taxonomy_nid2tid_and_parents($nid) {
-  $node_tids = themekey_taxonomy_nid2tid($nid, $object);
+function themekey_taxonomy_vid2tid_and_parents($node_vid) {
+  $node_tids = themekey_taxonomy_vid2tid($node_vid);
   if (!is_array($node_tids)) {
     return FALSE;
   }

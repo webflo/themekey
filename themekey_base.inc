@@ -64,7 +64,7 @@ function themekey_match_path($condition, &$parameters) {
   }
 
   if (!variable_get('themekey_path_case_sensitive', 0)) {
-    $condition['value'] = strtolower($condition['value']);
+    $condition['value'] = drupal_strtolower($condition['value']);
   }
 
   $condition_parts = explode('/', $condition['value']);
@@ -76,8 +76,8 @@ function themekey_match_path($condition, &$parameters) {
   if (FALSE === $wildcards && module_exists('path')) {
     if (empty($alias_uri)) {
       // Derive path from request_uri
-      $offset = (variable_get('clean_url', 0) ? 0 : 3) + strlen(base_path());
-      $alias_uri = substr(request_uri(), $offset);
+      $offset = (variable_get('clean_url', 0) ? 0 : 3) + drupal_strlen(base_path());
+      $alias_uri = drupal_substr(request_uri(), $offset);
       if (strpos($alias_uri, '?') !== FALSE) {
         // Remove query string from request uri
         $alias_uri_parts = explode('?', $alias_uri);
@@ -170,25 +170,21 @@ function themekey_get_global_parameters() {
   static $global_parameters = NULL;
 
   if (is_null($global_parameters)) {
-    $global_parameters = module_invoke_all('themekey_global');
+    $global_parameters = array_merge_recursive(themekey_invoke_modules('themekey_global'), module_invoke_all('themekey_global'));
 
-    // TODO don't store paths in database. maybe use a variable.
-    if ($result = db_query('SELECT * FROM {themekey_paths} ORDER BY fit DESC, weight DESC')) {
-      $get_q_parts = explode('/', themekey_get_q());
-      while ($item = db_fetch_array($result)) {
-        $item_parts = explode('/', $item['path']);
-        $wildcards = themekey_match_path_parts($get_q_parts, $item_parts);
-        if (!empty($wildcards)) {
-          $item_wildcards = unserialize($item['wildcards']);
-          foreach ($item_wildcards as $index => $item_wildcard) {
-            $global_parameters[$item_wildcard] = $wildcards[$index];
-          }
+    $get_q_parts = explode('/', themekey_get_q());
+    $paths = variable_get('themekey_paths', array());
+    foreach ($paths as $item) {
+      $item_parts = explode('/', $item['path']);
+      $wildcards = themekey_match_path_parts($get_q_parts, $item_parts);
+      if (!empty($wildcards)) {
+        foreach ($item['wildcards'] as $index => $item_wildcard) {
+          $global_parameters[$item_wildcard] = $wildcards[$index];
+        }
 
-          $callbacks = unserialize($item['callbacks']);
-          if (count($callbacks)) {
-            foreach ($callbacks as $callback) {
-              $callback($item, $global_parameters);
-            }
+        if (count($item['callbacks'])) {
+          foreach ($item['callbacks'] as $callback) {
+            $callback($item, $global_parameters);
           }
         }
       }
@@ -209,7 +205,10 @@ function themekey_match_rules() {
   $parameters = themekey_get_global_parameters();
 
   $theme = themekey_match_rule_childs($parameters);
-  if ('ThemeKeyAdminTheme' == $theme) {
+  if (FALSE === $theme || TRUE === $theme) {
+    $theme = NULL;
+  }
+  elseif ('ThemeKeyAdminTheme' === $theme) {
     $theme = variable_get('admin_theme', '0');
   }
 
@@ -217,7 +216,8 @@ function themekey_match_rules() {
 }
 
 /**
- * Helper function of @see themekey_match_rules()
+ * Helper function of
+ * @see themekey_match_rules()
  *
  * @param $parameters
  *   reference to an array containing all
@@ -264,7 +264,7 @@ function themekey_match_rule_childs(&$parameters, $parent = 0) {
         if (FALSE === $child_lookups[$parent]) {
           continue;
         }
-        elseif (TRUE  === $child_lookups[$parent]) {
+        elseif (TRUE === $child_lookups[$parent]) {
           if (!themekey_check_theme_enabled($item['theme'])) {
             if (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
               themekey_set_debug_message('Theme disabled: %theme', array('%theme' => $item['theme']));
@@ -487,7 +487,7 @@ function themekey_check_theme_enabled($theme, $settings_page = FALSE) {
   if ($settings_page) {
     if (!$displayed_error) {
       drupal_set_message(t("Your current configuration of theme rules uses at least one theme that is not enabled. Nevertheless this configuration is stored but affected rules won't be applied until the targeted theme will be enabled at !build_themes.",
-        array('!build_themes' => l('admin/build/themes', 'admin/build/themes'))), 'error');
+        array('!build_themes' => l(t('%path', array('%path' => 'admin/build/themes')), 'admin/build/themes'))), 'error');
       $displayed_error = TRUE;
     }
   }
@@ -496,7 +496,7 @@ function themekey_check_theme_enabled($theme, $settings_page = FALSE) {
 
     if (!$warned && 1 == $user->uid) {
       themekey_set_debug_message('A matching Theme Switching Rule to select theme %theme was not applied because this theme is disabled. You can enable this theme at !build_themes or remove this Theme Switching Rule at !themekey_properties or edit current node if the theme was selected using ThemeKey UI.',
-        array('%theme' => $theme, '!build_themes' => l('admin/build/themes', 'admin/build/themes'), '!themekey_properties' => l('admin/settings/themekey/properties', 'admin/settings/themekey/properties')));
+        array('%theme' => $theme, '!build_themes' => l(t('%path', array('%path' => 'admin/build/themes')), 'admin/build/themes'), '!themekey_properties' => l(t('%path', array('%path' => 'admin/settings/themekey/properties')), 'admin/settings/themekey/properties')));
       $warned = TRUE;
     }
   }
@@ -505,7 +505,9 @@ function themekey_check_theme_enabled($theme, $settings_page = FALSE) {
 }
 
 function themekey_format_rule_as_string($themekey_property_id) {
-    // fallback title
+  module_load_include('inc', 'themekey', 'themekey_build');
+
+  // fallback title
   $title = $themekey_property_id;
 
   $item = themekey_rule_get($themekey_property_id);

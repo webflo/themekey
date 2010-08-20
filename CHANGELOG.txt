@@ -1,9 +1,47 @@
 // $Id$
 
-ThemeKey 6.x-2.3, 2010-xx-xx
-----------------------------
+ThemeKey 6.x-3.0-rc1, 2010-08-20
+--------------------------------
+[#884862] flamingvan, mkalkbrenner: taxonomy properties and node revisions
+[       ] mkalkbrenner: improved comments
+[       ] mkalkbrenner: don't execute rule chain when cron has been started by drush
+
+
+ThemeKey 6.x-3.0-beta1, 2010-08-16
+----------------------------------
+[       ] mkalkbrenner: fixed warning: Undefined variable: object
+[       ] mkalkbrenner: fixed warnings in rule chain form
+[       ] mkalkbrenner: changed code according to drupal coding standards
+[#847204] mkalkbrenner: ThemeKey UI: Unable to change themes for nodes already created
+
+
+ThemeKey 6.x-3.0-alpha3, 2010-07-30
+-----------------------------------
+[       ] mkalkbrenner: added icons to Theme Switching Rule Chain that show the page cache compatibility of this rule
+[       ] mkalkbrenner: check names of new properties added via hook_themekey_properties()
+[       ] mkalkbrenner: added explainations of page cache compatibility
+[#863252] mkalkbrenner: Administration theme overrides the default theme if Rule Chain is empty
+
+
+ThemeKey 6.x-3.0-alpha2, 2010-07-27
+-----------------------------------
+[       ] mkalkbrenner: ThemeKey Debug: fixed fatal error: Call to undefined function themekey_rule_get()
+[       ] mkalkbrenner: fixed critical error: property setting from path did not work correctly
+
+
+ThemeKey 6.x-3.0-alpha1, 2010-07-22
+-----------------------------------
 [       ] mkalkbrenner: improved some descriptions
 [#445538] Sansui, mkalkbrenner: added new tutorial to help section: "Allowing users to select a theme for all content they create"
+[#812114] mkalkbrenner: fast deletion of page cache after modifications to Theme Switching Rule Chain
+[       ] mkalkbrenner: removed table themekey_paths and introduced the preprocessed variable themekey_paths instead which should be faster
+[       ] mkalkbrenner: removed some obsolete internal functions
+[#812114] mkalkbrenner: fast deletion of page cache after modifications to user profile theme setting
+[#812114] mkalkbrenner: wildcard deletion of page cache after modifications to path alias theme setting
+[#812114] mkalkbrenner: introduced classification of page cache support for themekey properties
+[       ] mkalkbrenner: allow '0' as value when creating a new rule
+[#812114] mkalkbrenner: introduced themekey cron to clean up page cache depending on rules containing time based properties
+[       ] mkalkbrenner: aded some documentation
 
 
 ThemeKey 6.x-2.2, 2010-07-19

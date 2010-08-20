@@ -3,7 +3,8 @@
 
 /**
  * @file
- * Database schema of @see themekey.module
+ * Database schema of
+ * @see themekey.module
  *
  * @author Markus Kalkbrenner | Cocomore AG
  *   @see http://drupal.org/user/124705
@@ -18,20 +19,6 @@
  */
 function themekey_schema() {
   $schema = array();
-  $schema['themekey_paths'] = array(
-    'fields' => array(
-      'id'            => array('type' => 'serial', 'unsigned' => TRUE, 'not null' => TRUE),
-      'path'          => array('type' => 'varchar', 'length' => 255, 'not null' => TRUE, 'default' => ''),
-      'fit'           => array('type' => 'int', 'not null' => TRUE, 'default' => 0),
-      'weight'        => array('type' => 'int', 'not null' => TRUE, 'default' => 0),
-      'wildcards'     => array('type' => 'text', 'not null' => TRUE, 'size' => 'big', 'serialize' => TRUE),
-      'callbacks'     => array('type' => 'text', 'not null' => TRUE, 'size' => 'big', 'serialize' => TRUE)
-    ),
-    'primary key' => array('id'),
-    'indexes' => array(
-      'path_fit_weight' => array('path', 'fit', 'weight'),
-    ),
-  );
   $schema['themekey_properties'] = array(
     'fields' => array(
       'id'            => array('type' => 'serial', 'unsigned' => TRUE, 'not null' => TRUE),
@@ -358,6 +345,42 @@ function themekey_update_6203() {
   if (module_exists('themekey_ui')) {
     drupal_set_message(t("ThemeKey UI won't work correctly until click 'Save configuration' at !settings_link. If you don't see a 'Save configuration' button you need to clear your cache first.", array('!settings_link' => l(t("ThemeKey UI settings"), 'admin/settings/themekey/settings/ui'))), 'error');
   }
+
+  return array();
+}
+
+
+/**
+ * Implements hook_update_N().
+ */
+function themekey_update_6300() {
+  if (!defined('THEMEKEY_PAGECACHE_UNSUPPORTED')) {
+    define('THEMEKEY_PAGECACHE_UNSUPPORTED', 0);
+    define('THEMEKEY_PAGECACHE_SUPPORTED', 1);
+    define('THEMEKEY_PAGECACHE_TIMEBASED', 2);
+  }
+
+  module_load_include('inc', 'themekey', 'themekey_build');
+  themekey_rebuild();
+
+  $ret = array();
+  db_drop_table($ret, 'themekey_paths');
+  return $ret;
+}
+
+
+/**
+ * Implements hook_update_N().
+ */
+function themekey_update_6301() {
+  if (!defined('THEMEKEY_PAGECACHE_UNSUPPORTED')) {
+    define('THEMEKEY_PAGECACHE_UNSUPPORTED', 0);
+    define('THEMEKEY_PAGECACHE_SUPPORTED', 1);
+    define('THEMEKEY_PAGECACHE_TIMEBASED', 2);
+  }
+
+  module_load_include('inc', 'themekey', 'themekey_build');
+  themekey_rebuild();
 
   return array();
 }

@@ -3,6 +3,10 @@
 
 /**
  * @file
+ * Provides content for help pages.
+ *
+ * @author Markus Kalkbrenner | Cocomore AG
+ *   @see http://drupal.org/user/124705
  */
 
 
@@ -29,7 +33,7 @@ function themekey_help_tutorials_form($collapsed = TRUE) {
   $form['themekey_help_tutorials']['Rule Chaining: Using a special theme for content creation depending on user roles']['author'] = array(
     '#type' => 'item',
     '#title' => t('Author'),
-    '#value' => l('mkalkbrenner', 'http://drupal.org/user/124705'),
+    '#value' => l(t('%path', array('%path' => 'mkalkbrenner')), 'http://drupal.org/user/124705'),
   );
 
   $img_path = base_path() . drupal_get_path('module', 'themekey') . '/img/tutorials/';
@@ -37,7 +41,7 @@ function themekey_help_tutorials_form($collapsed = TRUE) {
   $form['themekey_help_tutorials']['Rule Chaining: Using a special theme for content creation depending on user roles']['item'] = array(
     '#type' => 'item',
     '#value' =>
-'<p>' . t('Note: This tutorial uses some ThemeKey properties from an additional module called !themekey_properties_link.', array('!themekey_properties_link' => l('ThemeKey Properties', 'http://drupal.org/project/themekey_properties'))) . '</p>' .
+'<p>' . t('Note: This tutorial uses some ThemeKey properties from an additional module called !themekey_properties_link.', array('!themekey_properties_link' => l(t('%path', array('%path' => 'ThemeKey Properties')), 'http://drupal.org/project/themekey_properties'))) . '</p>' .
 '<p>' . t("In this tutorial you'll learn how to define ThemeKey rules and how to cascade them to achieve sophisticated rule chains.") . '</p>' .
 '<p>' . t("The use case is to use a different theme during conent creation for premium users, p.e. you don't want to show advertisements or you want to show some advanced help blocks ...") . '</p>' .
 '<p>' . t('Therefor you created two user roles called "premium user" and "standard user". Using ThemeKey it\'s easy to create a rule that switches the theme in general if a user\'s role is "premium user":') . '<br />' .
@@ -136,6 +140,10 @@ Value: 1
  * @see themekey_help()
  */
 function themekey_help_properties_form($collapsed = TRUE) {
+  module_load_include('inc', 'themekey', 'themekey_admin');
+
+  $page_cache_support_desriptions = themekey_get_page_cache_support_desriptions();
+
   $attributes = variable_get('themekey_attributes', array());
 
   $form['themekey_help_properties'] = array(
@@ -155,7 +163,14 @@ function themekey_help_properties_form($collapsed = TRUE) {
 
     $form['themekey_help_properties'][$property]['item'] = array(
       '#type' => 'item',
+      '#title' => t('Description'),
       '#value' => $attribute['description'],
+    );
+
+    $form['themekey_help_properties'][$property]['page_cache'] = array(
+      '#type' => 'item',
+      '#title' => t('Page Cache'),
+      '#value' => '<div id="themekey-page-cache-' . str_replace(array(':', '_'), array('-', '-'), $property) . '" style="display: none">' . theme('themekey_page_cache_icon', $attribute['page cache']) . '</div>' . $page_cache_support_desriptions[$attribute['page cache']],
     );
   }
 

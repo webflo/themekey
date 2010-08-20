@@ -33,7 +33,11 @@ function themekey_theme() {
       'template' => 'themekey-debug-messages',
       'arguments' => array('messages' => array()),
     ),
-    );
+    'themekey_page_cache_icon' => array(
+      'file' => 'themekey_admin.inc',
+      'arguments' => array('page_cache_support' => 0),
+    ),
+  );
   return $items;
 }
 
@@ -95,33 +99,6 @@ function themekey_menu() {
 
 
 /**
- * Implements hook_themekey_properties().
- */
-function themekey_themekey_properties() {
-  require_once(drupal_get_path('module', 'themekey') .'/themekey_build.inc');
-  return themekey_invoke_modules('themekey_properties');
-}
-
-
-/**
- * Implements hook_themekey_global().
- */
-function themekey_themekey_global() {
-  require_once(drupal_get_path('module', 'themekey') .'/themekey_build.inc');
-  return themekey_invoke_modules('themekey_global');
-}
-
-
-/**
- * Implements hook_themekey_paths().
- */
-function themekey_themekey_paths() {
-  require_once(drupal_get_path('module', 'themekey') .'/themekey_build.inc');
-  return themekey_invoke_modules('themekey_paths');
-}
-
-
-/**
  * Implements hook_init().
  *
  * Here happens all the magic of ThemeKey.
@@ -131,13 +108,19 @@ function themekey_themekey_paths() {
 function themekey_init() {
   global $theme, $custom_theme;
 
+  if (!defined('THEMEKEY_PAGECACHE_UNSUPPORTED')) {
+    define('THEMEKEY_PAGECACHE_UNSUPPORTED', 0);
+    define('THEMEKEY_PAGECACHE_SUPPORTED', 1);
+    define('THEMEKEY_PAGECACHE_TIMEBASED', 2);
+  }
+
   if (isset($theme)) {
     if (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
       themekey_set_debug_message('Skipped rule checking because another module already initialized the theme engine. $theme has been set to %theme.<br />This seems to be a bug. Visit !link and help us improving other modules.', array('%theme' => $theme, '!link' => l('drupal.org/node/754970', 'http://drupal.org/node/754970')));
     }
   }
-  // don't change theme when administer blocks or during cron run
-  elseif (strpos($_GET['q'], 'admin/build/block') !== 0 && strpos($_SERVER['SCRIPT_NAME'], 'cron.php') === FALSE) {
+  // don't change theme when administer blocks or during cron run executed by cron.php or drush
+  elseif (strpos($_GET['q'], 'admin/build/block') !== 0 && strpos($_SERVER['SCRIPT_FILENAME'], 'cron.php') === FALSE && strpos($_SERVER['SCRIPT_FILENAME'], 'drush.php') === FALSE) {
     // don't change theme when another module already set a $custom_theme like system.module does (administration theme) until administrator turned on this feature
     if (!$custom_theme || variable_get('themekey_override_custom_theme', 0)) {
       require_once(drupal_get_path('module', 'themekey') .'/themekey_base.inc');
@@ -213,17 +196,17 @@ function themekey_help($path, $arg) {
   switch ($path) {
     case 'admin/help#themekey':
       module_load_include('inc', 'themekey', 'themekey_help');
-      return '<p>' . t('ThemeKey allows you to define simple or sophisticated Theme Switching Rules. Using these rules you are able to use a different theme depending on current path, taxonomy terms, language, node type and many many more properties. It can also be easily extended to support additional properties as exposed by other modules.'). '</p>' .
-             '<p>' . $text_1 . '</p>'.
-             drupal_get_form('themekey_help_tutorials_form', FALSE) .
-             drupal_get_form('themekey_help_examples_form', FALSE) .
-             drupal_get_form('themekey_help_properties_form', FALSE);
+      return '<p>' . t('ThemeKey allows you to define simple or sophisticated Theme Switching Rules. Using these rules you are able to use a different theme depending on current path, taxonomy terms, language, node type and many many more properties. It can also be easily extended to support additional properties as exposed by other modules.') . '</p>' .
+        '<p>' . $text_1 . '</p>'.
+        drupal_get_form('themekey_help_tutorials_form', FALSE) .
+        drupal_get_form('themekey_help_examples_form', FALSE) .
+        drupal_get_form('themekey_help_properties_form', FALSE);
 
     case 'admin/settings/themekey':
       module_load_include('inc', 'themekey', 'themekey_help');
       return '<p>' . $text_1 . '<br />' . t('To get an idea how to get started you might have a look at the !tutorials_link.', array('!tutorials_link' => l(t('tutorials'), 'admin/help/themekey'))) . '</p> ' .
-             drupal_get_form('themekey_help_examples_form', FALSE) .
-             drupal_get_form('themekey_help_properties_form', FALSE);
+        drupal_get_form('themekey_help_examples_form', FALSE) .
+        drupal_get_form('themekey_help_properties_form', FALSE);
   }
 }
 
@@ -305,4 +288,15 @@ function themekey_get_q() {
   }
 
   return $get_q;
+}
+
+
+/**
+ * Implements hook_cron().
+ */
+function themekey_cron() {
+  if (variable_get('themekey_cron_page_cache', 1)) {
+    module_load_include('inc', 'themekey', 'themekey_cron');
+    themekey_cron_clear_page_cache();
+  }
 }

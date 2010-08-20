@@ -4,6 +4,12 @@
 /**
  * @file
  * Provides some comment attributes as ThemeKey properties.
+ *
+ * @author Markus Kalkbrenner | Cocomore AG
+ *   @see http://drupal.org/user/124705
+ *
+ * @author profix898
+ *   @see http://drupal.org/user/35192
  */
 
 
@@ -21,8 +27,9 @@ function themekey_comment_themekey_properties() {
   $attributes = array();
   $attributes['comment:cid'] = array(
     'description' => t('Comment: ID - The id of a comment (cid). See !link for your published comments or !link_unpublished for comments awaiting approval',
-      array('!link' => l('admin/content/comment', 'admin/content/comment'), '!link_unpublished' => l('admin/content/comment/approval', 'admin/content/comment/approval'))),
+      array('!link' => l(t('%path', array('%path' => 'admin/content/comment')), 'admin/content/comment'), '!link_unpublished' => l(t('%path', array('%path' => 'admin/content/comment/approval')), 'admin/content/comment/approval'))),
     'validator' => 'themekey_validator_ctype_digit',
+    'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
 
   // Mapping functions
