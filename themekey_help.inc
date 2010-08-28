@@ -33,7 +33,7 @@ function themekey_help_tutorials_form($collapsed = TRUE) {
   $form['themekey_help_tutorials']['Rule Chaining: Using a special theme for content creation depending on user roles']['author'] = array(
     '#type' => 'item',
     '#title' => t('Author'),
-    '#value' => l(t('%path', array('%path' => 'mkalkbrenner')), 'http://drupal.org/user/124705'),
+    '#value' => l(t('!path', array('!path' => 'mkalkbrenner')), 'http://drupal.org/user/124705'),
   );
 
   $img_path = base_path() . drupal_get_path('module', 'themekey') . '/img/tutorials/';
@@ -41,7 +41,7 @@ function themekey_help_tutorials_form($collapsed = TRUE) {
   $form['themekey_help_tutorials']['Rule Chaining: Using a special theme for content creation depending on user roles']['item'] = array(
     '#type' => 'item',
     '#value' =>
-'<p>' . t('Note: This tutorial uses some ThemeKey properties from an additional module called !themekey_properties_link.', array('!themekey_properties_link' => l(t('%path', array('%path' => 'ThemeKey Properties')), 'http://drupal.org/project/themekey_properties'))) . '</p>' .
+'<p>' . t('Note: This tutorial uses some ThemeKey properties from an additional module called !themekey_properties_link.', array('!themekey_properties_link' => l(t('!path', array('!path' => 'ThemeKey Properties')), 'http://drupal.org/project/themekey_properties'))) . '</p>' .
 '<p>' . t("In this tutorial you'll learn how to define ThemeKey rules and how to cascade them to achieve sophisticated rule chains.") . '</p>' .
 '<p>' . t("The use case is to use a different theme during conent creation for premium users, p.e. you don't want to show advertisements or you want to show some advanced help blocks ...") . '</p>' .
 '<p>' . t('Therefor you created two user roles called "premium user" and "standard user". Using ThemeKey it\'s easy to create a rule that switches the theme in general if a user\'s role is "premium user":') . '<br />' .

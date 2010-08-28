@@ -27,7 +27,7 @@ function themekey_book_themekey_properties() {
   // Attributes for properties
   $attributes = array();
   $attributes['book:bid'] = array(
-    'description' => t('Book: ID - The id of the book (bid). This is the node id (nid) of the top book page. See !link for your books', array('!link' => l(t('%path', array('%path' => 'admin/content/book')), 'admin/content/book'))),
+    'description' => t('Book: ID - The id of the book (bid). This is the node id (nid) of the top book page. See !link for your books', array('!link' => l(t('!path', array('!path' => 'admin/content/book')), 'admin/content/book'))),
     'validator' => 'themekey_validator_ctype_digit',
     'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );

@@ -29,7 +29,7 @@ function themekey_taxonomy_themekey_properties() {
   $attributes = array();
   $attributes['taxonomy:vid'] = array(
     'description' => t('Taxonomy: Vocabulary - The vocabulary id (vid) of a taxonomy vocabulary. See !link for your vocabularies.',
-      array('!link' => l(t('%path', array('%path' => 'admin/content/taxonomy')), 'admin/content/taxonomy'))),
+      array('!link' => l(t('!path', array('!path' => 'admin/content/taxonomy')), 'admin/content/taxonomy'))),
     'validator' => 'themekey_validator_ctype_digit',
     'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );

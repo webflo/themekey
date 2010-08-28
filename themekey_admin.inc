@@ -466,7 +466,7 @@ function themekey_settings_form() {
     '#default_value' => variable_get('themekey_theme_maintain_anonymous', 0),
     '#description' => t('Select this option to have anonymous users stay in the same theme until they browse to a new page with an explicit theme set.
 <br /><b>Warning: This feature is only working correctly if you turn off page caching or use a drupal core that supports lazy session initialization like !cdclink or !pflink.</b>',
-      array('!cdclink' => l(t('%path', array('%path' => 'Cocomore Drupal Core')), 'http://drupal.cocomore.com/node/175', array('attributes' => array('target' => '_blank'))), '!pflink' => l(t('%path', array('%path' => 'Pressflow')), 'https://launchpad.net/pressflow/6.x/', array('attributes' => array('target' => '_blank'))))),
+      array('!cdclink' => l(t('!path', array('!path' => 'Cocomore Drupal Core')), 'http://drupal.cocomore.com/node/175', array('attributes' => array('target' => '_blank'))), '!pflink' => l(t('!path', array('!path' => 'Pressflow')), 'https://launchpad.net/pressflow/6.x/', array('attributes' => array('target' => '_blank'))))),
   );
 
   if (module_exists('forum')) {
@@ -680,10 +680,10 @@ function theme_themekey_rule_chain_form($form) {
 function themekey_admin_theme_warning() {
   if (variable_get('admin_theme', '0')) {
     drupal_set_message(t('Note: %admin_theme is configured as administration theme at !link. This setting is more powerful than a corresponding ThemeKey rule.',
-      array('%admin_theme' => variable_get('admin_theme', '0'), '!link' => l(t('%path', array('%path' => 'admin/settings/admin')), 'admin/settings/admin'))), 'warning');
+      array('%admin_theme' => variable_get('admin_theme', '0'), '!link' => l(t('!path', array('!path' => 'admin/settings/admin')), 'admin/settings/admin'))), 'warning');
     if (variable_get('node_admin_theme', '0')) {
       drupal_set_message(t('Note: As configured at !link adding or editing a node will use the administration theme %admin_theme.',
-        array('%admin_theme' => variable_get('admin_theme', '0'), '!link' => l(t('%path', array('%path' => 'admin/settings/admin')), 'admin/settings/admin'))), 'warning');
+        array('%admin_theme' => variable_get('admin_theme', '0'), '!link' => l(t('!path', array('!path' => 'admin/settings/admin')), 'admin/settings/admin'))), 'warning');
     }
   }
 }
@@ -739,6 +739,6 @@ function themekey_get_page_cache_support_desriptions() {
   return array(
     THEMEKEY_PAGECACHE_UNSUPPORTED => t('Unsupported! If you enable page caching on your system you have to ensure that any rule using this property is wrapped by a different rule that excludes anonymous users like "user:uid > 0".'),
     THEMEKEY_PAGECACHE_SUPPORTED => t('Supported'),
-    THEMEKEY_PAGECACHE_TIMEBASED => t('Supported if enable "Cron cleans up page cache" at !link and run your cron frequently enough. During the cron run ThemeKey deletes the page cache if necessary depending on your Theme Switching Rules.', array('!link' => l(t('%path', array('%path' => '/admin/settings/themekey/settings')), 'admin/settings/themekey/settings'))),
+    THEMEKEY_PAGECACHE_TIMEBASED => t('Supported if enable "Cron cleans up page cache" at !link and run your cron frequently enough. During the cron run ThemeKey deletes the page cache if necessary depending on your Theme Switching Rules.', array('!link' => l(t('!path', array('!path' => '/admin/settings/themekey/settings')), 'admin/settings/themekey/settings'))),
   );
 }

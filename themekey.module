@@ -143,9 +143,10 @@ function themekey_init() {
             (!user_is_logged_in() && variable_get('themekey_theme_maintain_anonymous', 0))) {
           $_SESSION['themekey_theme'] = $theme_candidate;
         }
-        else {
+        elseif (!empty($_SESSION['themekey_theme'])) {
           unset($_SESSION['themekey_theme']);
         }
+
         $custom_theme = $theme_candidate;
         if (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
           themekey_set_debug_message('Switching theme to %custom_theme.', array('%custom_theme' => $custom_theme));
