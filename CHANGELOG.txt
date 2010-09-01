@@ -3,7 +3,8 @@
 ThemeKey 6.x-3.0-rc2, 2010-xx-xx
 --------------------------------
 [       ] mkalkbrenner: fixed Undefined variable: _SESSION in themekey_init() when using Pressflow or Cocomore Drupal Core
-[       ] mkalkbrenner: fixed links in decriptions and help texts
+[       ] mkalkbrenner: fixed links in descriptions and help texts
+[       ] mkalkbrenner: fixed typing error
 
 
 ThemeKey 6.x-3.0-rc1, 2010-08-20
