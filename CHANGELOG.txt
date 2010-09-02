@@ -1,6 +1,10 @@
 // $Id$
 
-ThemeKey 6.x-3.0-rc2, 2010-09-10
+ThemeKey 6.x-3.0, 2010-xx-xx
+----------------------------
+
+
+ThemeKey 6.x-3.0-rc2, 2010-09-02
 --------------------------------
 [       ] mkalkbrenner: fixed Undefined variable: _SESSION in themekey_init() when using Pressflow or Cocomore Drupal Core
 [       ] mkalkbrenner: fixed links in descriptions and help texts
