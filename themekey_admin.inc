@@ -564,7 +564,8 @@ function theme_themekey_rule_chain_form($form) {
           drupal_render($form['old_items'][$key]['property']) .
           drupal_render($form['old_items'][$key]['wildcard']) .
           drupal_render($form['old_items'][$key]['operator']) .
-          drupal_render($form['old_items'][$key]['value']),
+          drupal_render($form['old_items'][$key]['value']) .
+          '<a href="#" id="' . form_clean_id('edit-old-items-' . $key . '-value-help') . '" class="themekey-fadeable" title="' . htmlentities(strip_tags($attributes[$form['old_items'][$key]['property']['#default_value']]['description'])) . '" onClick="alert(\'TEST\')">?</a>',
           'class' => 'themekey-properties-row');
 
         $elements[] = array('data' =>
@@ -583,7 +584,7 @@ function theme_themekey_rule_chain_form($form) {
           drupal_render($form['old_items'][$key]['weight']));
 
         $elements[] = array('data' =>
-          '<div id="edit-old-items-' . $key . '-page-cache-icon">' .
+          '<div id="' . form_clean_id('edit-old-items-' . $key . '-page-cache-icon') . '">' .
           theme('themekey_page_cache_icon', $attributes[$form['old_items'][$key]['property']['#default_value']]['page cache']) .
           '</div>');
 

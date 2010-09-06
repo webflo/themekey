@@ -164,7 +164,7 @@ function themekey_help_properties_form($collapsed = TRUE) {
     $form['themekey_help_properties'][$property]['item'] = array(
       '#type' => 'item',
       '#title' => t('Description'),
-      '#value' => $attribute['description'],
+      '#value' => '<div id="themekey-value-help-' . str_replace(array(':', '_'), array('-', '-'), $property) . '" style="display: none">' . htmlentities(strip_tags($attribute['description'])) . '</div>' . $attribute['description'],
     );
 
     $form['themekey_help_properties'][$property]['page_cache'] = array(

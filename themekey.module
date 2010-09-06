@@ -123,7 +123,7 @@ function themekey_init() {
   elseif (strpos($_GET['q'], 'admin/build/block') !== 0 && strpos($_SERVER['SCRIPT_FILENAME'], 'cron.php') === FALSE && strpos($_SERVER['SCRIPT_FILENAME'], 'drush.php') === FALSE) {
     // don't change theme when another module already set a $custom_theme like system.module does (administration theme) until administrator turned on this feature
     if (!$custom_theme || variable_get('themekey_override_custom_theme', 0)) {
-      require_once(drupal_get_path('module', 'themekey') .'/themekey_base.inc');
+      require_once(drupal_get_path('module', 'themekey') . '/themekey_base.inc');
 
       $theme_candidate = themekey_match_rules();
 
