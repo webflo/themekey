@@ -176,3 +176,55 @@ function themekey_help_properties_form($collapsed = TRUE) {
 
   return $form;
 }
+
+
+/**
+ * Uses drupal's form builder to format ThemeKey's help operators
+ *
+ * @see themekey_help()
+ */
+function themekey_help_operators_form($collapsed = TRUE) {
+  $form['themekey_help_operators'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Operators explained'),
+    '#collapsible' => TRUE,
+    '#collapsed' => $collapsed,
+  );
+
+  $form['themekey_help_operators']['='] = array(
+    '#type' => 'item',
+    '#value' => t('<strong>=</strong><br />equals (exact value of a property, consider ThemeKey Debug to get an impression of the possible values)'),
+  );
+
+  $form['themekey_help_operators']['!'] = array(
+    '#type' => 'item',
+    '#value' => t('<strong>!</strong><br />not equals'),
+  );
+
+  $form['themekey_help_operators']['<'] = array(
+    '#type' => 'item',
+    '#value' => t('<strong>&lt;</strong><br />lower than (alpha numeric values are treated in alphabetical order: "A" is lower than "B" but "B" is lower than "a")'),
+  );
+
+  $form['themekey_help_operators']['<='] = array(
+    '#type' => 'item',
+    '#value' => t('<strong>&lt;=</strong><br />lower than or equal (alpha numeric values are treated in alphabetical order: "a" is lower than "b" but "B" is lower than "a" and "A" is lower than "a")'),
+  );
+
+  $form['themekey_help_operators']['>'] = array(
+    '#type' => 'item',
+    '#value' => t('<strong>&gt;</strong><br />greater (alpha numeric values are treated in alphabetical order: "b" is grater than "a" but "a" is greater than "B")'),
+  );
+
+  $form['themekey_help_operators']['=>'] = array(
+    '#type' => 'item',
+    '#value' => t('<strong>=&gt;</strong><br />greater than or equal (alpha numeric values are treated in alphabetical order: "b" is grater than "a" but "a" is greater than "B" and "a" is greater than "A")'),
+  );
+
+  $form['themekey_help_operators']['~'] = array(
+    '#type' => 'item',
+    '#value' => t('<strong>~</strong><br />regular expression including delimiters and modifiers (see !link)', array('!link' => l(t('PHP Manual'), 'http://php.net/manual/en/pcre.pattern.php'))),
+  );
+
+  return $form;
+}

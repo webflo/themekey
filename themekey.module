@@ -201,13 +201,15 @@ function themekey_help($path, $arg) {
         '<p>' . $text_1 . '</p>'.
         drupal_get_form('themekey_help_tutorials_form', FALSE) .
         drupal_get_form('themekey_help_examples_form', FALSE) .
-        drupal_get_form('themekey_help_properties_form', FALSE);
+        drupal_get_form('themekey_help_properties_form', FALSE) .
+        drupal_get_form('themekey_help_operators_form', FALSE);
 
     case 'admin/settings/themekey':
       module_load_include('inc', 'themekey', 'themekey_help');
       return '<p>' . $text_1 . '<br />' . t('To get an idea how to get started you might have a look at the !tutorials_link.', array('!tutorials_link' => l(t('tutorials'), 'admin/help/themekey'))) . '</p> ' .
         drupal_get_form('themekey_help_examples_form', FALSE) .
-        drupal_get_form('themekey_help_properties_form', FALSE);
+        drupal_get_form('themekey_help_properties_form', FALSE) .
+        drupal_get_form('themekey_help_operators_form', FALSE);
   }
 }
 

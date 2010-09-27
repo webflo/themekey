@@ -3,6 +3,7 @@
 ThemeKey 6.x-3.0, 2010-xx-xx
 ----------------------------
 [       ] mkalkbrenner: Show tooltips about possible property values at rule chain edit form
+[#908640] mkalkbrenner: explain operators
 
 
 ThemeKey 6.x-3.0-rc2, 2010-09-02
