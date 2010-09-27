@@ -558,14 +558,17 @@ function theme_themekey_rule_chain_form($form) {
 
         $elements = array();
 
+        $description = htmlentities(strip_tags($attributes[$form['old_items'][$key]['property']['#default_value']]['description']));
+        $description = str_replace('\'', '', $description);
+
         $elements[] = array('data' =>
           theme('indentation', $form['old_items'][$key]['depth']['#value']) .
-          drupal_render($form['old_items'][$key]['id']) .
-          drupal_render($form['old_items'][$key]['property']) .
-          drupal_render($form['old_items'][$key]['wildcard']) .
-          drupal_render($form['old_items'][$key]['operator']) .
-          drupal_render($form['old_items'][$key]['value']) .
-          '<a href="#" id="' . form_clean_id('edit-old-items-' . $key . '-value-help') . '" class="themekey-fadeable" title="' . htmlentities(strip_tags($attributes[$form['old_items'][$key]['property']['#default_value']]['description'])) . '" onClick="alert(\'TEST\')">?</a>',
+            drupal_render($form['old_items'][$key]['id']) .
+            drupal_render($form['old_items'][$key]['property']) .
+            drupal_render($form['old_items'][$key]['wildcard']) .
+            drupal_render($form['old_items'][$key]['operator']) .
+            drupal_render($form['old_items'][$key]['value']) .
+            '<a name="anchor-' . $key .'" href="#anchor-' . $key .'" id="' . form_clean_id('edit-old-items-' . $key . '-value-help') . '" class="themekey-fadeable" title="' . $description . '" onClick="alert(\'' . $description . '\')">?</a>',
           'class' => 'themekey-properties-row');
 
         $elements[] = array('data' =>
@@ -642,9 +645,9 @@ function theme_themekey_rule_chain_form($form) {
       $elements[] = t('New Rule:');
       $elements[] = array('data' =>
         drupal_render($form['new_item']['property']) .
-        drupal_render($form['new_item']['wildcard']) .
-        drupal_render($form['new_item']['operator']) .
-        drupal_render($form['new_item']['value']),
+          drupal_render($form['new_item']['wildcard']) .
+          drupal_render($form['new_item']['operator']) .
+          drupal_render($form['new_item']['value']),
         'class' => 'themekey-properties-row');
       $elements[] = array('data' => drupal_render($form['new_item']['theme']));
       $elements[] = array('data' => drupal_render($form['new_item']['enabled']));
