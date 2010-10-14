@@ -1,12 +1,11 @@
 // $Id$
 
-ThemeKey 6.x-3.0, 2010-xx-xx
+ThemeKey 6.x-3.0, 2010-10-14
 ----------------------------
 [       ] mkalkbrenner: Show tooltips about possible property values at rule chain edit form
 [#908640] mkalkbrenner: explain operators
 [       ] mkalkbrenner: avoid duplicate notes after saving theme switching rule chain
 [       ] mkalkbrenner: added warnings about properties and page cache
-
 
 
 ThemeKey 6.x-3.0-rc2, 2010-09-02
