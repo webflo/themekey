@@ -1,5 +1,20 @@
 // $Id$
 
+ThemeKey 6.x-3.0, 2010-10-14
+----------------------------
+[       ] mkalkbrenner: Show tooltips about possible property values at rule chain edit form
+[#908640] mkalkbrenner: explain operators
+[       ] mkalkbrenner: avoid duplicate notes after saving theme switching rule chain
+[       ] mkalkbrenner: added warnings about properties and page cache
+
+
+ThemeKey 6.x-3.0-rc2, 2010-09-02
+--------------------------------
+[       ] mkalkbrenner: fixed Undefined variable: _SESSION in themekey_init() when using Pressflow or Cocomore Drupal Core
+[       ] mkalkbrenner: fixed links in descriptions and help texts
+[       ] mkalkbrenner: fixed typing error
+
+
 ThemeKey 6.x-3.0-rc1, 2010-08-20
 --------------------------------
 [#884862] flamingvan, mkalkbrenner: taxonomy properties and node revisions

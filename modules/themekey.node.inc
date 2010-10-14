@@ -69,7 +69,7 @@ function themekey_node_themekey_properties() {
   );
   $attributes['node:language'] = array(
     'description' => t('Node: Language - The code of the selected language of a node (formatted like "en" or "de") or "neutral". See !link for the codes of your enabled languages',
-      array('!link' => l(t('%path', array('%path' => 'admin/settings/language')), 'admin/settings/language'))),
+      array('!link' => l(t('!path', array('!path' => 'admin/settings/language')), 'admin/settings/language'))),
     'validator' => 'themekey_validator_language',
     'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
@@ -95,13 +95,13 @@ function themekey_node_themekey_properties() {
   );
   $attributes['node:type'] = array(
     'description' => t('Node: Type - The machine readable content type of the node. See !link for your content types (use column "Type"). Drupal default types are "page" and "story".',
-      array('!link' => l(t('%path', array('%path' => 'admin/content/types')), 'admin/content/types'))),
+      array('!link' => l(t('!path', array('!path' => 'admin/content/types')), 'admin/content/types'))),
     'validator' => 'themekey_validator_node_type',
     'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
   $attributes['node:uid'] = array(
     'description' => t('Node: User ID - The user id (uid) of the author of the node. The user id can be found in the URL of the users profile page, "user/23" or "user/23/edit" (23 = uid). See !link for your users.',
-      array('!link' => l(t('%path', array('%path' => 'admin/user/user/list')), 'admin/user/user/list'))),
+      array('!link' => l(t('!path', array('!path' => 'admin/user/user/list')), 'admin/user/user/list'))),
     'validator' => 'themekey_validator_ctype_digit',
     'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );

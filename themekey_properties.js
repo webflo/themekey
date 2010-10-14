@@ -107,9 +107,14 @@ if (Drupal.jsEnabled) {
           wildcardElement.css('display', 'none');
         }
         
+        var propertyName = $(this).val().replace(':', '-').replace(':', '-').replace('_', '-').replace('_', '-');
+        
         var pageCacheIconElement = $('#' + $(this).attr('id').replace('property', 'page-cache-icon'));
         pageCacheIconElement.empty();
-        pageCacheIconElement.append($('#themekey-page-cache-' + $(this).val().replace(':', '-').replace('_', '-')).html());
+        pageCacheIconElement.append($('#themekey-page-cache-' + propertyName).html());
+        
+        var valueHelpElement = $('#' + $(this).attr('id').replace('property', 'value-help'));
+        valueHelpElement.attr('title', $('#themekey-value-help-' + propertyName).html());
       }
     );
 

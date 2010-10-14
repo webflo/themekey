@@ -33,8 +33,6 @@ function themekey_rule_chain_form() {
   // scan for new properties provided by other modules
   themekey_rebuild();
 
-  themekey_admin_theme_warning();
-
   $properties = variable_get('themekey_properties', array());
 
   if (empty($properties)) {
@@ -466,7 +464,7 @@ function themekey_settings_form() {
     '#default_value' => variable_get('themekey_theme_maintain_anonymous', 0),
     '#description' => t('Select this option to have anonymous users stay in the same theme until they browse to a new page with an explicit theme set.
 <br /><b>Warning: This feature is only working correctly if you turn off page caching or use a drupal core that supports lazy session initialization like !cdclink or !pflink.</b>',
-      array('!cdclink' => l(t('%path', array('%path' => 'Cocomore Drupal Core')), 'http://drupal.cocomore.com/node/175', array('attributes' => array('target' => '_blank'))), '!pflink' => l(t('%path', array('%path' => 'Pressflow')), 'https://launchpad.net/pressflow/6.x/', array('attributes' => array('target' => '_blank'))))),
+      array('!cdclink' => l(t('!path', array('!path' => 'Cocomore Drupal Core')), 'http://drupal.cocomore.com/node/175', array('attributes' => array('target' => '_blank'))), '!pflink' => l(t('!path', array('!path' => 'Pressflow')), 'https://launchpad.net/pressflow/6.x/', array('attributes' => array('target' => '_blank'))))),
   );
 
   if (module_exists('forum')) {
@@ -495,6 +493,8 @@ function themekey_settings_form() {
  * @ingroup themeable
  */
 function theme_themekey_rule_chain_form($form) {
+  themekey_admin_theme_warning();
+
   $output = '';
 
   $rows = array();
@@ -558,13 +558,17 @@ function theme_themekey_rule_chain_form($form) {
 
         $elements = array();
 
+        $description = htmlentities(strip_tags($attributes[$form['old_items'][$key]['property']['#default_value']]['description']));
+        $description = str_replace('\'', '', $description);
+
         $elements[] = array('data' =>
           theme('indentation', $form['old_items'][$key]['depth']['#value']) .
-          drupal_render($form['old_items'][$key]['id']) .
-          drupal_render($form['old_items'][$key]['property']) .
-          drupal_render($form['old_items'][$key]['wildcard']) .
-          drupal_render($form['old_items'][$key]['operator']) .
-          drupal_render($form['old_items'][$key]['value']),
+            drupal_render($form['old_items'][$key]['id']) .
+            drupal_render($form['old_items'][$key]['property']) .
+            drupal_render($form['old_items'][$key]['wildcard']) .
+            drupal_render($form['old_items'][$key]['operator']) .
+            drupal_render($form['old_items'][$key]['value']) .
+            '<a name="anchor-' . $key .'" href="#anchor-' . $key .'" id="' . form_clean_id('edit-old-items-' . $key . '-value-help') . '" class="themekey-fadeable" title="' . $description . '" onClick="alert(\'' . $description . '\')">?</a>',
           'class' => 'themekey-properties-row');
 
         $elements[] = array('data' =>
@@ -582,9 +586,14 @@ function theme_themekey_rule_chain_form($form) {
         $elements[] = array('data' =>
           drupal_render($form['old_items'][$key]['weight']));
 
+        $page_cache = $attributes[$form['old_items'][$key]['property']['#default_value']]['page cache'];
+        if ($form['old_items'][$key]['enabled']['#value']) {
+          themekey_page_cache_warning($page_cache);
+        }
+
         $elements[] = array('data' =>
-          '<div id="edit-old-items-' . $key . '-page-cache-icon">' .
-          theme('themekey_page_cache_icon', $attributes[$form['old_items'][$key]['property']['#default_value']]['page cache']) .
+          '<div id="' . form_clean_id('edit-old-items-' . $key . '-page-cache-icon') . '">' .
+          theme('themekey_page_cache_icon', $page_cache) .
           '</div>');
 
         $row['class'] = !empty($row['class']) ? $row['class'] .' draggable' : 'draggable';
@@ -641,9 +650,9 @@ function theme_themekey_rule_chain_form($form) {
       $elements[] = t('New Rule:');
       $elements[] = array('data' =>
         drupal_render($form['new_item']['property']) .
-        drupal_render($form['new_item']['wildcard']) .
-        drupal_render($form['new_item']['operator']) .
-        drupal_render($form['new_item']['value']),
+          drupal_render($form['new_item']['wildcard']) .
+          drupal_render($form['new_item']['operator']) .
+          drupal_render($form['new_item']['value']),
         'class' => 'themekey-properties-row');
       $elements[] = array('data' => drupal_render($form['new_item']['theme']));
       $elements[] = array('data' => drupal_render($form['new_item']['enabled']));
@@ -679,11 +688,47 @@ function theme_themekey_rule_chain_form($form) {
  */
 function themekey_admin_theme_warning() {
   if (variable_get('admin_theme', '0')) {
-    drupal_set_message(t('Note: %admin_theme is configured as administration theme at !link. This setting is more powerful than a corresponding ThemeKey rule.',
-      array('%admin_theme' => variable_get('admin_theme', '0'), '!link' => l(t('%path', array('%path' => 'admin/settings/admin')), 'admin/settings/admin'))), 'warning');
+    drupal_set_message(t('%admin_theme is configured as administration theme at !link. This setting is more powerful than a corresponding ThemeKey rule.',
+      array('%admin_theme' => variable_get('admin_theme', '0'), '!link' => l(t('!path', array('!path' => 'admin/settings/admin')), 'admin/settings/admin'))), 'warning');
     if (variable_get('node_admin_theme', '0')) {
-      drupal_set_message(t('Note: As configured at !link adding or editing a node will use the administration theme %admin_theme.',
-        array('%admin_theme' => variable_get('admin_theme', '0'), '!link' => l(t('%path', array('%path' => 'admin/settings/admin')), 'admin/settings/admin'))), 'warning');
+      drupal_set_message(t('As configured at !link adding or editing a node will use the administration theme %admin_theme.',
+        array('%admin_theme' => variable_get('admin_theme', '0'), '!link' => l(t('!path', array('!path' => 'admin/settings/admin')), 'admin/settings/admin'))), 'warning');
+    }
+  }
+}
+
+
+/**
+ * Detects if page cache is active and incompatible properties are used
+ * in theme switching rule chain
+ */
+function themekey_page_cache_warning($page_cache_support) {
+  static $warnings = array();
+
+  if (variable_get('cache', CACHE_DISABLED)) {
+    // CACHE_NORMAL, CACHE_AGGRESSIVE, CACHE_EXTERNAL
+    switch ($page_cache_support) {
+      case THEMEKEY_PAGECACHE_UNSUPPORTED:
+        if (!isset($warnings[THEMEKEY_PAGECACHE_UNSUPPORTED])) {
+          drupal_set_message(t('!page_cache_icon Your site uses !page_caching, but the Theme Switching Rule Chain contains properties that do not support page caching. You have to ensure that any rule using those properties are wrapped by a different rule that excludes anonymous users like "user:uid > 0".',
+            array('!page_caching' => l(t('page caching'), 'admin/settings/performance'), '!page_cache_icon' => theme('themekey_page_cache_icon', $page_cache_support))), 'warning');
+          $warnings[THEMEKEY_PAGECACHE_UNSUPPORTED] = TRUE;
+        }
+        break;
+
+      case THEMEKEY_PAGECACHE_TIMEBASED:
+        if (!isset($warnings[THEMEKEY_PAGECACHE_TIMEBASED])) {
+          if (variable_get('themekey_cron_page_cache', 1)) {
+            drupal_set_message(t('!page_cache_icon Your site uses !page_caching and the Theme Switching Rule Chain contains properties that require your cron to run frequently enough. During the cron run ThemeKey deletes the page cache if necessary depending on your Theme Switching Rules.',
+              array('!page_caching' => l(t('page caching'), 'admin/settings/performance'), '!page_cache_icon' => theme('themekey_page_cache_icon', $page_cache_support))), 'warning');
+          }
+          else {
+            drupal_set_message(t('!page_cache_icon Your site uses !page_caching and the Theme Switching Rule Chain contains properties that require "!cron_page_cache" to be enabled which has been disabled.',
+              array('!page_caching' => l(t('page caching'), 'admin/settings/performance'), '!cron_page_cache' => l(t('Cron cleans up page cache'), 'admin/settings/themekey/settings'), '!page_cache_icon' => theme('themekey_page_cache_icon', $page_cache_support))), 'error');
+          }
+          $warnings[THEMEKEY_PAGECACHE_TIMEBASED] = TRUE;
+        }
+        break;
     }
   }
 }
@@ -739,6 +784,6 @@ function themekey_get_page_cache_support_desriptions() {
   return array(
     THEMEKEY_PAGECACHE_UNSUPPORTED => t('Unsupported! If you enable page caching on your system you have to ensure that any rule using this property is wrapped by a different rule that excludes anonymous users like "user:uid > 0".'),
     THEMEKEY_PAGECACHE_SUPPORTED => t('Supported'),
-    THEMEKEY_PAGECACHE_TIMEBASED => t('Supported if enable "Cron cleans up page cache" at !link and run your cron frequently enough. During the cron run ThemeKey deletes the page cache if necessary depending on your Theme Switching Rules.', array('!link' => l(t('%path', array('%path' => '/admin/settings/themekey/settings')), 'admin/settings/themekey/settings'))),
+    THEMEKEY_PAGECACHE_TIMEBASED => t('Supported if you enable "Cron cleans up page cache" at !link and run your cron frequently enough. During the cron run ThemeKey deletes the page cache if necessary depending on your Theme Switching Rules.', array('!link' => l(t('!path', array('!path' => '/admin/settings/themekey/settings')), 'admin/settings/themekey/settings'))),
   );
 }
