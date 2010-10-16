@@ -47,10 +47,6 @@ function themekey_debug_settings_form() {
     '#description' => t('All debug output will be shown to all users including anonymous users. Be carefull in production environments and turn off page caching first!'),
   );
 
-  $form['buttons']['submit'] = array(
-    '#type' => 'submit',
-    '#value' => t('Save configuration'),
-  );
 
   return system_settings_form($form);
 }
