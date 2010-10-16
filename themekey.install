@@ -103,9 +103,9 @@ function themekey_uninstall() {
  * Update property 'nid' to 'node:nid'
  */
 function themekey_update_6001() {
-  
+
   $result = db_query('SELECT * FROM {themekey_properties} WHERE property = :property', array(':property' => 'nid'));
-  
+
   foreach ($result as $item) {
     if (db_query('SELECT COUNT(id) FROM {themekey_properties} WHERE property = :property AND value = :value', array(':property' => 'node:nid', ':value' => $item->value))->fetchField() > 0) {
       db_delete('themekey_properties')
@@ -113,7 +113,7 @@ function themekey_update_6001() {
       ->execute();
     }
     else {
-      $num_updated = db_update('themekey_properties') // Table name no longer needs {}
+      $num_updated = db_update('themekey_properties')
       ->fields(array(
         'property' => 'node:nid',
       ))
@@ -122,10 +122,7 @@ function themekey_update_6001() {
     }
   }
 
-  // hook_update_N() no longer returns a $ret array. Instead, return
-  // nothing or a translated string indicating the update ran successfully.
-  // See http://drupal.org/node/224333#update_sql.
-  return t('Updated property "nid" to "node:nid"') /* $ret */;
+  return t('Updated property "nid" to "node:nid"');
 }
 
 
@@ -144,10 +141,7 @@ function themekey_update_6100() {
 
   variable_set('themekey_properties', $properties);
 
-  // hook_update_N() no longer returns a $ret array. Instead, return
-  // nothing or a translated string indicating the update ran successfully.
-  // See http://drupal.org/node/224333#update_sql.
-  return t('Updated variable themekey_properties:path.') /* array() */;
+  return t('Updated variable themekey_properties:path.');
 }
 
 
@@ -155,17 +149,14 @@ function themekey_update_6100() {
  * Implements hook_update_N().
  */
 function themekey_update_6101() {
-  $num_updated = db_update('system') // Table name no longer needs {}
+  $num_updated = db_update('system')
   ->fields(array(
     'weight' => 0,
   ))
   ->condition('name', 'themekey', '=')
   ->execute();
-  
-  // hook_update_N() no longer returns a $ret array. Instead, return
-  // nothing or a translated string indicating the update ran successfully.
-  // See http://drupal.org/node/224333#update_sql.
-  return t('Updated system weight to 0 for themekey.') /* array($result) */;
+
+  return t('Updated system weight to 0 for themekey.');
 }
 
 
@@ -181,10 +172,7 @@ function themekey_update_6102() {
     variable_set('themekey_module_taxonomy_menu_triggers_taxonomy_tid', 1);
   }
 
-  // hook_update_N() no longer returns a $ret array. Instead, return
-  // nothing or a translated string indicating the update ran successfully.
-  // See http://drupal.org/node/224333#update_sql.
-  return t('Set variables "themekey_module_forum_triggers_taxonomy_vid" and "themekey_module_taxonomy_menu_triggers_taxonomy_tid" with value 1') /* array() */;
+  return t('Set variables "themekey_module_forum_triggers_taxonomy_vid" and "themekey_module_taxonomy_menu_triggers_taxonomy_tid" with value 1');
 }
 
 
@@ -193,10 +181,7 @@ function themekey_update_6102() {
  */
 function themekey_update_6103() {
   variable_del('themekey_nodediscover');
-  // hook_update_N() no longer returns a $ret array. Instead, return
-  // nothing or a translated string indicating the update ran successfully.
-  // See http://drupal.org/node/224333#update_sql.
-  return t('Deleted variable themekey_nodediscover.') /* array() */;
+  return t('Deleted variable themekey_nodediscover.');
 }
 
 
@@ -205,10 +190,7 @@ function themekey_update_6103() {
  */
 function themekey_update_6104() {
   db_drop_field('themekey_properties', 'callbacks');
-  // hook_update_N() no longer returns a $ret array. Instead, return
-  // nothing or a translated string indicating the update ran successfully.
-  // See http://drupal.org/node/224333#update_sql.
-  return t('Dropped field callbacks.') /* array($result) */;
+  return t('Dropped field callbacks.');
 }
 
 
@@ -238,9 +220,9 @@ function themekey_update_6105() {
         }
         if ($result = db_query($sql, array(':property' => 'node:nid', ':conditions' => 'a:0:{}'))) {
 
-          
+
         foreach ($result as $row) {
-          
+
           $return['INSERT']['success'] = db_insert('themekey_ui_node_theme') // Table name no longer needs {}
             ->fields(array(
               'nid' => $row->nid,
@@ -248,7 +230,7 @@ function themekey_update_6105() {
               'theme' => $row->theme,
             ))
             ->execute();
-            
+
             if ($return['INSERT']['success']) {
               $return['DELETE']['success'] = db_delete('themekey_properties')
               ->condition('id', $row->id)
@@ -264,7 +246,7 @@ function themekey_update_6105() {
           }
 
           $return = t('Themekey UI was successfully updated');
-          
+
         }
         else {
           $return = t('Update of Themekey UI failed.');
@@ -275,10 +257,7 @@ function themekey_update_6105() {
     }
   }
 
-  // hook_update_N() no longer returns a $ret array. Instead, return
-  // nothing or a translated string indicating the update ran successfully.
-  // See http://drupal.org/node/224333#update_sql.
-  return $return /* $return */;
+  return $return;
 }
 
 
@@ -340,9 +319,9 @@ function themekey_update_6200() {
   $weight = ((int) db_query("SELECT MIN(weight) FROM {themekey_properties}")->fetchField()) - 1;
 
   $result = db_query("SELECT * FROM {themekey_paths} WHERE custom = :custom", array(':custom' => 1));
-  
+
   foreach ($result as $item) {
-    
+
     $conditions = unserialize($item->conditions);
     if (is_array($conditions) && !empty($conditions)) {
       if (!is_array($conditions[0])) {
@@ -350,7 +329,7 @@ function themekey_update_6200() {
         $conditions = _themekey_properties_explode_conditions($conditions[0]);
       }
     }
-    
+
     $insert_success = db_insert('themekey_properties') // Table name no longer needs {}
     ->fields(array(
       'property' => 'drupal:path',
@@ -360,23 +339,20 @@ function themekey_update_6200() {
       'theme' => $item->theme,
       'enabled' => 1,
       'wildcards' => $item->wildcards,
-    )) 
+    ))
     ->execute();
 
     $num_deleted = db_delete('themekey_paths')
     ->condition('id', $item->id)
     ->execute();
-    
+
   }
 
   db_drop_field('themekey_paths', 'conditions');
   db_drop_field('themekey_paths', 'custom');
   db_drop_field('themekey_paths', 'theme');
 
-  // hook_update_N() no longer returns a $ret array. Instead, return
-  // nothing or a translated string indicating the update ran successfully.
-  // See http://drupal.org/node/224333#update_sql.
-  return t('Updated Themekey properties.') /* $ret */;
+  return t('Updated Themekey properties.');
 }
 
 
@@ -386,10 +362,7 @@ function themekey_update_6200() {
 function themekey_update_6201() {
   // Don't rebuild anymore when themekey_update_6202() will run
   //themekey_rebuild();
-  // hook_update_N() no longer returns a $ret array. Instead, return
-  // nothing or a translated string indicating the update ran successfully.
-  // See http://drupal.org/node/224333#update_sql.
-  return '' /* array() */;
+  return '';
 }
 
 
@@ -418,9 +391,9 @@ function themekey_update_6202() {
   db_add_field('themekey_properties', 'parent', $field_parent);
 
   if ($result = db_query("SELECT * FROM {themekey_properties} WHERE conditions <> :conditions", array(':conditions' => serialize(array())))) {
-    
+
     foreach ($result as $row) {
-      
+
      $conditions = unserialize($row->conditions);
       if (is_array($conditions)) {
         $parent = $row->id;
@@ -437,16 +410,16 @@ function themekey_update_6202() {
             'parent' => $parent,
           ))
           ->execute();
-          
+
           if ($insert_result) {
             $parent = db_last_insert_id('themekey_properties', 'id'); // TODO Wofür ist das gut?
           }
 
         }
       }
-      
+
     }
-    
+
   }
 
   db_drop_field('themekey_properties', 'conditions');
@@ -460,10 +433,7 @@ function themekey_update_6202() {
   db_drop_index('themekey_paths', 'weight');
   db_add_index('themekey_paths', 'path_fit_weight', array('path', 'fit', 'weight'));
 
-  // hook_update_N() no longer returns a $ret array. Instead, return
-  // nothing or a translated string indicating the update ran successfully.
-  // See http://drupal.org/node/224333#update_sql.
-  return t('Updated themekey properties.') /* $ret */;
+  return t('Updated themekey properties.');
 }
 
 
@@ -480,10 +450,7 @@ function themekey_update_6203() {
     drupal_set_message(t("ThemeKey UI won't work correctly until click 'Save configuration' at !settings_link. If you don't see a 'Save configuration' button you need to clear your cache first.", array('!settings_link' => l(t("ThemeKey UI settings"), 'admin/config/themekey/settings/ui'))), 'error');
   }
 
-  // hook_update_N() no longer returns a $ret array. Instead, return
-  // nothing or a translated string indicating the update ran successfully.
-  // See http://drupal.org/node/224333#update_sql.
-  return '' /* array() */;
+  return '';
 }
 
 
@@ -501,10 +468,7 @@ function themekey_update_6300() {
   themekey_rebuild();
 
   db_drop_table('themekey_paths');
-  // hook_update_N() no longer returns a $ret array. Instead, return
-  // nothing or a translated string indicating the update ran successfully.
-  // See http://drupal.org/node/224333#update_sql.
-  return t('Update of Themekey ran successfully') /* $ret */;
+  return t('Update of Themekey ran successfully');
 }
 
 
@@ -521,8 +485,5 @@ function themekey_update_6301() {
   module_load_include('inc', 'themekey', 'themekey_build');
   themekey_rebuild();
 
-  // hook_update_N() no longer returns a $ret array. Instead, return
-  // nothing or a translated string indicating the update ran successfully.
-  // See http://drupal.org/node/224333#update_sql.
-  return t('Update of Themekey ran successfully') /* $ret */;
+  return t('Update of Themekey ran successfully');
 }
