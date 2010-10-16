@@ -27,7 +27,7 @@ function themekey_theme() {
   $items = array(
     'themekey_rule_chain_form' => array(
       'file' => 'themekey_admin.inc',
-      'render element' => array('form' => NULL),
+      'render element' => 'form',
     ),
     'themekey_debug_messages' => array(
       'template' => 'themekey-debug-messages',

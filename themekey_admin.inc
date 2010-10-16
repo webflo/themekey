@@ -674,9 +674,9 @@ function theme_themekey_rule_chain_form($variables) {
   if (!empty($rows)) {
     $header = array(
       '',
-      array('data' => t('Theme Switching Rule')),
-      array('data' => t('Theme')),
-      array('data' => t('Enabled')),
+      t('Theme Switching Rule'),
+      t('Theme'),
+      t('Enabled'),
     );
 
     $output .= '<a name="themekey_new_rule"></a>';
