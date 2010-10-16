@@ -44,7 +44,7 @@ function themekey_invoke_modules($hook) {
  * matches to the current page request.
  *
  * @param $condition
- *   ThemeKey rule as associative array:
+ *   ThemeKey rule as object:
  *   - property (must be "drupal:path")
  *   - operator
  *   - value
@@ -59,15 +59,15 @@ function themekey_invoke_modules($hook) {
 function themekey_match_path($condition, &$parameters) {
   static $alias_uri = '';
 
-  if ('drupal:path' != $condition['property']) {
+  if ('drupal:path' != $condition->property) {
     return FALSE;
   }
 
   if (!variable_get('themekey_path_case_sensitive', 0)) {
-    $condition['value'] = drupal_strtolower($condition['value']);
+    $condition->value = drupal_strtolower($condition->value);
   }
 
-  $condition_parts = explode('/', $condition['value']);
+  $condition_parts = explode('/', $condition->value);
 
   $get_q = themekey_get_q();
   $get_q_parts = explode('/', $get_q);
@@ -243,11 +243,11 @@ function themekey_match_rule_childs(&$parameters, $parent = 0) {
   if ($result = db_query("SELECT * FROM {themekey_properties} WHERE enabled = :enabled AND parent = :parent AND value <> :value ORDER BY weight", array(':enabled' => 1, ':parent' => $parent, ':value' => ''))) {
     $num_childs = 0;
 
-    while ($item = db_fetch_array($result)) {
+    foreach ($result as $item) {
       $num_childs++;
       if (themekey_match_condition($item, $parameters)) {
-        if ('drupal:path' == $item['property'] && !empty($parameters['internal:temp_wildcards'])) {
-          $wildcards = unserialize($item['wildcards']);
+        if ('drupal:path' == $item->property && !empty($parameters['internal:temp_wildcards'])) {
+          $wildcards = unserialize($item->wildcards);
           if (!empty($wildcards)) {
             foreach ($wildcards as $index => $wildcard) {
               $parameters[$wildcard] = $parameters['internal:temp_wildcards'][$index];
@@ -256,30 +256,30 @@ function themekey_match_rule_childs(&$parameters, $parent = 0) {
         }
 
         if (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
-          themekey_set_debug_message('Match: %rule', array('%rule' => themekey_format_rule_as_string($item['id'])));
+          themekey_set_debug_message('Match: %rule', array('%rule' => themekey_format_rule_as_string($item->id)));
         }
 
-        $child_lookups[$parent] = themekey_match_rule_childs($parameters, $item['id']);
+        $child_lookups[$parent] = themekey_match_rule_childs($parameters, $item->id);
 
         if (FALSE === $child_lookups[$parent]) {
           continue;
         }
         elseif (TRUE === $child_lookups[$parent]) {
-          if (!themekey_check_theme_enabled($item['theme'])) {
+          if (!themekey_check_theme_enabled($item->theme)) {
             if (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
-              themekey_set_debug_message('Theme disabled: %theme', array('%theme' => $item['theme']));
+              themekey_set_debug_message('Theme disabled: %theme', array('%theme' => $item->theme));
             }
             continue;
           }
 
-          $child_lookups[$parent] = $item['theme'];
+          $child_lookups[$parent] = $item->theme;
         }
 
         // return own theme or theme from child property or NULL in case of a database error
         return $child_lookups[$parent];
       }
       elseif (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
-        themekey_set_debug_message('No match: %rule', array('%rule' => themekey_format_rule_as_string($item['id'])));
+        themekey_set_debug_message('No match: %rule', array('%rule' => themekey_format_rule_as_string($item->id)));
       }
     }
 
@@ -297,7 +297,7 @@ function themekey_match_rule_childs(&$parameters, $parent = 0) {
  * page request.
  *
  * @param $condition
- *   ThemeKey rule as associative array:
+ *   ThemeKey rule as object:
  *   - property
  *   - operator
  *   - value
@@ -312,17 +312,17 @@ function themekey_match_rule_childs(&$parameters, $parent = 0) {
 function themekey_match_condition($condition, &$parameters) {
   $custom_theme = &drupal_static('themekey_custom_theme', '');
 
-  if (is_array($condition) && count($condition)) {
+  if (is_object($condition)) {
     // Default operator is 'equal'
-    if (empty($condition['operator'])) {
-      $condition['operator'] = '=';
+    if (empty($condition->operator)) {
+      $condition->operator = '=';
     }
 
-    if ('drupal:path' == $condition['property']) {
+    if ('drupal:path' == $condition->property) {
       return themekey_match_path($condition, $parameters);
     }
 
-    $value = themekey_property_value($parameters, $condition['property']);
+    $value = themekey_property_value($parameters, $condition->property);
 
     if ('static' === $value && $custom_theme) {
       if (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
@@ -340,25 +340,25 @@ function themekey_match_condition($condition, &$parameters) {
         if (!is_null($single_value)) {
           // Supported operators for condition check:
           // smaller ('<'), greater ('>'), equal ('='), not equal ('!'), regex match ('~')
-          if ($condition['operator'] == '<' && $single_value >= $condition['value']) {
+          if ($condition->operator == '<' && $single_value >= $condition->value) {
             return FALSE;
           }
-          elseif ($condition['operator'] == '>' && $single_value <= $condition['value']) {
+          elseif ($condition->operator == '>' && $single_value <= $condition->value) {
             return FALSE;
           }
-          elseif ($condition['operator'] == '<=' && $single_value > $condition['value']) {
+          elseif ($condition->operator == '<=' && $single_value > $condition->value) {
             return FALSE;
           }
-          elseif ($condition['operator'] == '>=' && $single_value < $condition['value']) {
+          elseif ($condition->operator == '>=' && $single_value < $condition->value) {
             return FALSE;
           }
-          elseif ($condition['operator'] == '=' && $single_value == $condition['value']) {
+          elseif ($condition->operator == '=' && $single_value == $condition->value) {
             return TRUE;
           }
-          elseif ($condition['operator'] == '!' && $single_value == $condition['value']) {
+          elseif ($condition->operator == '!' && $single_value == $condition->value) {
             return FALSE;
           }
-          elseif ($condition['operator'] == '~' && preg_match($condition['value'], $single_value)) {
+          elseif ($condition->operator == '~' && preg_match($condition->value, $single_value)) {
             return TRUE;
           }
         }
@@ -368,7 +368,7 @@ function themekey_match_condition($condition, &$parameters) {
         }
       }
 
-      if ($condition['operator'] == '=' || $condition['operator'] == '~') {
+      if ($condition->operator == '=' || $condition->operator == '~') {
         // no value matched
         return FALSE;
       }

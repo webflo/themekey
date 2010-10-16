@@ -9,7 +9,7 @@ ThemeKey 7.x-1.x, 2010-xx-xx
 [       ] carstenmueller: added files[] in themekey.info for upgreading to Drupal 7
 [       ] carstenmueller: improved themekey_ui_update_6200()
 [       ] carstenmueller: fixed db_fetch_array() calls in updates in themekey.install 
-
+[       ] mkalkbrenner: adjusted database code turned condition into object in themekey_match_rule_childs and themekey_match_condition
 
 
 ThemeKey 6.x-3.0, 2010-10-14

@@ -132,8 +132,7 @@ function themekey_custom_theme() {
 
   // don't change theme when administer blocks or during cron run executed by cron.php or drush
   if (strpos($_GET['q'], 'admin/structure/block') !== 0 && strpos($_SERVER['SCRIPT_FILENAME'], 'cron.php') === FALSE && strpos($_SERVER['SCRIPT_FILENAME'], 'drush.php') === FALSE) {
-    // don't change theme when another module already set a $custom_theme like system.module does (administration theme) until administrator turned on this feature
-    if (!$custom_theme || variable_get('themekey_override_custom_theme', 0)) {
+    if (!$custom_theme) {
       require_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'themekey') . '/themekey_base.inc';
 
       $theme_candidate = themekey_match_rules();
@@ -187,6 +186,10 @@ function themekey_custom_theme() {
 
   if (variable_get('themekey_debug_show_property_values', FALSE) && module_exists('themekey_debug')) {
     themekey_debug_properties();
+  }
+
+  if ($custom_theme && variable_get('themekey_override_custom_theme', 0)) {
+    // TODO initialize theme right here
   }
 
   return $custom_theme;
