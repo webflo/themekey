@@ -506,8 +506,8 @@ function theme_themekey_rule_chain_form($variables) {
     $attributes = variable_get('themekey_attributes', array());
 
     foreach ($form['old_items'] as $key => $item) {
-      if (isset($item['property'])) {
-        $num_childs[$key] = 0;
+      if (ctype_digit($key) && !empty($item['property'])) {
+        var_dump($item['property']);
         $parents_disabled[$key] = FALSE;
 
         if (!empty($parents_disabled[$item['parent']['#value']])) {
@@ -524,7 +524,7 @@ function theme_themekey_rule_chain_form($variables) {
     }
 
     foreach ($form['old_items'] as $key => $item) {
-      if (isset($item['property'])) {
+      if (ctype_digit($key) && !empty($item['property'])) {
         $row = (isset($form['old_items'][$key]['#attributes']) && is_array($form['old_items'][$key]['#attributes'])) ? $form['old_items'][$key]['#attributes'] : array();
 
         // Add special classes to be used for tabledrag.js.
@@ -625,13 +625,13 @@ function theme_themekey_rule_chain_form($variables) {
     }
 
     $header = array(
-      array('data' => t('Theme Switching Rule Chain')),
-      array('data' => t('Theme')),
-      array('data' => t('Enabled')),
-      array('data' => t('Operation')),
-      array('data' => t('Parent')),
-      array('data' => t('Weight')),
-      array('data' => t('Page<br />Cache')),
+      t('Theme Switching Rule Chain'),
+      t('Theme'),
+      t('Enabled'),
+      t('Operation'),
+      t('Parent'),
+      t('Weight'),
+      t('Page<br />Cache'),
     );
 
     $output .= theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => array('id' => 'themekey-properties')));
