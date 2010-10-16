@@ -64,22 +64,10 @@ function themekey_ui_schema() {
 
 
 /**
- * Implements hook_install().
- */
-function themekey_ui_install() {
-  drupal_install_schema('themekey_ui');
-}
-
-
-/**
  * Implements hook_uninstall().
  */
 function themekey_ui_uninstall() {
-  // Drop tables
-  drupal_uninstall_schema('themekey_ui');
   // Remove variables
-  // TODO Please review the conversion of this statement to the D7 database API syntax.
-  /* db_query("DELETE FROM {variable} WHERE name LIKE 'themekey_ui%%'") */
   db_delete('variable')
   ->condition('name', 'themekey_ui%%', 'LIKE')
   ->execute();
