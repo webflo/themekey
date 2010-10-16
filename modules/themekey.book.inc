@@ -38,12 +38,16 @@ function themekey_book_themekey_properties() {
   );
 
   $maps = array();
-  $maps[] = array('src'       => 'node:nid',
-                  'dst'       => 'book:bid',
-                  'callback'  => 'themekey_book_nid2bid');
-  $maps[] = array('src'       => 'node:nid',
-                  'dst'       => 'book:has_children',
-                  'callback'  => 'themekey_book_nid2has_children');
+  $maps[] = array(
+    'src' => 'node:nid',
+    'dst' => 'book:bid',
+    'callback' => 'themekey_book_nid2bid',
+  );
+  $maps[] = array(
+    'src' => 'node:nid',
+    'dst' => 'book:has_children',
+    'callback' => 'themekey_book_nid2has_children',
+  );
 
   return array('attributes' => $attributes, 'maps' => $maps);
 }

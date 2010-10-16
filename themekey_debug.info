@@ -2,6 +2,6 @@
 
 name = "ThemeKey Debug"
 description = "Debug ThemeKey"
-core = 6.x
+core = 7.x
 dependencies[] = themekey
 package = ThemeKey

@@ -131,7 +131,7 @@ function themekey_rebuild() {
  */
 function themekey_scan_modules() {
   $modules = array();
-  $files = file_scan_directory(dirname(__FILE__) . '/modules', '^themekey.[a-z]+.inc$');
+  $files = file_scan_directory(dirname(__FILE__) . '/modules', '/^themekey.[a-z]+.inc$/');
   foreach ($files as $file) {
     list( , $module) = explode('.', $file->name);
     if (module_exists($module)) {
@@ -289,7 +289,7 @@ function themekey_load_rules($parent = 0, $depth = 0) {
   }
 
   $query = 'SELECT * FROM {themekey_properties} WHERE parent = %d ORDER BY weight';
-  $result = db_query($query, $parent);
+  $result = db_query('SELECT * FROM {themekey_properties} WHERE parent = :parent ORDER BY weight', array(':parent' => $parent));
   while ($item = db_fetch_array($result)) {
     if ('drupal:path' == $item['property']) {
       themekey_complete_path($item);
@@ -335,7 +335,7 @@ function themekey_rule_set(&$item) {
     drupal_get_schema(FALSE);
     db_lock_table('themekey_properties');
     // new entry should be added at the end of the chain
-    $weight = db_result(db_query("SELECT MAX(weight) FROM {themekey_properties}"));
+    $weight = db_query("SELECT MAX(weight) FROM {themekey_properties}")->fetchField();
     // if query fails $weight will be FALSE which will cause $item['weight'] to be set to '1'
     $item['weight'] = 1 + $weight;
     drupal_write_record('themekey_properties', $item, array());
@@ -356,14 +356,18 @@ function themekey_rule_set(&$item) {
 function themekey_rule_del($id) {
   // lock table to prevent race condition
   db_lock_table('themekey_properties');
-  $num_childs = db_result(db_query("SELECT COUNT(*) FROM {themekey_properties} WHERE parent = %d", $id));
+  $num_childs = db_query("SELECT COUNT(*) FROM {themekey_properties} WHERE parent = :parent", array(':parent' => $id))->fetchField();
   if (FALSE !== $num_childs) {
     if ($num_childs > 0) {
       db_unlock_tables();
       drupal_set_message(t('ThemeKey rule could not be deleted because it has children in the chain'), 'error');
     }
     else {
-      $result = db_query('DELETE FROM {themekey_properties} WHERE id = %d', $id);
+      // TODO Please review the conversion of this statement to the D7 database API syntax.
+      /* db_query('DELETE FROM {themekey_properties} WHERE id = %d', $id) */
+      $result = db_delete('themekey_properties')
+  ->condition('id', $id)
+  ->execute();
       db_unlock_tables();
       if (!$result) {
         drupal_set_message(t('Error while deleteing ThemeKey rule'), 'error');
@@ -387,7 +391,7 @@ function themekey_rule_del($id) {
  *   the rule as associative array or NULL
  */
 function themekey_rule_get($id) {
-  if ($result = db_query('SELECT * FROM {themekey_properties} WHERE id = %d', $id)) {
+  if ($result = db_query('SELECT * FROM {themekey_properties} WHERE id = :id', array(':id' => $id))) {
     if ($item = db_fetch_array($result)) {
       if ('drupal:path' == $item['property']) {
         themekey_complete_path($item);
@@ -415,7 +419,7 @@ function themekey_rule_get($id) {
  *   - FALSE the rule should be deleted
  */
 function themekey_update_static_rule($property, $state) {
-  $id = db_result(db_query("SELECT id FROM {themekey_properties} WHERE property = '%s'", $property));
+  $id = db_query("SELECT id FROM {themekey_properties} WHERE property = :property", array(':property' => $property))->fetchField();
   if ($state) {
     $item = array(
       'property' => $property,

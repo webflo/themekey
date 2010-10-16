@@ -16,6 +16,10 @@
  */
 function themekey_debug_uninstall() {
   // Remove variables
-  db_query("DELETE FROM {variable} WHERE name LIKE 'themekey_debug_%%'");
+  // TODO Please review the conversion of this statement to the D7 database API syntax.
+  /* db_query("DELETE FROM {variable} WHERE name LIKE 'themekey_debug_%%'") */
+  db_delete('variable')
+  ->condition('name', 'themekey_debug_%%', 'LIKE')
+  ->execute();
   cache_clear_all('variables', 'cache');
 }

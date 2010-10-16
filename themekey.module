@@ -27,15 +27,15 @@ function themekey_theme() {
   $items = array(
     'themekey_rule_chain_form' => array(
       'file' => 'themekey_admin.inc',
-      'arguments' => array('form' => NULL),
+      'render element' => array('form' => NULL),
     ),
     'themekey_debug_messages' => array(
       'template' => 'themekey-debug-messages',
-      'arguments' => array('messages' => array()),
+      'variables' => array('messages' => array()),
     ),
     'themekey_page_cache_icon' => array(
       'file' => 'themekey_admin.inc',
-      'arguments' => array('page_cache_support' => 0),
+      'variables' => array('page_cache_support' => 0),
     ),
   );
   return $items;
@@ -43,10 +43,19 @@ function themekey_theme() {
 
 
 /**
- * Implements hook_perm().
+ * Implements hook_permission().
  */
-function themekey_perm() {
-  return array('administer theme assignments', 'administer themekey settings');
+function themekey_permission() {
+  return array(
+    'administer theme assignments' => array(
+      'title' => t('administer theme assignments'),
+      'description' => t('TODO Add a description for \'administer theme assignments\''),
+    ),
+    'administer themekey settings' => array(
+      'title' => t('administer themekey settings'),
+      'description' => t('TODO Add a description for \'administer themekey settings\''),
+    ),
+  );
 }
 
 
@@ -55,21 +64,21 @@ function themekey_perm() {
  */
 function themekey_menu() {
   $items = array();
-  $items['admin/settings/themekey'] = array(
+  $items['admin/config/themekey'] = array(
     'title' => 'ThemeKey',
     'description' => 'Map themes to Drupal paths or object properties.',
     'access callback' => 'user_access',
     'access arguments' => array('administer theme assignments'),
     'file' => 'themekey_admin.inc',
     'page callback' => 'drupal_get_form',
-    'page arguments' => array('themekey_rule_chain_form')
+    'page arguments' => array('themekey_rule_chain_form'),
   );
-  $items['admin/settings/themekey/properties'] = array(
+  $items['admin/config/themekey/properties'] = array(
     'title' => 'Theme Switching Rule Chain',
     'type' => MENU_DEFAULT_LOCAL_TASK,
-    'weight' => 0
+    'weight' => 0,
   );
-  $items['admin/settings/themekey/properties/delete'] = array(
+  $items['admin/config/themekey/properties/delete'] = array(
     'title' => 'Delete ThemeKey Property',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('themekey_admin_delete_rule_confirm', 1),
@@ -78,7 +87,7 @@ function themekey_menu() {
     'file' => 'themekey_admin.inc',
     'type' => MENU_CALLBACK,
   );
-  $items['admin/settings/themekey/settings'] = array(
+  $items['admin/config/themekey/settings'] = array(
     'title' => 'Settings',
     'access callback' => 'user_access',
     'access arguments' => array('administer themekey settings'),
@@ -86,12 +95,12 @@ function themekey_menu() {
     'page callback' => 'drupal_get_form',
     'page arguments' => array('themekey_settings_form'),
     'type' => MENU_LOCAL_TASK,
-    'weight' => 5
+    'weight' => 5,
   );
-  $items['admin/settings/themekey/settings/general'] = array(
+  $items['admin/config/themekey/settings/general'] = array(
     'title' => 'General',
     'type' => MENU_DEFAULT_LOCAL_TASK,
-    'weight' => 0
+    'weight' => 0,
   );
 
   return $items;
@@ -120,17 +129,17 @@ function themekey_init() {
     }
   }
   // don't change theme when administer blocks or during cron run executed by cron.php or drush
-  elseif (strpos($_GET['q'], 'admin/build/block') !== 0 && strpos($_SERVER['SCRIPT_FILENAME'], 'cron.php') === FALSE && strpos($_SERVER['SCRIPT_FILENAME'], 'drush.php') === FALSE) {
+  elseif (strpos($_GET['q'], 'admin/structure/block') !== 0 && strpos($_SERVER['SCRIPT_FILENAME'], 'cron.php') === FALSE && strpos($_SERVER['SCRIPT_FILENAME'], 'drush.php') === FALSE) {
     // don't change theme when another module already set a $custom_theme like system.module does (administration theme) until administrator turned on this feature
     if (!$custom_theme || variable_get('themekey_override_custom_theme', 0)) {
-      require_once(drupal_get_path('module', 'themekey') . '/themekey_base.inc');
+      require_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'themekey') . '/themekey_base.inc';
 
       $theme_candidate = themekey_match_rules();
 
       // If no theme has been triggered but a theme
       // is in the user's session, use that theme.
       if (!$theme_candidate && !empty($_SESSION['themekey_theme'])
-          && (!$custom_theme || $custom_theme == variable_get('theme_default', 'garland'))) {
+           && (!$custom_theme || $custom_theme == variable_get('theme_default', 'garland'))) {
         $theme_candidate = $_SESSION['themekey_theme'];
         if (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
           themekey_set_debug_message('ThemeKey Debug: No rule triggered a different theme. Reusing last theme from users session: %custom_theme', array('%custom_theme' => $theme_candidate));
@@ -169,7 +178,7 @@ function themekey_init() {
     }
   }
   elseif (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
-    if (strpos($_GET['q'], 'admin/build/block') !== 0) {
+    if (strpos($_GET['q'], 'admin/structure/block') !== 0) {
       themekey_set_debug_message('Rule checking disabled on block configuration.');
     }
   }
@@ -198,13 +207,13 @@ function themekey_help($path, $arg) {
     case 'admin/help#themekey':
       module_load_include('inc', 'themekey', 'themekey_help');
       return '<p>' . t('ThemeKey allows you to define simple or sophisticated Theme Switching Rules. Using these rules you are able to use a different theme depending on current path, taxonomy terms, language, node type and many many more properties. It can also be easily extended to support additional properties as exposed by other modules.') . '</p>' .
-        '<p>' . $text_1 . '</p>'.
+        '<p>' . $text_1 . '</p>' .
         drupal_get_form('themekey_help_tutorials_form', FALSE) .
         drupal_get_form('themekey_help_examples_form', FALSE) .
         drupal_get_form('themekey_help_properties_form', FALSE) .
         drupal_get_form('themekey_help_operators_form', FALSE);
 
-    case 'admin/settings/themekey':
+    case 'admin/config/themekey':
       module_load_include('inc', 'themekey', 'themekey_help');
       return '<p>' . $text_1 . '<br />' . t('To get an idea how to get started you might have a look at the !tutorials_link.', array('!tutorials_link' => l(t('tutorials'), 'admin/help/themekey'))) . '</p> ' .
         drupal_get_form('themekey_help_examples_form', FALSE) .
@@ -248,11 +257,15 @@ function themekey_set_debug_message($msg, $placeholder = array(), $translate = T
       }
 
       if (!empty($messages)) {
-        return theme('themekey_debug_messages', $messages);
+        return theme('themekey_debug_messages', array('messages' => $messages));
       }
     }
     else {
-      $msg_stack[] = array('msg' => $msg, 'placeholder' => $placeholder, 'translate' => $translate);
+      $msg_stack[] = array(
+        'msg' => $msg,
+        'placeholder' => $placeholder,
+        'translate' => $translate,
+      );
     }
   }
 }

@@ -2,5 +2,5 @@
 
 name = "ThemeKey"
 description = "Map themes to Drupal paths or object properties."
-core = 6.x
+core = 7.x
 package = ThemeKey

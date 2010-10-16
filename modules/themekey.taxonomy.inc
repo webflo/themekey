@@ -29,7 +29,7 @@ function themekey_taxonomy_themekey_properties() {
   $attributes = array();
   $attributes['taxonomy:vid'] = array(
     'description' => t('Taxonomy: Vocabulary - The vocabulary id (vid) of a taxonomy vocabulary. See !link for your vocabularies.',
-      array('!link' => l(t('!path', array('!path' => 'admin/content/taxonomy')), 'admin/content/taxonomy'))),
+      array('!link' => l(t('!path', array('!path' => 'admin/structure/taxonomy')), 'admin/structure/taxonomy'))),
     'validator' => 'themekey_validator_ctype_digit',
     'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
@@ -46,21 +46,31 @@ function themekey_taxonomy_themekey_properties() {
 
   // Mapping functions
   $maps = array();
-  $maps[] = array('src'       => 'taxonomy:tid',
-                  'dst'       => 'taxonomy:vid',
-                  'callback'  => 'themekey_taxonomy_tid2vid');
-  $maps[] = array('src'       => 'taxonomy:tid',
-                  'dst'       => 'taxonomy:tid_and_childs',
-                  'callback'  => 'themekey_taxonomy_tid2tid_and_parents');
-  $maps[] = array('src'       => 'node:vid',
-                  'dst'       => 'taxonomy:vid',
-                  'callback'  => 'themekey_taxonomy_vid2vid');
-  $maps[] = array('src'       => 'node:vid',
-                  'dst'       => 'taxonomy:tid',
-                  'callback'  => 'themekey_taxonomy_vid2tid');
-  $maps[] = array('src'       => 'node:vid',
-                  'dst'       => 'taxonomy:tid_and_childs',
-                  'callback'  => 'themekey_taxonomy_vid2tid_and_parents');
+  $maps[] = array(
+    'src' => 'taxonomy:tid',
+    'dst' => 'taxonomy:vid',
+    'callback' => 'themekey_taxonomy_tid2vid',
+  );
+  $maps[] = array(
+    'src' => 'taxonomy:tid',
+    'dst' => 'taxonomy:tid_and_childs',
+    'callback' => 'themekey_taxonomy_tid2tid_and_parents',
+  );
+  $maps[] = array(
+    'src' => 'node:vid',
+    'dst' => 'taxonomy:vid',
+    'callback' => 'themekey_taxonomy_vid2vid',
+  );
+  $maps[] = array(
+    'src' => 'node:vid',
+    'dst' => 'taxonomy:tid',
+    'callback' => 'themekey_taxonomy_vid2tid',
+  );
+  $maps[] = array(
+    'src' => 'node:vid',
+    'dst' => 'taxonomy:tid_and_childs',
+    'callback' => 'themekey_taxonomy_vid2tid_and_parents',
+  );
 
   return array('attributes' => $attributes, 'maps' => $maps);
 }
@@ -103,7 +113,7 @@ function themekey_taxonomy_tid2vid($tids) {
   // Using taxonomy API will require to load the node using node_load() which is not allowed in this stage.
   $tids = is_array($tids) ? $tids : array($tids);
   foreach ($tids as $tid) {
-    $vid[] = db_result(db_query('SELECT vid FROM {term_data} WHERE tid = %d', $tid));
+    $vid[] = db_query('SELECT vid FROM {taxonomy_term_data} WHERE tid = :tid', array(':tid' => $tid))->fetchField();
   }
 
   return count($vid) ? $vid : NULL;
@@ -129,7 +139,7 @@ function themekey_taxonomy_vid2vid($node_vid) {
   $vid = array();
   // Use SQL instead taxonomy API because this code runs during hook_init() stage.
   // Using taxonomy API will require to load the node using node_load() which is not allowed in this stage.
-  $result = db_query('SELECT td.vid FROM {term_data} td INNER JOIN {term_node} tn ON td.tid = tn.tid WHERE tn.vid = %d', $node_vid);
+  $result = db_query('SELECT td.vid FROM {taxonomy_term_data} td INNER JOIN {taxonomy_term_node} tn ON td.tid = tn.tid WHERE tn.vid = :tn.vid', array(':tn.vid' => $node_vid));
   while ($term = db_fetch_object($result)) {
     $vid[] = $term->vid;
   }
@@ -157,7 +167,7 @@ function themekey_taxonomy_vid2tid($node_vid) {
   $tid = array();
   // Use SQL instead taxonomy API because this code runs during hook_init() stage.
   // Using taxonomy API will require to load the node using node_load() which is not allowed in this stage.
-  $result = db_query('SELECT tid FROM {term_node} WHERE vid = %d', $node_vid);
+  $result = db_query('SELECT tid FROM {taxonomy_term_node} WHERE vid = :vid', array(':vid' => $node_vid));
   while ($term = db_fetch_object($result)) {
     $tid[] = $term->tid;
   }

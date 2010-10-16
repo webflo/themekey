@@ -37,7 +37,7 @@ function themekey_user_themekey_properties() {
   $attributes['user:language'] = array(
     'description' => t('User: Language - The language the user has set in the settings of his profile page.
       Format is the language code (for example "en" for english or "de" for german) that can be found on !link.',
-      array('!link' => l(t('!path', array('!path' => 'admin/settings/language')), 'admin/settings/language'))),
+      array('!link' => l(t('!path', array('!path' => 'admin/config/language')), 'admin/config/language'))),
     'validator' => 'themekey_validator_language',
     'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );

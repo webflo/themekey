@@ -40,10 +40,10 @@ function themekey_debug_properties() {
         }
       }
       else {
-        $values = is_array($parameters[$property]) ?  $parameters[$property] : array($parameters[$property]);
+        $values = is_array($parameters[$property]) ?   $parameters[$property] : array($parameters[$property]);
         $links = array();
         foreach ($values as $single_value) {
-          $links[] = l($single_value, 'admin/settings/themekey', array('fragment' => 'themekey_new_rule', 'query' => array('property' => $property, 'value' => $single_value)));
+          $links[] = l($single_value, 'admin/config/themekey', array('fragment' => 'themekey_new_rule', 'query' => array('property' => $property, 'value' => $single_value)));
         }
 
         $value = implode('<br />', $links);
@@ -61,7 +61,7 @@ function themekey_debug_properties() {
  */
 function themekey_debug_menu() {
   $items = array();
-  $items['admin/settings/themekey/settings/debug'] = array(
+  $items['admin/config/themekey/settings/debug'] = array(
     'title' => 'Debug',
     'access callback' => 'user_access',
     'access arguments' => array('administer themekey settings'),
@@ -69,7 +69,7 @@ function themekey_debug_menu() {
     'page callback' => 'drupal_get_form',
     'page arguments' => array('themekey_debug_settings_form'),
     'type' => MENU_LOCAL_TASK,
-    'weight' => 10
+    'weight' => 10,
   );
 
   return $items;

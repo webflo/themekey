@@ -382,7 +382,7 @@ function themekey_validator_node_type($rule) {
   switch ($rule['operator']) {
     case '=':
     case '!':
-      $node_types = node_get_types();
+      $node_types = node_type_get_types();
       if (!array_key_exists($rule['value'], $node_types)) {
         $errors['value'] = t('Possible values are %node_types', array('%node_types' => '"' . implode('", "', array_keys($node_types)) . '"'));
       }

@@ -26,10 +26,10 @@
 function themekey_invoke_modules($hook) {
   $return = array();
   foreach (variable_get('themekey_modules', array('themekey.node')) as $module) {
-    if (is_readable(drupal_get_path('module', 'themekey') .'/modules/'. $module .'.inc')) {
-      require_once(drupal_get_path('module', 'themekey') .'/modules/'. $module .'.inc');
+    if (is_readable(drupal_get_path('module', 'themekey') . '/modules/' . $module . '.inc')) {
+      require_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'themekey') . '/modules/' . $module . '.inc';
     }
-    $function = str_replace('.', '_', $module) .'_'. $hook;
+    $function = str_replace('.', '_', $module) . '_' . $hook;
     if (function_exists($function)) {
       $return = array_merge_recursive($return, $function());
     }
@@ -240,7 +240,7 @@ function themekey_match_rule_childs(&$parameters, $parent = 0) {
     return $child_lookups[$parent];
   }
 
-  if ($result = db_query("SELECT * FROM {themekey_properties} WHERE enabled = 1 AND parent = %d AND value <> '' ORDER BY weight", $parent)) {
+  if ($result = db_query("SELECT * FROM {themekey_properties} WHERE enabled = :enabled AND parent = :parent AND value <> :value ORDER BY weight", array(':enabled' => 1, ':parent' => $parent, ':value' => ''))) {
     $num_childs = 0;
 
     while ($item = db_fetch_array($result)) {
@@ -470,7 +470,7 @@ function themekey_check_theme_enabled($theme, $settings_page = FALSE) {
   }
 
   if (empty($themes_enabled)) {
-    if ($result = db_query("SELECT name FROM {system} WHERE type = 'theme' AND status = 1;")) {
+    if ($result = db_query("SELECT name FROM {system} WHERE type = :type AND status = :status", array(':type' => 'theme', ':status' => 1))) {
       while ($row = db_fetch_array($result)) {
         $themes_enabled[] = $row['name'];
       }
@@ -487,7 +487,7 @@ function themekey_check_theme_enabled($theme, $settings_page = FALSE) {
   if ($settings_page) {
     if (!$displayed_error) {
       drupal_set_message(t("Your current configuration of theme rules uses at least one theme that is not enabled. Nevertheless this configuration is stored but affected rules won't be applied until the targeted theme will be enabled at !build_themes.",
-        array('!build_themes' => l(t('!path', array('!path' => 'admin/build/themes')), 'admin/build/themes'))), 'error');
+        array('!build_themes' => l(t('!path', array('!path' => 'admin/appearance')), 'admin/appearance'))), 'error');
       $displayed_error = TRUE;
     }
   }
@@ -496,7 +496,7 @@ function themekey_check_theme_enabled($theme, $settings_page = FALSE) {
 
     if (!$warned && 1 == $user->uid) {
       themekey_set_debug_message('A matching Theme Switching Rule to select theme %theme was not applied because this theme is disabled. You can enable this theme at !build_themes or remove this Theme Switching Rule at !themekey_properties or edit current node if the theme was selected using ThemeKey UI.',
-        array('%theme' => $theme, '!build_themes' => l(t('!path', array('!path' => 'admin/build/themes')), 'admin/build/themes'), '!themekey_properties' => l(t('!path', array('!path' => 'admin/settings/themekey/properties')), 'admin/settings/themekey/properties')));
+        array('%theme' => $theme, '!build_themes' => l(t('!path', array('!path' => 'admin/appearance')), 'admin/appearance'), '!themekey_properties' => l(t('!path', array('!path' => 'admin/config/themekey/properties')), 'admin/config/themekey/properties')));
       $warned = TRUE;
     }
   }
@@ -504,6 +504,10 @@ function themekey_check_theme_enabled($theme, $settings_page = FALSE) {
   return FALSE;
 }
 
+/**
+ * @todo Please document this function.
+ * @see http://drupal.org/node/1354
+ */
 function themekey_format_rule_as_string($themekey_property_id) {
   module_load_include('inc', 'themekey', 'themekey_build');
 

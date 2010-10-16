@@ -23,17 +23,20 @@ function themekey_ui_schema() {
         'description' => 'The {node} this version belongs to.',
         'type' => 'int',
         'unsigned' => TRUE,
-        'not null' => TRUE),
+        'not null' => TRUE,
+      ),
       'vid' => array(
         'description' => 'The primary identifier for this version.',
         'type' => 'int',
         'unsigned' => TRUE,
-        'not null' => TRUE),
+        'not null' => TRUE,
+      ),
       'theme' => array(
         'type' => 'varchar',
         'length' => 255,
         'not null' => TRUE,
-        'default' => ''),
+        'default' => '',
+      ),
     ),
     'primary key' => array('nid', 'vid'),
   );
@@ -44,12 +47,14 @@ function themekey_ui_schema() {
         'description' => 'The user id.',
         'type' => 'int',
         'unsigned' => TRUE,
-        'not null' => TRUE),
+        'not null' => TRUE,
+      ),
       'theme' => array(
         'type' => 'varchar',
         'length' => 255,
         'not null' => TRUE,
-        'default' => ''),
+        'default' => '',
+      ),
     ),
     'primary key' => array('uid'),
   );
@@ -73,7 +78,11 @@ function themekey_ui_uninstall() {
   // Drop tables
   drupal_uninstall_schema('themekey_ui');
   // Remove variables
-  db_query("DELETE FROM {variable} WHERE name LIKE 'themekey_ui%%'");
+  // TODO Please review the conversion of this statement to the D7 database API syntax.
+  /* db_query("DELETE FROM {variable} WHERE name LIKE 'themekey_ui%%'") */
+  db_delete('variable')
+  ->condition('name', 'themekey_ui%%', 'LIKE')
+  ->execute();
   cache_clear_all('variables', 'cache');
 }
 
@@ -85,7 +94,10 @@ function themekey_ui_update_6100() {
 
   // moved to themekey_update_6105() to not break upgrades from ThemeKey 6.x-1.1 to 6.x-2.0
 
-  return array();
+  // hook_update_N() no longer returns a $ret array. Instead, return
+  // nothing or a translated string indicating the update ran successfully.
+  // See http://drupal.org/node/224333#update_sql.
+  return t('TODO Add a descriptive string here to show in the UI.') /* array() */;
 }
 
 
@@ -99,17 +111,22 @@ function themekey_ui_update_6200() {
         'description' => 'The user id.',
         'type' => 'int',
         'unsigned' => TRUE,
-        'not null' => TRUE),
+        'not null' => TRUE,
+      ),
       'theme' => array(
         'type' => 'varchar',
         'length' => 255,
         'not null' => TRUE,
-        'default' => ''),
+        'default' => '',
+      ),
     ),
     'primary key' => array('uid'),
   );
 
   $ret = array();
-  db_create_table($ret, 'themekey_ui_author_theme', $schema['themekey_ui_author_theme']);
-  return $ret;
+  db_create_table('themekey_ui_author_theme', $schema['themekey_ui_author_theme']);
+  // hook_update_N() no longer returns a $ret array. Instead, return
+  // nothing or a translated string indicating the update ran successfully.
+  // See http://drupal.org/node/224333#update_sql.
+  return t('TODO Add a descriptive string here to show in the UI.') /* $ret */;
 }

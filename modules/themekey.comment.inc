@@ -34,9 +34,11 @@ function themekey_comment_themekey_properties() {
 
   // Mapping functions
   $maps = array();
-  $maps[] = array('src'       => 'comment:cid',
-                  'dst'       => 'node:nid',
-                  'callback'  => 'themekey_comment_cid2nid');
+  $maps[] = array(
+    'src' => 'comment:cid',
+    'dst' => 'node:nid',
+    'callback' => 'themekey_comment_cid2nid',
+  );
 
   return array('attributes' => $attributes, 'maps' => $maps);
 }
@@ -72,6 +74,6 @@ function themekey_comment_themekey_paths() {
  *   or NULL if no value could be mapped
  */
 function themekey_comment_cid2nid($cid) {
-  $nid = db_result(db_query('SELECT nid FROM {comments} WHERE cid = %d', $cid));
+  $nid = db_query('SELECT nid FROM {comments} WHERE cid = :cid', array(':cid' => $cid))->fetchField();
   return $nid ? $nid : NULL;
 }

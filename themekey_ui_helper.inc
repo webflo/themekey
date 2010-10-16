@@ -16,7 +16,7 @@
  *   @see http://drupal.org/user/35192
  */
 
-require_once(drupal_get_path('module', 'themekey') .'/themekey_build.inc');
+require_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'themekey') . '/themekey_build.inc';
 
 /**
  * Returns a theme assigned to a drupal path alias using
@@ -33,9 +33,9 @@ require_once(drupal_get_path('module', 'themekey') .'/themekey_build.inc');
  */
 function themekey_ui_get_path_theme($path) {
   $serialized_empty_array = serialize(array());
-  if ($result = db_query("SELECT id, theme FROM {themekey_properties} WHERE property = 'drupal:path' AND operator = '=' AND value = '%s' AND wildcards = '%s' AND parent = 0", $path, $serialized_empty_array)) {
+  if ($result = db_query("SELECT id, theme FROM {themekey_properties} WHERE property = :property AND operator = :operator AND value = :value AND wildcards = :wildcards AND parent = :parent", array(':property' => 'drupal:path', ':operator' => '=', ':value' => $path, ':wildcards' => $serialized_empty_array, ':parent' => 0))) {
     while ($row = db_fetch_array($result)) {
-      if (!db_result(db_query("SELECT COUNT(*) FROM {themekey_properties} WHERE parent = %d", $row['id']))) {
+      if (!db_query("SELECT COUNT(*) FROM {themekey_properties} WHERE parent = :parent", array(':parent' => $row['id']))->fetchField()) {
         return array($row['id'], $row['theme']);
       }
     }
