@@ -16,6 +16,7 @@ ThemeKey 7.x-1.x, 2010-xx-xx
 [       ] mkalkbrenner: adjusted database code in themekey_load_rules and turned parameter into object in themekey_complete_path
 [       ] carstenmueller: fixed db_fetch_object() calls
 [       ] carstenmueller: replaced db_lock_table() by transactions (see http://drupal.org/node/355875)
+[       ] cspitzlay: moved property definitions, mapping definitions and mapping implementations over from the themekey_properties module; renamed browser detection class to contain "themekey"
 
 
 ThemeKey 6.x-3.0, 2010-10-14

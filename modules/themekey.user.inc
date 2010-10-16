@@ -51,6 +51,11 @@ function themekey_user_themekey_properties() {
     'validator' => 'themekey_validator_ctype_digit',
     'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
+  $attributes['user:role'] = array(
+    'description' => t("User: Role - Defined user roles (examples: 'anonymous user', 'authenticated user')"),
+    'validator' => 'themekey_validator_role',
+    'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
+  );
 
   return array('attributes' => $attributes);
 }
@@ -67,6 +72,7 @@ function themekey_user_themekey_global() {
   $parameters['user:language'] = !empty($user->language) ? $user->language : NULL;
   $parameters['user:name'] = !empty($user->name) ? $user->name : NULL;
   $parameters['user:uid'] = $user->uid;
+  $parameters['user:role'] = $user->roles;
 
   return $parameters;
 }

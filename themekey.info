@@ -12,3 +12,5 @@ files[] = themekey_admin.inc
 files[] = themekey_base.inc
 files[] = themekey_build.inc
 files[] = themekey_cron.inc
+files[] = modules/themekey_browser_detection.php
+
