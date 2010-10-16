@@ -527,16 +527,16 @@ function theme_themekey_rule_chain_form($variables) {
         $row = (isset($form['old_items'][$key]['#attributes']) && is_array($form['old_items'][$key]['#attributes'])) ? $form['old_items'][$key]['#attributes'] : array();
 
         // Add special classes to be used for tabledrag.js.
-        $form['old_items'][$key]['id']['#attributes']['class'] = 'themekey-property-id';
-        $form['old_items'][$key]['parent']['#attributes']['class'] = 'themekey-property-parent';
-        $form['old_items'][$key]['weight']['#attributes']['class'] = 'themekey-property-weight';
+        $form['old_items'][$key]['id']['#attributes']['class'] = array('themekey-property-id');
+        $form['old_items'][$key]['parent']['#attributes']['class'] = array('themekey-property-parent');
+        $form['old_items'][$key]['weight']['#attributes']['class'] = array('themekey-property-weight');
         // Add special classes to be used for themekey-properties.js.
-        $form['old_items'][$key]['property']['#attributes']['class'] = 'themekey-property-property themekey-fadeable';
-        $form['old_items'][$key]['wildcard']['#attributes']['class'] = 'themekey-property-wildcard themekey-fadeable';
-        $form['old_items'][$key]['operator']['#attributes']['class'] = 'themekey-fadeable';
-        $form['old_items'][$key]['value']['#attributes']['class'] = 'themekey-fadeable';
-        $form['old_items'][$key]['enabled']['#attributes']['class'] = 'themekey-property-enabled';
-        $form['old_items'][$key]['theme']['#attributes']['class'] = 'themekey-property-theme themekey-fadeable';
+        $form['old_items'][$key]['property']['#attributes']['class'] = array('themekey-property-property themekey-fadeable');
+        $form['old_items'][$key]['wildcard']['#attributes']['class'] = array('themekey-property-wildcard themekey-fadeable');
+        $form['old_items'][$key]['operator']['#attributes']['class'] = array('themekey-fadeable');
+        $form['old_items'][$key]['value']['#attributes']['class'] = array('themekey-fadeable');
+        $form['old_items'][$key]['enabled']['#attributes']['class'] = array('themekey-property-enabled');
+        $form['old_items'][$key]['theme']['#attributes']['class'] = array('themekey-property-theme themekey-fadeable');
 
         // form items of type markup don't have attributes
         $form['old_items'][$key]['delete']['#value'] = str_replace('<a', '<a class="themekey-rule-delete-link"', $form['old_items'][$key]['delete']['#value']);
@@ -569,7 +569,7 @@ function theme_themekey_rule_chain_form($variables) {
             drupal_render($form['old_items'][$key]['operator']) .
             drupal_render($form['old_items'][$key]['value']) .
             '<a name="anchor-' . $key . '" href="#anchor-' . $key . '" id="' . drupal_clean_css_identifier('edit-old-items-' . $key . '-value-help') . '" class="themekey-fadeable" title="' . $description . '" onClick="alert(\'' . $description . '\')">?</a>',
-          'class' => 'themekey-properties-row',
+          'class' => array('themekey-properties-row'),
         );
 
         $elements[] = array(
@@ -603,12 +603,12 @@ function theme_themekey_rule_chain_form($variables) {
           '</div>',
         );
 
-        $row['class'] = !empty($row['class']) ? $row['class'] . ' draggable' : 'draggable';
+        $row['class'][] = 'draggable';
         if (!$form['old_items'][$key]['enabled']['#value']) {
-          $row['class'] .= ' themekey-fade-out';
+          $row['class'][] = 'themekey-fade-out';
         }
         if (!$form['old_items'][$key]['parent']['#value']) {
-          $row['class'] .= ' themekey-top-level';
+          $row['class'][] = 'themekey-top-level';
         }
         $row['id'] = 'themekey-properties-row-' . $key;
         $row['data'] = $elements;
@@ -647,8 +647,8 @@ function theme_themekey_rule_chain_form($variables) {
       $row = (isset($form['new_item']['#attributes']) && is_array($form['new_item']['#attributes'])) ? $form['new_item']['#attributes'] : array();
 
       // Add special classes to be used for themekey-properties.js.
-      $form['new_item']['property']['#attributes']['class'] = 'themekey-property-property';
-      $form['new_item']['wildcard']['#attributes']['class'] = 'themekey-property-wildcard';
+      $form['new_item']['property']['#attributes']['class'] = array('themekey-property-property');
+      $form['new_item']['wildcard']['#attributes']['class'] = array('themekey-property-wildcard');
       if ('drupal:path:wildcard' != $form['new_item']['property']['#value']) {
         $form['new_item']['wildcard']['#attributes']['style'] = 'display: none';
       }
@@ -660,7 +660,7 @@ function theme_themekey_rule_chain_form($variables) {
           drupal_render($form['new_item']['wildcard']) .
           drupal_render($form['new_item']['operator']) .
           drupal_render($form['new_item']['value']),
-        'class' => 'themekey-properties-row',
+        'class' => array('themekey-properties-row'),
       );
       $elements[] = array('data' => drupal_render($form['new_item']['theme']));
       $elements[] = array('data' => drupal_render($form['new_item']['enabled']));
