@@ -255,6 +255,7 @@ function themekey_set_debug_message($msg, $placeholder = array(), $translate = T
   static $msg_stack = array();
   global $user;
 
+  // FIXME use admin role
   if (1 == $user->uid || variable_get('themekey_debug_non_admin_users', FALSE)) {
     if ('flush' == $msg) {
       $messages = array();
@@ -279,14 +280,19 @@ function themekey_set_debug_message($msg, $placeholder = array(), $translate = T
 
 
 /**
- * Implements hook_footer().
+ * Implements hook_page_alter().
  *
  * Prints out debug messages for admin user.
  *
  * @return string
  */
-function themekey_footer() {
-  return themekey_set_debug_message('flush');
+function themekey_page_alter(&$page) {
+  if ($messages = themekey_set_debug_message('flush')) {
+    $page['page_bottom']['themekey']= array(
+      '#type' => 'markup',
+      '#markup' => $messages,
+    );
+  }
 }
 
 

@@ -18,6 +18,7 @@
 function themekey_debug_properties() {
   global $user;
 
+  // FIXME use admin role
   if (1 == $user->uid || variable_get('themekey_debug_non_admin_users', FALSE)) {
     module_load_include('inc', 'themekey', 'themekey_base');
 
