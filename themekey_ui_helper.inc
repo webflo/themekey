@@ -34,11 +34,13 @@ require_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'themekey') . '/theme
 function themekey_ui_get_path_theme($path) {
   $serialized_empty_array = serialize(array());
   if ($result = db_query("SELECT id, theme FROM {themekey_properties} WHERE property = :property AND operator = :operator AND value = :value AND wildcards = :wildcards AND parent = :parent", array(':property' => 'drupal:path', ':operator' => '=', ':value' => $path, ':wildcards' => $serialized_empty_array, ':parent' => 0))) {
-    while ($row = db_fetch_array($result)) {
-      if (!db_query("SELECT COUNT(*) FROM {themekey_properties} WHERE parent = :parent", array(':parent' => $row['id']))->fetchField()) {
-        return array($row['id'], $row['theme']);
+
+    foreach ($result as $row) {
+      if (!db_query("SELECT COUNT(*) FROM {themekey_properties} WHERE parent = :parent", array(':parent' => $row->id))->fetchField()) {
+        return array($row->id, $row->theme);
       }
     }
+    
   }
 
   return array(0, 'default');
