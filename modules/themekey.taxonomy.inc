@@ -140,7 +140,8 @@ function themekey_taxonomy_vid2vid($node_vid) {
   // Use SQL instead taxonomy API because this code runs during hook_init() stage.
   // Using taxonomy API will require to load the node using node_load() which is not allowed in this stage.
   $result = db_query('SELECT td.vid FROM {taxonomy_term_data} td INNER JOIN {taxonomy_term_node} tn ON td.tid = tn.tid WHERE tn.vid = :tn.vid', array(':tn.vid' => $node_vid));
-  while ($term = db_fetch_object($result)) {
+  
+  foreach ($result as $term) {
     $vid[] = $term->vid;
   }
 
@@ -168,7 +169,8 @@ function themekey_taxonomy_vid2tid($node_vid) {
   // Use SQL instead taxonomy API because this code runs during hook_init() stage.
   // Using taxonomy API will require to load the node using node_load() which is not allowed in this stage.
   $result = db_query('SELECT tid FROM {taxonomy_term_node} WHERE vid = :vid', array(':vid' => $node_vid));
-  while ($term = db_fetch_object($result)) {
+  
+  foreach ($result as  $term) {
     $tid[] = $term->tid;
   }
 

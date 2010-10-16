@@ -724,7 +724,8 @@ function themekey_validator_role($rule) {
     case '!':
       $roles = array();
       $result = db_query('SELECT * FROM {role} ORDER BY name');
-      while ($role = db_fetch_object($result)) {
+      
+      foreach ($result as $role) {
         $roles[$role->rid] = $role->name;
       }
 
