@@ -713,8 +713,7 @@ function themekey_admin_theme_warning() {
 function themekey_page_cache_warning($page_cache_support) {
   static $warnings = array();
 
-  if (variable_get('cache', CACHE_DISABLED)) {
-    // CACHE_NORMAL, CACHE_AGGRESSIVE, CACHE_EXTERNAL
+  if (variable_get('cache', 0)) {
     switch ($page_cache_support) {
       case THEMEKEY_PAGECACHE_UNSUPPORTED:
         if (!isset($warnings[THEMEKEY_PAGECACHE_UNSUPPORTED])) {
