@@ -108,14 +108,13 @@ function themekey_menu() {
 
 
 /**
- * Implements hook_init().
+ * Implements hook_custom_theme().
  *
  * Here happens all the magic of ThemeKey.
  * ThemeKey detects if any Theme Switching Rule matches
- * the current request and sets the global variable $custom_theme.
+ * the current request and returns a custom theme.
  */
-function themekey_init() {
-  global $theme, $custom_theme;
+function themekey_custom_theme() {
 
   if (!defined('THEMEKEY_PAGECACHE_UNSUPPORTED')) {
     define('THEMEKEY_PAGECACHE_UNSUPPORTED', 0);
@@ -123,13 +122,16 @@ function themekey_init() {
     define('THEMEKEY_PAGECACHE_TIMEBASED', 2);
   }
 
-  if (isset($theme)) {
-    if (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
-      themekey_set_debug_message('Skipped rule checking because another module already initialized the theme engine. $theme has been set to %theme.<br />This seems to be a bug. Visit !link and help us improving other modules.', array('%theme' => $theme, '!link' => l('drupal.org/node/754970', 'http://drupal.org/node/754970')));
-    }
-  }
+//  if (isset($theme)) {
+//    if (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
+//      themekey_set_debug_message('Skipped rule checking because another module already initialized the theme engine. $theme has been set to %theme.<br />This seems to be a bug. Visit !link and help us improving other modules.', array('%theme' => $theme, '!link' => l('drupal.org/node/754970', 'http://drupal.org/node/754970')));
+//    }
+//  }
+
+  $custom_theme = &drupal_static('themekey_custom_theme', '');
+
   // don't change theme when administer blocks or during cron run executed by cron.php or drush
-  elseif (strpos($_GET['q'], 'admin/structure/block') !== 0 && strpos($_SERVER['SCRIPT_FILENAME'], 'cron.php') === FALSE && strpos($_SERVER['SCRIPT_FILENAME'], 'drush.php') === FALSE) {
+  if (strpos($_GET['q'], 'admin/structure/block') !== 0 && strpos($_SERVER['SCRIPT_FILENAME'], 'cron.php') === FALSE && strpos($_SERVER['SCRIPT_FILENAME'], 'drush.php') === FALSE) {
     // don't change theme when another module already set a $custom_theme like system.module does (administration theme) until administrator turned on this feature
     if (!$custom_theme || variable_get('themekey_override_custom_theme', 0)) {
       require_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'themekey') . '/themekey_base.inc';
@@ -186,6 +188,8 @@ function themekey_init() {
   if (variable_get('themekey_debug_show_property_values', FALSE) && module_exists('themekey_debug')) {
     themekey_debug_properties();
   }
+
+  return $custom_theme;
 }
 
 

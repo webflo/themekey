@@ -310,7 +310,7 @@ function themekey_match_rule_childs(&$parameters, $parent = 0) {
  *   boolean
  */
 function themekey_match_condition($condition, &$parameters) {
-  global $custom_theme;
+  $custom_theme = &drupal_static('themekey_custom_theme', '');
 
   if (is_array($condition) && count($condition)) {
     // Default operator is 'equal'

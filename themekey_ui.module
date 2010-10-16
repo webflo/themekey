@@ -74,9 +74,8 @@ function themekey_ui_themekey_properties() {
 /**
  * This function implements the interface of a ThemeKey
  * mapping function but doesn't set a ThemeKey property's
- * value. It sets the global variable $custom_theme to a
- * theme directly which will cause ThemeKey to use this
- * theme.
+ * value. It sets the drupal static themekey_custom_theme
+ * which will cause ThemeKey to use this theme.
  *
  * @param $nid
  *   a node id, current value of ThemeKey property node:nid
@@ -86,7 +85,7 @@ function themekey_ui_themekey_properties() {
  *   or NULL if no theme has been assigned to the node
  */
 function themekey_ui_nid2theme($nid) {
-  global $custom_theme;
+  $custom_theme = &drupal_static('themekey_custom_theme', '');
 
   // node_load() must not be called from hook_init().
   // Therefor we have to execute SQL here using hook_nodeapi().
@@ -109,9 +108,8 @@ function themekey_ui_nid2theme($nid) {
 /**
  * This function implements the interface of a ThemeKey
  * mapping function but doesn't set a ThemeKey property's
- * value. It sets the global variable $custom_theme to a
- * theme directly which will cause ThemeKey to use this
- * theme.
+ * value. It sets the drupal static themekey_custom_theme
+ * which will cause ThemeKey to use this theme.
  *
  * @param $nid
  *   a node id, current value of ThemeKey property node:nid
@@ -121,7 +119,7 @@ function themekey_ui_nid2theme($nid) {
  *   or NULL if no theme has been assigned to the node
  */
 function themekey_ui_author2theme($nid) {
-  global $custom_theme;
+  $custom_theme = &drupal_static('themekey_custom_theme', '');
 
   // node_load() must not be called from hook_init().
   // Therefor we have to execute SQL here.
