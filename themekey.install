@@ -487,3 +487,46 @@ function themekey_update_6301() {
 
   return t('Update of Themekey ran successfully');
 }
+
+/**
+ * Implements hook_update_N().
+ */
+function themekey_update_7001() {
+  // cleanup for users of older versions of the obsolete module themekey_properties
+  $attributes = array(
+    'system:query_param',
+    'system:query_string',
+    'system:cookie',
+    'system:server_ip',
+    'system:server_port',
+    'system:server_name',
+    'system:https',
+    'system:remote_ip',
+    'system:referer',
+    'system:user_agent',
+    'system:user_browser',
+    'system:user_browser_simplified',
+    'system:user_os',
+    'system:user_os_simplified',
+    'system:date_time',
+    'system:date',
+    'system:time',
+    'system:dummy',
+    'drupal:base_path',
+    'drupal:is_front_page',
+    'user:role',
+  );
+  $properties = variable_get('themekey_properties', array());
+  foreach ($attributes as $attribute) {
+    if (array_key_exists($attribute, $properties)) {
+      $properties[$attribute]['path'] = FALSE;
+    }
+  }
+  variable_set('themekey_properties', $properties);
+
+  // cleanup for users of older versions of the obsolete module themekey_properties
+  variable_del('themekey_properties_debug_show_values');
+
+  return t('Update of Themekey ran successfully');
+}
+
