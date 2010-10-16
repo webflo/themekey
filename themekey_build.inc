@@ -395,12 +395,14 @@ function themekey_rule_del($id) {
  */
 function themekey_rule_get($id) {
   if ($result = db_query('SELECT * FROM {themekey_properties} WHERE id = :id', array(':id' => $id))) {
-    if ($item = db_fetch_array($result)) {
-      if ('drupal:path' == $item['property']) {
+    
+    foreach ($result as $item) {
+      if ('drupal:path' == $item->property) {
         themekey_complete_path($item);
       }
       return $item;
     }
+    
   }
 
   return NULL;
