@@ -26,7 +26,8 @@ function themekey_cron_clear_page_cache() {
     $attributes = variable_get('themekey_attributes', array());
     $parameters = themekey_get_global_parameters();
 
-    while ($item = db_fetch_array($result)) {
+    foreach ($result as $item) {
+      
       if (THEMEKEY_PAGECACHE_TIMEBASED == $attributes[$item['property']]['page cache']) {
         $md5 = md5(serialize($item)); // use md5 instead of item id, because we want a track if an item's weight changed
         $match = themekey_match_condition($item, $parameters);
@@ -42,7 +43,9 @@ function themekey_cron_clear_page_cache() {
           $rules_processed_new[] = $md5;
         }
       }
+      
     }
+   
   }
 
   if ($clear_page_cache) {
