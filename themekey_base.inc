@@ -471,9 +471,11 @@ function themekey_check_theme_enabled($theme, $settings_page = FALSE) {
 
   if (empty($themes_enabled)) {
     if ($result = db_query("SELECT name FROM {system} WHERE type = :type AND status = :status", array(':type' => 'theme', ':status' => 1))) {
-      while ($row = db_fetch_array($result)) {
-        $themes_enabled[] = $row['name'];
+      
+      foreach ($result as $row) {
+        $themes_enabled[] = $row->name;
       }
+
     }
   }
 
