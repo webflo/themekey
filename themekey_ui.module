@@ -140,10 +140,12 @@ function themekey_ui_author2theme($nid) {
 function themekey_ui_theme() {
   return array(
     'themekey_ui_table' => array(
-      'arguments' => array('form' => NULL),
+      'file' => 'themekey_ui_admin.inc',
+      'render element' => 'form',
     ),
     'themekey_ui_theme_select_form' => array(
-      'arguments' => array('form' => NULL),
+      'file' => 'themekey_ui_admin.inc',
+      'render element' => 'form',
     ),
   );
 }
@@ -152,8 +154,21 @@ function themekey_ui_theme() {
 /**
  * Implements hook_perm().
  */
-function themekey_ui_perm() {
-  return array('assign node themes', 'assign path alias themes', 'assign theme to own nodes');
+function themekey_ui_permission() {
+  return array(
+    'assign node themes' => array(
+      'title' => t('assign node themes'),
+      'description' => '',
+    ), 
+    'assign path alias themes' => array(
+      'title' => t('assign path alias themes'),
+      'description' => '',
+    ), 
+    'assign theme to own nodes' => array(
+      'title' => t('assign theme to own nodes'),
+      'description' => '',
+    ),
+  );
 }
 
 

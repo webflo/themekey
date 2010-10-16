@@ -61,7 +61,7 @@ function themekey_ui_settings_form() {
       '#header' => array(t('Content Type'), t('Enabled')),
     );
     foreach (node_type_get_names() as $type => $title) {
-      $form['themekey_ui']['content_type']['table'][$type]['title'] = array('#value' => $title);
+      $form['themekey_ui']['content_type']['table'][$type]['title'] = array('#markup' => $title);
       $form['themekey_ui']['content_type']['table'][$type]['themekey_ui_nodeform|' . $type] = array(
         '#type' => 'checkbox',
         '#default_value' => variable_get('themekey_ui_nodeform|' . $type, 1),
@@ -246,6 +246,9 @@ function themekey_ui_pathalias_submit($form, &$form_state) {
  * @ingroup themeable
  */
 function theme_themekey_ui_table($form) {
+  
+  $form = $form['form'];
+  
   // TODO: Should this theme themekey_ui_table be declared in hook_theme()?
   $header = isset($form['#header']) ? $form['#header'] : array();
   $attributes = isset($form['#attributes']) ? $form['#attributes'] : array();
@@ -268,7 +271,7 @@ function theme_themekey_ui_table($form) {
         'class' => 'message',
       ));
   }
-
+  
   return count($rows) ? theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => $attributes)) : '';
 }
 
