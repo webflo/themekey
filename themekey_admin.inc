@@ -506,8 +506,7 @@ function theme_themekey_rule_chain_form($variables) {
     $attributes = variable_get('themekey_attributes', array());
 
     foreach ($form['old_items'] as $key => $item) {
-      if (ctype_digit($key) && !empty($item['property'])) {
-        var_dump($item['property']);
+      if (is_numeric($key) && !empty($item['property'])) {
         $parents_disabled[$key] = FALSE;
 
         if (!empty($parents_disabled[$item['parent']['#value']])) {
@@ -524,7 +523,7 @@ function theme_themekey_rule_chain_form($variables) {
     }
 
     foreach ($form['old_items'] as $key => $item) {
-      if (ctype_digit($key) && !empty($item['property'])) {
+      if (is_numeric($key) && !empty($item['property'])) {
         $row = (isset($form['old_items'][$key]['#attributes']) && is_array($form['old_items'][$key]['#attributes'])) ? $form['old_items'][$key]['#attributes'] : array();
 
         // Add special classes to be used for tabledrag.js.
@@ -546,7 +545,7 @@ function theme_themekey_rule_chain_form($variables) {
           $form['old_items'][$key]['wildcard']['#attributes']['style'] = 'display: none';
         }
 
-        if ($num_childs[$key]) {
+        if (!empty($num_childs[$key])) {
           $form['old_items'][$key]['theme']['#attributes']['style'] = 'display: none';
           // form items of type markup don't have attributes
           $form['old_items'][$key]['delete']['#value'] = str_replace('<a', '<a style="display: none"', $form['old_items'][$key]['delete']['#value']);
