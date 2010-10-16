@@ -516,8 +516,8 @@ function theme_themekey_rule_chain_form($variables) {
         if (!$form['old_items'][$key]['enabled']['#value']) {
           $parents_disabled[$key] = TRUE;
         }
-        elseif ($item['parent']['#value']) {
-          $num_childs[$item['parent']['#value']]++;
+        elseif (!empty($item['parent']['#value'])) {
+          $num_childs[$item['parent']['#value']] = empty($num_childs[$item['parent']['#value']]) ? 1 : $num_childs[$item['parent']['#value']] + 1;
         }
       }
     }
