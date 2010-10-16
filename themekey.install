@@ -85,13 +85,13 @@ function themekey_schema() {
 }
 
 
-/**
- * Implements hook_install().
- */
-function themekey_install() {
-  // TODO The drupal_(un)install_schema functions are called automatically in D7.
-  // drupal_install_schema('themekey')
-}
+///**
+// * Implements hook_install().
+// */
+//function themekey_install() {
+//  // TODO The drupal_(un)install_schema functions are called automatically in D7.
+//  // drupal_install_schema('themekey')
+//}
 
 
 /**
@@ -119,22 +119,31 @@ function themekey_uninstall() {
 function themekey_update_6001() {
   $ret = array();
   //
-  $result = db_query('SELECT * FROM {themekey_properties} WHERE property = :property', array(':property' =>));
+  $result = db_query('SELECT * FROM {themekey_properties} WHERE property = :property', array(':property' => 'nid'));
   while ($item = db_fetch_array($result)) {
-    if (db_query('SELECT COUNT(id) FROM {themekey_properties} WHERE property = :property AND value = :value', array(':property' => ':value' => '' => $item['value']))->fetchField() > 0) {
+    if (db_query('SELECT COUNT(id) FROM {themekey_properties} WHERE property = :property AND value = :value', array(':property' => 'node:nid', ':value' => $item['value']))->fetchField() > 0) {
       // TODO update_sql has been removed. Use the database API for any schema or data changes.
-      $ret[] = array() /* update_sql('DELETE FROM {themekey_properties} WHERE id = ' . $item['id']) */;
+//      $ret[] = array() /* update_sql('DELETE FROM {themekey_properties} WHERE id = ' . $item['id']) */;
+      db_delete('themekey_properties')
+      ->condition('id', $item['id'], '=')
+      ->execute();
     }
     else {
       // TODO update_sql has been removed. Use the database API for any schema or data changes.
-      $ret[] = array() /* update_sql('UPDATE {themekey_properties} SET property = \'node:nid\' WHERE id = ' . $item['id']) */;
+//      $ret[] = array() /* update_sql('UPDATE {themekey_properties} SET property = \'node:nid\' WHERE id = ' . $item['id']) */;
+      $num_updated = db_update('themekey_properties') // Table name no longer needs {}
+      ->fields(array(
+        'property' => 'node:nid',
+      ))
+      ->condition('id', $item['id'], '=')
+      ->execute();
     }
   }
 
   // hook_update_N() no longer returns a $ret array. Instead, return
   // nothing or a translated string indicating the update ran successfully.
   // See http://drupal.org/node/224333#update_sql.
-  return t('TODO Add a descriptive string here to show in the UI.') /* $ret */;
+  return t('Updated property "nid" to "node:nid"') /* $ret */;
 }
 
 
@@ -156,7 +165,7 @@ function themekey_update_6100() {
   // hook_update_N() no longer returns a $ret array. Instead, return
   // nothing or a translated string indicating the update ran successfully.
   // See http://drupal.org/node/224333#update_sql.
-  return t('TODO Add a descriptive string here to show in the UI.') /* array() */;
+  return t('Updated variable themekey_properties:path.') /* array() */;
 }
 
 
@@ -165,11 +174,18 @@ function themekey_update_6100() {
  */
 function themekey_update_6101() {
   // TODO update_sql has been removed. Use the database API for any schema or data changes.
-  $result = array() /* update_sql("UPDATE {system} SET weight = 0 WHERE name = 'themekey'") */;
+//  $result = array() /* update_sql("UPDATE {system} SET weight = 0 WHERE name = 'themekey'") */;
+  $num_updated = db_update('system') // Table name no longer needs {}
+  ->fields(array(
+    'weight' => 0,
+  ))
+  ->condition('name', 'themekey', '=')
+  ->execute();
+  
   // hook_update_N() no longer returns a $ret array. Instead, return
   // nothing or a translated string indicating the update ran successfully.
   // See http://drupal.org/node/224333#update_sql.
-  return t('TODO Add a descriptive string here to show in the UI.') /* array($result) */;
+  return t('Updated system weight to 0 for themekey.') /* array($result) */;
 }
 
 
@@ -188,7 +204,7 @@ function themekey_update_6102() {
   // hook_update_N() no longer returns a $ret array. Instead, return
   // nothing or a translated string indicating the update ran successfully.
   // See http://drupal.org/node/224333#update_sql.
-  return t('TODO Add a descriptive string here to show in the UI.') /* array() */;
+  return t('Set variables "themekey_module_forum_triggers_taxonomy_vid" and "themekey_module_taxonomy_menu_triggers_taxonomy_tid" with value 1') /* array() */;
 }
 
 
@@ -200,7 +216,7 @@ function themekey_update_6103() {
   // hook_update_N() no longer returns a $ret array. Instead, return
   // nothing or a translated string indicating the update ran successfully.
   // See http://drupal.org/node/224333#update_sql.
-  return t('TODO Add a descriptive string here to show in the UI.') /* array() */;
+  return t('Deleted variable themekey_nodediscover.') /* array() */;
 }
 
 
@@ -209,11 +225,12 @@ function themekey_update_6103() {
  */
 function themekey_update_6104() {
   // TODO update_sql has been removed. Use the database API for any schema or data changes.
-  $result = array() /* update_sql("ALTER TABLE {themekey_properties} DROP COLUMN callbacks") */;
+//  $result = array() /* update_sql("ALTER TABLE {themekey_properties} DROP COLUMN callbacks") */;
+  db_drop_field('themekey_properties', 'callbacks');
   // hook_update_N() no longer returns a $ret array. Instead, return
   // nothing or a translated string indicating the update ran successfully.
   // See http://drupal.org/node/224333#update_sql.
-  return t('TODO Add a descriptive string here to show in the UI.') /* array($result) */;
+  return t('Dropped field callbacks.') /* array($result) */;
 }
 
 
@@ -236,20 +253,27 @@ function themekey_update_6105() {
       if (!variable_get('themekey_nodeaspath', 0)) {
         $sql = '';
         if (0 === strpos($db_type, 'mysql')) {
-          $sql = "SELECT id, value, theme, nid, vid FROM {themekey_properties} JOIN {node_revisions} ON (value = nid) WHERE property = 'node:nid' AND conditions = '%s'";
+          $sql = "SELECT id, value, theme, nid, vid FROM {themekey_properties} JOIN {node_revisions} ON (value = nid) WHERE property = :property AND conditions = :conditions";
         }
         elseif (0 === strpos($db_type, 'pqsql')) {
-          $sql = "SELECT id, value, theme, nid, vid FROM {themekey_properties} JOIN {node_revisions} ON (value = nid::character varying) WHERE property = 'node:nid' AND conditions = '%s'";
+          $sql = "SELECT id, value, theme, nid, vid FROM {themekey_properties} JOIN {node_revisions} ON (value = nid::character varying) WHERE property = :property AND conditions = :conditions";
         }
-        if ($result = db_query("SELECT id, value, theme, nid, vid FROM {themekey_properties} JOIN {node_revisions} ON (value = nid::character varying) WHERE property = :property AND conditions = :conditions", array(':property' => 'node:nid', ':conditions' => 'a:0:{}'))) {
-          $insert_sql = "INSERT INTO {themekey_ui_node_theme} (nid, vid, theme) VALUES (%d, %d, '%s')";
-          $delete_sql = "DELETE FROM {themekey_properties} WHERE id = %d";
+        if ($result = db_query($sql, array(':property' => 'node:nid', ':conditions' => 'a:0:{}'))) {
 
           while ($row = db_fetch_array($result)) {
-            // TODO Please convert this statement to the D7 database API syntax.
-            if ($return['INSERT']['success'] = db_query($insert_sql, $row['nid'], $row['vid'], $row['theme'])) {
-              // TODO Please convert this statement to the D7 database API syntax.
-              if (!($return['DELETE']['success'] = db_query($delete_sql, $row['id']))) {
+            $return['INSERT']['success'] = db_insert('themekey_ui_node_theme') // Table name no longer needs {}
+            ->fields(array(
+              'nid' => $row['nid'],
+              'vid' => $row['vid'],
+              'theme' => $row['theme'],
+            ))
+            ->execute();
+            
+            if ($return['INSERT']['success']) {
+              $return['DELETE']['success'] = db_delete('themekey_properties')
+              ->condition('id', $row['id'])
+              ->execute();
+              if (!($return['DELETE']['success'])) {
                 break;
               }
             }
@@ -259,19 +283,23 @@ function themekey_update_6105() {
             }
           }
 
-          if (isset($return['INSERT'])) {
-            $return['INSERT']['query'] = check_plain($insert_sql);
-          }
+//          if (isset($return['INSERT'])) {
+//            $return['INSERT']['query'] = check_plain($insert_sql);
+//          }
+//
+//          if (isset($return['DELETE'])) {
+//            $return['DELETE']['query'] = check_plain($delete_sql);
+//          }
 
-          if (isset($return['DELETE'])) {
-            $return['DELETE']['query'] = check_plain($delete_sql);
-          }
+          $return = t('Themekey UI was successfully updated');
+          
         }
         else {
-          $return['SELECT'] = array(
-            'success' => FALSE,
-            'query' => check_plain($sql),
-          );
+          $return = t('Update of Themekey UI failed.');
+//          $return['SELECT'] = array(
+//            'success' => FALSE,
+//            'query' => check_plain($sql),
+//          );
         }
       }
 
@@ -282,7 +310,7 @@ function themekey_update_6105() {
   // hook_update_N() no longer returns a $ret array. Instead, return
   // nothing or a translated string indicating the update ran successfully.
   // See http://drupal.org/node/224333#update_sql.
-  return t('TODO Add a descriptive string here to show in the UI.') /* $return */;
+  return $return /* $return */;
 }
 
 
@@ -342,7 +370,7 @@ function themekey_update_6200() {
   db_add_field('themekey_properties', 'wildcards', $field);
 
   $weight = ((int) db_query("SELECT MIN(weight) FROM {themekey_properties}")->fetchField()) - 1;
-  $insert_query = "INSERT INTO {themekey_properties} (property, value, weight, conditions, theme, enabled, wildcards) VALUES ('drupal:path', '%s', %d, '%s', '%s', 1, '%s')";
+//  $insert_query = "INSERT INTO {themekey_properties} (property, value, weight, conditions, theme, enabled, wildcards) VALUES ('drupal:path', '%s', %d, '%s', '%s', 1, '%s')";
 
   $result = db_query("SELECT * FROM {themekey_paths} WHERE custom = :custom", array(':custom' => 1));
   while ($item = db_fetch_array($result)) {
@@ -354,13 +382,31 @@ function themekey_update_6200() {
       }
     }
     // TODO Please convert this statement to the D7 database API syntax.
-    $insert_success = db_query($insert_query, $item['path'], $weight, serialize($conditions), $item['theme'], $item['wildcards']);
-    $ret[] = array(
-      'success' => $insert_success,
-      'query' => $insert_query,
-    );
+//    $insert_success = db_query($insert_query, $item['path'], $weight, serialize($conditions), $item['theme'], $item['wildcards']);
+    
+    $insert_success = db_insert('themekey_properties') // Table name no longer needs {}
+    ->fields(array(
+      'property' => 'drupal:path',
+      'value' => $item['path'],
+      'weight' => $weight,
+      'conditions' => serialize($conditions),
+      'theme' => $item['theme'],
+      'enabled' => 1,
+      'wildcards' => $item['wildcards'],
+    )) 
+    ->execute();
+//    
+//    $ret[] = array(
+//      'success' => $insert_success,
+//      'query' => $insert_query,
+//    );
     // TODO update_sql has been removed. Use the database API for any schema or data changes.
-    $ret[] = array() /* update_sql('DELETE FROM {themekey_paths} WHERE id = ' . $item['id']) */;
+//    $ret[] = array() /* update_sql('DELETE FROM {themekey_paths} WHERE id = ' . $item['id']) */;
+    
+    $num_deleted = db_delete('themekey_paths')
+    ->condition('id', $item['id'])
+    ->execute();
+    
   }
 
   db_drop_field('themekey_paths', 'conditions');
@@ -370,7 +416,7 @@ function themekey_update_6200() {
   // hook_update_N() no longer returns a $ret array. Instead, return
   // nothing or a translated string indicating the update ran successfully.
   // See http://drupal.org/node/224333#update_sql.
-  return t('TODO Add a descriptive string here to show in the UI.') /* $ret */;
+  return t('Updated Themekey properties.') /* $ret */;
 }
 
 
@@ -383,7 +429,7 @@ function themekey_update_6201() {
   // hook_update_N() no longer returns a $ret array. Instead, return
   // nothing or a translated string indicating the update ran successfully.
   // See http://drupal.org/node/224333#update_sql.
-  return t('TODO Add a descriptive string here to show in the UI.') /* array() */;
+  return '' /* array() */;
 }
 
 
@@ -420,14 +466,28 @@ function themekey_update_6202() {
         $parent = $row['id'];
         foreach ($conditions as $condition) {
           // TODO Please convert this statement to the D7 database API syntax.
-          $insert_result = db_query($insert_query, $condition['property'], $condition['operator'], $condition['value'], 0, $row['theme'], $row['enabled'], serialize(array()), $parent);
+//          $insert_result = db_query($insert_query, $condition['property'], $condition['operator'], $condition['value'], 0, $row['theme'], $row['enabled'], serialize(array()), $parent);
+          $insert_result = db_insert('themekey_properties') // Table name no longer needs {}
+          ->fields(array(
+            'property' =>  $condition['property'],
+            'operator' => $condition['operator'],
+            'value' => $condition['value'],
+            'weight' => 0,
+            'theme' => $row['theme'],
+            'enabled' => $row['enabled'],
+            'wildcards' => serialize(array()),
+            'parent' => $parent,
+          ))
+          ->execute();
+          
+          
           if ($insert_result) {
-            $parent = db_last_insert_id('themekey_properties', 'id');
+            $parent = db_last_insert_id('themekey_properties', 'id'); // TODO Wofür ist das gut?
           }
-          $ret[] = array(
-            'success' => $insert_result,
-            'query' => $insert_query,
-          );
+//          $ret[] = array(
+//            'success' => $insert_result,
+//            'query' => $insert_query,
+//          );
         }
       }
     }
@@ -447,7 +507,7 @@ function themekey_update_6202() {
   // hook_update_N() no longer returns a $ret array. Instead, return
   // nothing or a translated string indicating the update ran successfully.
   // See http://drupal.org/node/224333#update_sql.
-  return t('TODO Add a descriptive string here to show in the UI.') /* $ret */;
+  return t('Updated themekey properties.') /* $ret */;
 }
 
 
@@ -467,7 +527,7 @@ function themekey_update_6203() {
   // hook_update_N() no longer returns a $ret array. Instead, return
   // nothing or a translated string indicating the update ran successfully.
   // See http://drupal.org/node/224333#update_sql.
-  return t('TODO Add a descriptive string here to show in the UI.') /* array() */;
+  return '' /* array() */;
 }
 
 
@@ -484,12 +544,12 @@ function themekey_update_6300() {
   module_load_include('inc', 'themekey', 'themekey_build');
   themekey_rebuild();
 
-  $ret = array();
+//  $ret = array();
   db_drop_table('themekey_paths');
   // hook_update_N() no longer returns a $ret array. Instead, return
   // nothing or a translated string indicating the update ran successfully.
   // See http://drupal.org/node/224333#update_sql.
-  return t('TODO Add a descriptive string here to show in the UI.') /* $ret */;
+  return t('Update of Themekey ran successfully') /* $ret */;
 }
 
 
@@ -509,5 +569,5 @@ function themekey_update_6301() {
   // hook_update_N() no longer returns a $ret array. Instead, return
   // nothing or a translated string indicating the update ran successfully.
   // See http://drupal.org/node/224333#update_sql.
-  return t('TODO Add a descriptive string here to show in the UI.') /* array() */;
+  return t('Update of Themekey ran successfully') /* $ret */;
 }
