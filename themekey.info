@@ -4,3 +4,11 @@ name = "ThemeKey"
 description = "Map themes to Drupal paths or object properties."
 core = 7.x
 package = ThemeKey
+
+files[] = themekey.install
+files[] = themekey-debug-messages.tpl.php
+files[] = themekey_validators.inc
+files[] = themekey_admin.inc
+files[] = themekey_base.inc
+files[] = themekey_build.inc
+files[] = themekey_cron.inc
