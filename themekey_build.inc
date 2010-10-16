@@ -330,20 +330,23 @@ function themekey_rule_set(&$item) {
   }
 
   if (empty($item['id'])) {
-    // prevent table lock issues with drupal_write_record
-    // see http://drupal.org/node/372308#comment-2442664
-    drupal_get_schema(FALSE);
-    db_lock_table('themekey_properties');
+    
+    // TRANSACTIONS - SEE http://drupal.org/node/355875
+    // The transaction opens here.
+    $txn = db_transaction();
+    
     // new entry should be added at the end of the chain
     $weight = db_query("SELECT MAX(weight) FROM {themekey_properties}")->fetchField();
     // if query fails $weight will be FALSE which will cause $item['weight'] to be set to '1'
     $item['weight'] = 1 + $weight;
     drupal_write_record('themekey_properties', $item, array());
-    db_unlock_tables();
+    
   }
   else {
     drupal_write_record('themekey_properties', $item, 'id');
   }
+  
+  // $txn goes out of scope here, and the entire transaction commits.
 }
 
 
@@ -354,30 +357,30 @@ function themekey_rule_set(&$item) {
  *   id of the rule to be deleted from database
  */
 function themekey_rule_del($id) {
-  // lock table to prevent race condition
-  db_lock_table('themekey_properties');
+  
+  // TRANSACTIONS - SEE http://drupal.org/node/355875
+  // The transaction opens here.
+  $txn = db_transaction();
+  
   $num_childs = db_query("SELECT COUNT(*) FROM {themekey_properties} WHERE parent = :parent", array(':parent' => $id))->fetchField();
   if (FALSE !== $num_childs) {
     if ($num_childs > 0) {
-      db_unlock_tables();
       drupal_set_message(t('ThemeKey rule could not be deleted because it has children in the chain'), 'error');
     }
     else {
-      // TODO Please review the conversion of this statement to the D7 database API syntax.
-      /* db_query('DELETE FROM {themekey_properties} WHERE id = %d', $id) */
       $result = db_delete('themekey_properties')
-  ->condition('id', $id)
-  ->execute();
-      db_unlock_tables();
+      ->condition('id', $id)
+      ->execute();
       if (!$result) {
         drupal_set_message(t('Error while deleteing ThemeKey rule'), 'error');
       }
     }
   }
   else {
-    db_unlock_tables();
     drupal_set_message(t('Error while deleteing ThemeKey rule'), 'error');
   }
+  
+  // $txn goes out of scope here, and the entire transaction commits.
 }
 
 
