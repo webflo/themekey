@@ -103,13 +103,13 @@ function themekey_uninstall() {
  * Update property 'nid' to 'node:nid'
  */
 function themekey_update_6001() {
-  $ret = array();
-  //
+  
   $result = db_query('SELECT * FROM {themekey_properties} WHERE property = :property', array(':property' => 'nid'));
-  while ($item = db_fetch_array($result)) {
-    if (db_query('SELECT COUNT(id) FROM {themekey_properties} WHERE property = :property AND value = :value', array(':property' => 'node:nid', ':value' => $item['value']))->fetchField() > 0) {
+  
+  foreach ($result as $item) {
+    if (db_query('SELECT COUNT(id) FROM {themekey_properties} WHERE property = :property AND value = :value', array(':property' => 'node:nid', ':value' => $item->value))->fetchField() > 0) {
       db_delete('themekey_properties')
-      ->condition('id', $item['id'], '=')
+      ->condition('id', $item->id, '=')
       ->execute();
     }
     else {
@@ -117,7 +117,7 @@ function themekey_update_6001() {
       ->fields(array(
         'property' => 'node:nid',
       ))
-      ->condition('id', $item['id'], '=')
+      ->condition('id', $item->id, '=')
       ->execute();
     }
   }
@@ -238,18 +238,20 @@ function themekey_update_6105() {
         }
         if ($result = db_query($sql, array(':property' => 'node:nid', ':conditions' => 'a:0:{}'))) {
 
-          while ($row = db_fetch_array($result)) {
-            $return['INSERT']['success'] = db_insert('themekey_ui_node_theme') // Table name no longer needs {}
+          
+        foreach ($result as $row) {
+          
+          $return['INSERT']['success'] = db_insert('themekey_ui_node_theme') // Table name no longer needs {}
             ->fields(array(
-              'nid' => $row['nid'],
-              'vid' => $row['vid'],
-              'theme' => $row['theme'],
+              'nid' => $row->nid,
+              'vid' => $row->vid,
+              'theme' => $row->theme,
             ))
             ->execute();
             
             if ($return['INSERT']['success']) {
               $return['DELETE']['success'] = db_delete('themekey_properties')
-              ->condition('id', $row['id'])
+              ->condition('id', $row->id)
               ->execute();
               if (!($return['DELETE']['success'])) {
                 break;
@@ -338,8 +340,10 @@ function themekey_update_6200() {
   $weight = ((int) db_query("SELECT MIN(weight) FROM {themekey_properties}")->fetchField()) - 1;
 
   $result = db_query("SELECT * FROM {themekey_paths} WHERE custom = :custom", array(':custom' => 1));
-  while ($item = db_fetch_array($result)) {
-    $conditions = unserialize($item['conditions']);
+  
+  foreach ($result as $item) {
+    
+    $conditions = unserialize($item->conditions);
     if (is_array($conditions) && !empty($conditions)) {
       if (!is_array($conditions[0])) {
         // ThemeKey 6.x-1.1 stored conditions for paths as simple string within an array
@@ -350,17 +354,17 @@ function themekey_update_6200() {
     $insert_success = db_insert('themekey_properties') // Table name no longer needs {}
     ->fields(array(
       'property' => 'drupal:path',
-      'value' => $item['path'],
+      'value' => $item->path,
       'weight' => $weight,
       'conditions' => serialize($conditions),
-      'theme' => $item['theme'],
+      'theme' => $item->theme,
       'enabled' => 1,
-      'wildcards' => $item['wildcards'],
+      'wildcards' => $item->wildcards,
     )) 
     ->execute();
 
     $num_deleted = db_delete('themekey_paths')
-    ->condition('id', $item['id'])
+    ->condition('id', $item->id)
     ->execute();
     
   }
@@ -414,12 +418,12 @@ function themekey_update_6202() {
   db_add_field('themekey_properties', 'parent', $field_parent);
 
   if ($result = db_query("SELECT * FROM {themekey_properties} WHERE conditions <> :conditions", array(':conditions' => serialize(array())))) {
-    $insert_query = "INSERT INTO {themekey_properties} (property, operator, value, weight, theme, enabled, wildcards, parent) VALUES ('%s', '%s', '%s', %d, '%s', %d, '%s', %d)";
-
-    while ($row = db_fetch_array($result)) {
-      $conditions = unserialize($row['conditions']);
+    
+    foreach ($result as $row) {
+      
+     $conditions = unserialize($row->conditions);
       if (is_array($conditions)) {
-        $parent = $row['id'];
+        $parent = $row->id;
         foreach ($conditions as $condition) {
           $insert_result = db_insert('themekey_properties') // Table name no longer needs {}
           ->fields(array(
@@ -427,13 +431,12 @@ function themekey_update_6202() {
             'operator' => $condition['operator'],
             'value' => $condition['value'],
             'weight' => 0,
-            'theme' => $row['theme'],
-            'enabled' => $row['enabled'],
+            'theme' => $row->theme,
+            'enabled' => $row->enabled,
             'wildcards' => serialize(array()),
             'parent' => $parent,
           ))
           ->execute();
-          
           
           if ($insert_result) {
             $parent = db_last_insert_id('themekey_properties', 'id'); // TODO Wofür ist das gut?
@@ -441,7 +444,9 @@ function themekey_update_6202() {
 
         }
       }
+      
     }
+    
   }
 
   db_drop_field('themekey_properties', 'conditions');
