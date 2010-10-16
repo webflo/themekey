@@ -16,7 +16,7 @@
 
 
 /**
- * Validates a Theme Switichng Rule.
+ * Validates a Theme Switching Rule.
  * Allowed Operators: "=", "!"
  * Allowed values: "true", "false" as string
  *
@@ -60,7 +60,7 @@ function themekey_validator_string_boolean($rule) {
 
 
 /**
- * Validates a Theme Switichng Rule.
+ * Validates a Theme Switching Rule.
  * Allowed Operators: "=", "!"
  * Allowed values: "1", "0"
  *
@@ -103,7 +103,7 @@ function themekey_validator_nummeric_boolean($rule) {
 
 
 /**
- * Validates a Theme Switichng Rule.
+ * Validates a Theme Switching Rule.
  * Allowed Operators: "=", "!", "<", "<=", ">", ">="
  * Allowed values: string of digits (numbers)
  *
@@ -144,7 +144,7 @@ function themekey_validator_ctype_digit($rule) {
 
 
 /**
- * Validates a Theme Switichng Rule.
+ * Validates a Theme Switching Rule.
  * Allowed Operators: any
  * Allowed values:
  * - configured drupal language as string or 'neutral' if operator is "="
@@ -193,7 +193,7 @@ function themekey_validator_language($rule) {
 
 
 /**
- * Validates a Theme Switichng Rule.
+ * Validates a Theme Switching Rule.
  * Allowed Operators: "<", "<=", ">", ">=" and "~"
  * Allowed values:
  * - valid regular expression if operator is "~"
@@ -243,7 +243,7 @@ function themekey_validator_date_time($rule) {
 
 
 /**
- * Validates a Theme Switichng Rule.
+ * Validates a Theme Switching Rule.
  * Allowed Operators: any
  * Allowed values:
  * - valid regular expression if operator is "~"
@@ -296,7 +296,7 @@ function themekey_validator_date($rule) {
 
 
 /**
- * Validates a Theme Switichng Rule.
+ * Validates a Theme Switching Rule.
  * Allowed Operators: any
  * Allowed values:
  * - valid regular expression if operator is "~"
@@ -349,7 +349,7 @@ function themekey_validator_time($rule) {
 
 
 /**
- * Validates a Theme Switichng Rule.
+ * Validates a Theme Switching Rule.
  * Allowed Operators: any
  * Allowed values:
  * - valid regular expression if operator is "~"
@@ -403,7 +403,7 @@ function themekey_validator_node_type($rule) {
 
 
 /**
- * Validates a Theme Switichng Rule.
+ * Validates a Theme Switching Rule.
  * Allowed Operators: any
  * Allowed values:
  * - valid regular expression if operator is "~"
@@ -448,7 +448,7 @@ function themekey_validator_http_host($rule) {
 
 
 /**
- * Validates a Theme Switichng Rule.
+ * Validates a Theme Switching Rule.
  * Allowed Operators: all
  * Allowed values: any string without whitespaces
  *
@@ -484,7 +484,7 @@ function themekey_validator_no_whitespace($rule) {
 
 
 /**
- * Validates a Theme Switichng Rule.
+ * Validates a Theme Switching Rule.
  * Allowed Operators: any
  * Allowed wildcards: any string without whitespaces and not starting with "#" or "%"
  *
@@ -523,7 +523,7 @@ function themekey_validator_wildcard($rule) {
 
 
 /**
- * Validates a Theme Switichng Rule.
+ * Validates a Theme Switching Rule.
  * Allowed Operators: "~"
  * Allowed values: valid regular expression
  *
@@ -580,7 +580,7 @@ function themekey_validator_regex($rule) {
 
 
 /**
- * Validates a Theme Switichng Rule.
+ * Validates a Theme Switching Rule.
  * Allowed Operators: "=", "!"
  * Allowed values: paths without whitespaces
  *
@@ -627,4 +627,172 @@ function themekey_validator_drupal_path($rule) {
 
   return $errors;
 }
+
+
+/**
+ * Validates a Theme Switching Rule.
+ * Allowed Operators: any
+ * Allowed values:
+ * - valid regular expression if operator is "~"
+ * - a vaild IPv4 address like "123.123.123.123" if operator is "=" or "!"
+ * - fragment of an IPv4 address which contains at least one digit
+ *   for different operators
+ *
+ *
+ * @param $rule
+ *   A Theme Switching Rule as associative array:
+ *   - property: ThemeKey property as string (p.e. "drupal:path")
+ *   - wildcard: optional string, only used if property is "drupal:path:wildcard"
+ *   - operator: ThemeKey operator as string ("=", "!", "<". "<=", ">", ">=", "~")
+ *   - value: ThemeKey property value as string
+ *
+ * @return
+ *   An associative array of errors:
+ *   - property: translated error message as string
+ *     describing a problem with the property
+ *   - wildcard: translated error message as string
+ *     describing a problem with the wildcard
+ *   - operator: translated error message as string
+ *     describing a problem with the operator
+ *   - value: translated error message as string
+ *     describing a problem with the value
+ *   If no errors detected the array is empty.
+ */
+function themekey_validator_ip_address($rule) {
+  $errors = array();
+
+  switch ($rule['operator']) {
+    case '=':
+    case '!':
+      // TODO add for support IPv6
+      // TODO improve regex for IPv4
+      if (!preg_match("/^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$/", $rule['value'])) {
+        $errors['value'] = t('Not a valid IPv4 address. Format should look like "123.123.123.123"');
+      }
+      break;
+
+    case '~':
+      // CHECK THE REGULAR EXPRESSION
+      $errors = themekey_validator_regex($rule);
+      break;
+
+    default:
+      // TODO add for support IPv6
+      // TODO improve regex for IPv4
+      if (!preg_match("/^[1-2][0-9\.]*$/", $rule['value'])) {
+        $errors['value'] = t("Value isn't suitable for checks against dates formatted like \"123.123.123.123\"");
+      }
+      break;
+  }
+
+  return $errors;
+}
+
+
+/**
+ * Validates a Theme Switching Rule.
+ * Allowed Operators: "=", "!", "~"
+ * Allowed values:
+ * - valid regular expression if operator is "~"
+ * - a vaild drupal role if operator is "=" or "!"
+ *
+ *
+ * @param $rule
+ *   A Theme Switching Rule as associative array:
+ *   - property: ThemeKey property as string (p.e. "drupal:path")
+ *   - wildcard: optional string, only used if property is "drupal:path:wildcard"
+ *   - operator: ThemeKey operator as string ("=", "!", "<". "<=", ">", ">=", "~")
+ *   - value: ThemeKey property value as string
+ *
+ * @return
+ *   An associative array of errors:
+ *   - property: translated error message as string
+ *     describing a problem with the property
+ *   - wildcard: translated error message as string
+ *     describing a problem with the wildcard
+ *   - operator: translated error message as string
+ *     describing a problem with the operator
+ *   - value: translated error message as string
+ *     describing a problem with the value
+ *   If no errors detected the array is empty.
+ */
+function themekey_validator_role($rule) {
+  $errors = array();
+
+  switch ($rule['operator']) {
+    case '=':
+    case '!':
+      $roles = array();
+      $result = db_query('SELECT * FROM {role} ORDER BY name');
+      while ($role = db_fetch_object($result)) {
+        $roles[$role->rid] = $role->name;
+      }
+
+      if (!in_array($rule['value'], $roles)) {
+        $errors['value'] = t('The entered user role %value is not valid. Possible roles are "%roles".', array('%value' => $rule['value'], '%roles' => implode('", "', $roles)));
+      }
+      break;
+
+    case '~':
+      $errors = themekey_validator_regex($rule);
+      break;
+
+    default:
+      $errors['operator'] = t('Possible operators are "=", "!", "~"');
+      break;
+
+  }
+
+  return $errors;
+}
+
+
+/**
+ * Validates a Theme Switching Rule.
+ * Allowed Operators: "=", "!"
+ * Allowed values:
+ * - a three letter day String if operator is "=" or "!"
+ *
+ *
+ * @param $rule
+ *   A Theme Switching Rule as associative array:
+ *   - property: ThemeKey property as string (p.e. "drupal:path")
+ *   - wildcard: optional string, only used if property is "drupal:path:wildcard"
+ *   - operator: ThemeKey operator as string ("=", "!", "<". "<=", ">", ">=", "~")
+ *   - value: ThemeKey property value as string
+ *
+ * @return
+ *   An associative array of errors:
+ *   - property: translated error message as string
+ *     describing a problem with the property
+ *   - wildcard: translated error message as string
+ *     describing a problem with the wildcard
+ *   - operator: translated error message as string
+ *     describing a problem with the operator
+ *   - value: translated error message as string
+ *     describing a problem with the value
+ *   If no errors detected the array is empty.
+ */
+function themekey_validator_day_of_week($rule) {
+  static $days_of_week = array('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun');
+
+  $errors = array();
+
+  switch ($rule['operator']) {
+    case '=':
+    case '!':
+      if (!in_array($rule['value'], $days_of_week)) {
+        $errors['value'] = t('The day %value is not valid. Possible days are "%days".', array('%value' => $rule['value'], '%days' => implode('", "', $days_of_week)));
+      }
+      break;
+
+    default:
+      $errors['operator'] = t('Possible operators are "=" and "!"');
+      break;
+
+  }
+
+  return $errors;
+}
+
 
