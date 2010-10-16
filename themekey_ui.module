@@ -237,12 +237,17 @@ function themekey_ui_form_alter(&$form, $form_state, $form_id) {
 }
 
 
-/**
- * Implements hook_nodeapi().
+
+/** Implementation of hook_node_load
+ * 
+ * @param $nodes
+ * @param $types
  */
-function themekey_ui_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
-  switch ($op) {
-    case 'load':
+function themekey_ui_node_load($nodes, $types) {
+  
+  if (!empty($nodes)) {
+    foreach ($nodes as $nid => $node) {
+      
       if (variable_get('themekey_ui_nodeform', 0) && variable_get('themekey_ui_nodeform|' . $node->type, 1)) {
         if (!empty($node->vid)) {
           $theme = db_query('SELECT theme FROM {themekey_ui_node_theme} WHERE nid = :nid AND vid = :vid', array(':nid' => $node->nid, ':vid' => $node->vid))->fetchField();
@@ -254,20 +259,94 @@ function themekey_ui_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
           }
         }
       }
-      break;
+      
+    }
+  }
+  
+}
 
-    case 'insert':
-      if (!empty($node->themekey_ui_theme)) {
-        $item = array(
-          'nid' => $node->nid,
-          'vid' => $node->vid,
-          'theme' => $node->themekey_ui_theme,
-        );
-        drupal_write_record('themekey_ui_node_theme', $item);
-      }
-      break;
 
-    case 'update':
+/**
+ * Implementation of hook_node_insert
+ * @param unknown_type $node
+ */
+function themekey_ui_node_insert($node) {
+  if (!empty($node->themekey_ui_theme)) {
+    db_insert('themekey_ui_node_theme')
+      ->fields(array(
+        'nid' => $node->nid,
+        'vid' => $node->vid,
+        'theme' => $node->themekey_ui_theme,
+      ))
+      ->execute();
+  }
+}
+
+
+/**
+ * Implementation of hook_node_update
+ * @param unknown_type $node
+ */
+function themekey_ui_node_update($node) {
+  
+  if (!empty($node->themekey_ui_theme)) {
+    db_update('mytable')
+      ->fields(array(
+        'nid' => $node->nid,
+        'vid' => $node->vid,
+        'theme' => $node->themekey_ui_theme,
+      ))
+      ->condition('nid', $node->nid)
+      ->execute();
+  }
+  
+}
+
+
+/**
+ * Implementation of hook_node_delete
+ * @param unknown_type $node
+ */
+function themekey_ui_node_delete($node) {
+  db_delete('themekey_ui_node_theme')
+  ->condition('nid', $node->nid)
+  ->execute();
+}
+
+
+
+
+/**
+ * Implements hook_nodeapi().
+ */
+//function themekey_ui_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
+//  switch ($op) {
+//    case 'load':
+//      if (variable_get('themekey_ui_nodeform', 0) && variable_get('themekey_ui_nodeform|' . $node->type, 1)) {
+//        if (!empty($node->vid)) {
+//          $theme = db_query('SELECT theme FROM {themekey_ui_node_theme} WHERE nid = :nid AND vid = :vid', array(':nid' => $node->nid, ':vid' => $node->vid))->fetchField();
+//          if ($theme) {
+//            $node->themekey_ui_theme = $theme;
+//          }
+//          else {
+//            $node->themekey_ui_theme = 'default';
+//          }
+//        }
+//      }
+//      break;
+//
+//    case 'insert':
+//      if (!empty($node->themekey_ui_theme)) {
+//        $item = array(
+//          'nid' => $node->nid,
+//          'vid' => $node->vid,
+//          'theme' => $node->themekey_ui_theme,
+//        );
+//        drupal_write_record('themekey_ui_node_theme', $item);
+//      }
+//      break;
+//
+//    case 'update':
       if (!empty($node->themekey_ui_theme)) {
         $item = array(
           'nid' => $node->nid,
@@ -280,17 +359,65 @@ function themekey_ui_nodeapi(&$node, $op, $a3 = NULL, $a4 = NULL) {
         }
         drupal_write_record('themekey_ui_node_theme', $item, $key);
       }
-      break;
+//      break;
+//
+//    case 'delete':
+//      // TODO Please review the conversion of this statement to the D7 database API syntax.
+//      /* db_query('DELETE FROM {themekey_ui_node_theme} WHERE nid = %d', $node->nid) */
+//      db_delete('themekey_ui_node_theme')
+//  ->condition('nid', $node->nid)
+//  ->execute();
+//      break;
+//  }
+//}
 
-    case 'delete':
-      // TODO Please review the conversion of this statement to the D7 database API syntax.
-      /* db_query('DELETE FROM {themekey_ui_node_theme} WHERE nid = %d', $node->nid) */
-      db_delete('themekey_ui_node_theme')
-  ->condition('nid', $node->nid)
-  ->execute();
-      break;
+
+
+/**
+ * Implementation of hook_user_insert()
+ * @param unknown_type $edit
+ * @param unknown_type $account
+ * @param unknown_type $category
+ */
+function themekey_ui_user_insert(&$edit, $account, $category) {
+    
+  if (user_access('assign theme to own nodes') && variable_get('themekey_ui_author', 0) && !empty($edit['themekey_ui_theme'])) {
+
+    if (db_query("SELECT 1 FROM {themekey_ui_author_theme} WHERE uid = :uid", array(':uid' => $account->uid))->fetchField()) {
+      db_update('themekey_ui_author_theme')
+        ->fields(array(
+         'uid' => $account->uid,
+         'theme' => $edit['themekey_ui_theme'],
+        ))
+        ->condition('uid', $account->uid)
+        ->execute();
+    }
+    else {
+      db_update('themekey_ui_author_theme')
+        ->fields(array(
+         'uid' => $account->uid,
+         'theme' => $edit['themekey_ui_theme'],
+        ))
+        ->execute();
+    }
+
+    if ($edit['themekey_ui_theme'] != $account->themekey_ui_theme) {
+      // theme settings changed
+      // fast deletion of page cache (truncate)
+      cache_clear_all('*', 'cache_page', TRUE);
+    }
+
+    $edit['themekey_ui_theme'] = NULL;
   }
+    
 }
+
+
+// TODO hook_user_update()
+
+
+// TODO hook_user_delete()
+
 
 /**
  * Implements hook_user().
