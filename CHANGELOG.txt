@@ -13,6 +13,7 @@ ThemeKey 7.x-1.x, 2010-xx-xx
 [       ] carstenmueller: fixed db_fetch_array() calls in updates in themekey_ui_helper.ui 
 [       ] cspitzlay: moved examples and validators over from the themekey_properties module (which will be merged into themekey)
 [       ] carstenmueller: fixed db_fetch_array() calls
+[       ] mkalkbrenner: adjusted database code in themekey_load_rules and turned parameter into object in themekey_complete_path
 
 
 ThemeKey 6.x-3.0, 2010-10-14

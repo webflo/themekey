@@ -158,18 +158,18 @@ function themekey_scan_modules() {
  * @see themekey_load_rules()
  *
  * @param $item
- *   reference to an associative array
+ *   reference to an onject
  *   containing a ThemeKey rule as returned
  *   directly from database
  */
-function themekey_complete_path(&$item) {
-  $item['wildcards'] = unserialize($item['wildcards']);
-  if (count($item['wildcards'])) {
-    $parts = explode('/', $item['value'], MENU_MAX_PARTS);
-    foreach ($item['wildcards'] as $index => $wildcard) {
+function themekey_complete_path($item) {
+  $item->wildcards = unserialize($item->wildcards);
+  if (count($item->wildcards)) {
+    $parts = explode('/', $item->value, MENU_MAX_PARTS);
+    foreach ($item->wildcards as $index => $wildcard) {
       $parts[$index] .= $wildcard;
     }
-    $item['value'] = implode('/', $parts);
+    $item->value = implode('/', $parts);
   }
 }
 
@@ -290,14 +290,14 @@ function themekey_load_rules($parent = 0, $depth = 0) {
 
   $query = 'SELECT * FROM {themekey_properties} WHERE parent = %d ORDER BY weight';
   $result = db_query('SELECT * FROM {themekey_properties} WHERE parent = :parent ORDER BY weight', array(':parent' => $parent));
-  while ($item = db_fetch_array($result)) {
-    if ('drupal:path' == $item['property']) {
+  foreach ($result as $item) {
+    if ('drupal:path' == $item->property) {
       themekey_complete_path($item);
     }
-    $item['depth'] = $depth;
-    $properties[$item['id']] = $item;
-    themekey_load_rules($item['id'], $depth + 1);
-    $parent_lookups[$item['id']] = TRUE;
+    $item->depth = $depth;
+    $properties[$item->id] = get_object_vars($item);
+    themekey_load_rules($item->id, $depth + 1);
+    $parent_lookups[$item->id] = TRUE;
   }
   return $properties;
 }
