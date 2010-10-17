@@ -298,14 +298,15 @@ function themekey_ui_node_update($node) {
 
     if (!$node->revision && db_query("SELECT 1 FROM {themekey_ui_node_theme} WHERE nid = :nid AND vid = :vid", array(':nid' => $node->nid, ':vid' => $node->vid))->fetchField()) {
       // UPDATE
-      db_update('themekey_ui_node_theme')
-      ->fields(array(
-        'nid' => $node->nid,
-        'vid' => $node->vid,
-        'theme' => $node->themekey_ui_theme,
-      ))
-      ->condition('nid', $node->nid)
-      ->execute();
+      $query = db_update('themekey_ui_node_theme')
+        ->fields(array(
+          'nid' => $node->nid,
+          'vid' => $node->vid,
+          'theme' => $node->themekey_ui_theme,
+        ));
+      $query->condition('nid', $node->nid, '=');
+      $query->condition('vid', $node->vid, '=');
+      $query->execute();
     }
     else {
       // INSERT
