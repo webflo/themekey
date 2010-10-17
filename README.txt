@@ -6,10 +6,11 @@ ThemeKey
 Name: themekey
 Authors: Markus Kalkbrenner | Cocomore AG
          Carsten Müller | Cocomore AG
+         Christian Spitzlay | Cocomore AG
          Thilo Wawrzik <drupal at profix898 dot de>
-Drupal: 6.x
+Drupal: 7.x
 Sponsor: Cocomore AG - http://www.cocomore.com
-
+                     - http://drupal.cocomore.com
 
 Description
 ===========
@@ -31,28 +32,21 @@ Installation
 1. Place whole themekey folder into your Drupal modules/ or better
    sites/x/modules/ directory.
 
-2. Enable the themekey module by navigating to
-     administer > modules
+2. Enable the ThemeKey module by navigating to
+     Configuration > Modules
 
 3. Bring up themekey configuration screens by navigating to
-     administer > settings > themekey
+     Configuration > User Interface / ThemeKey
 
 
 ThemeKey UI
 ===========
 
-How to use ThemeKey UI on node forms ...
+1. Enable the ThemeKey UI module by navigating to
+     Configuration > Modules
 
-- Go to admin/settings/themekey/settings/ui to make theme options available
-  on node forms, and check off the content types you want to enable the
-  options for
-
-
-ThemeKey Properties
-===================
-
-"ThemeKey Properties" adds additional properties to ThemeKey module.
-Download it from http://drupal.org/project/themekey_properties
+2. Bring up ThemeKey configuration screens by navigating to
+     Configuration > User Interface / ThemeKey > Settings > User Interface
 
 
 For Developers

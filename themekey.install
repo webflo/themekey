@@ -444,10 +444,10 @@ function themekey_update_6203() {
   // calling themekey_rebuild() at this point will cause an error because
   // modified schema is not yet populated
   // therefor we show a message
-  drupal_set_message(t("ThemeKey won't work correctly until you click 'Save configuration' at !settings_link. If you don't see a 'Save configuration' button you need to clear your cache first.", array('!settings_link' => l(t("ThemeKey settings"), 'admin/config/themekey/settings'))), 'error');
+  drupal_set_message(t("ThemeKey won't work correctly until you click 'Save configuration' at !settings_link. If you don't see a 'Save configuration' button you need to clear your cache first.", array('!settings_link' => l(t("ThemeKey settings"), 'admin/config/user-interface/themekey/settings'))), 'error');
 
   if (module_exists('themekey_ui')) {
-    drupal_set_message(t("ThemeKey UI won't work correctly until click 'Save configuration' at !settings_link. If you don't see a 'Save configuration' button you need to clear your cache first.", array('!settings_link' => l(t("ThemeKey UI settings"), 'admin/config/themekey/settings/ui'))), 'error');
+    drupal_set_message(t("ThemeKey UI won't work correctly until click 'Save configuration' at !settings_link. If you don't see a 'Save configuration' button you need to clear your cache first.", array('!settings_link' => l(t("ThemeKey UI settings"), 'admin/config/user-interface/themekey/settings/ui'))), 'error');
   }
 
   return '';

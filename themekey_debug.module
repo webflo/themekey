@@ -63,7 +63,7 @@ function themekey_debug_properties() {
  */
 function themekey_debug_menu() {
   $items = array();
-  $items['admin/config/themekey/settings/debug'] = array(
+  $items['admin/config/user-interface/themekey/settings/debug'] = array(
     'title' => 'Debug',
     'access callback' => 'user_access',
     'access arguments' => array('administer themekey settings'),

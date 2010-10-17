@@ -30,6 +30,7 @@ ThemeKey 7.x-1.x, 2010-xx-xx
 [       ] cspitzlay: fixed the help forms: HTML content is displayed now.
 [       ] mkalkbrenner: fixed rule deletion and menu entries
 [       ] mkalkbrenner: set bartik as default theme
+[       ] mkalkbrenner: adjusted README
 
 
 ThemeKey 6.x-3.0, 2010-10-14

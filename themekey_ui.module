@@ -40,14 +40,14 @@ function themekey_ui_themekey_properties() {
 
   $attributes['themekey_ui:node_triggers_theme'] = array(
     'description' => t("Property themekey_ui:node_triggers_theme could not be selected from the property drop down. You get this static property by activating !link. Afterwards you can move the property to any position in the rule chain. When done it triggers the switch to the theme assigned to the current node using ThemeKey UI.",
-      array('!link' => l(t('Show theme option in create/edit node forms'), 'admin/config/themekey/settings/ui'))),
+      array('!link' => l(t('Show theme option in create/edit node forms'), 'admin/config/user-interface/themekey/settings/ui'))),
     'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
     'static' => TRUE,
   );
 
   $attributes['themekey_ui:node_author_triggers_theme'] = array(
     'description' => t("Property themekey_ui:node_author_triggers_theme could not be selected from the property drop down. You get this static property by activating !link. Afterwards you can move the property to any position in the rule chain. When done it triggers the switch to the theme the author selected for his nodes in his user profile.",
-      array('!link' => l(t('Show theme option in user profile'), 'admin/config/themekey/settings/ui'))),
+      array('!link' => l(t('Show theme option in user profile'), 'admin/config/user-interface/themekey/settings/ui'))),
     'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
     'static' => TRUE,
   );
@@ -177,7 +177,7 @@ function themekey_ui_permission() {
  */
 function themekey_ui_menu() {
   $items = array();
-  $items['admin/config/themekey/settings/ui'] = array(
+  $items['admin/config/user-interface/themekey/settings/ui'] = array(
     'title' => 'User Interface',
     'access callback' => 'user_access',
     'access arguments' => array('administer themekey settings'),
