@@ -115,18 +115,14 @@ function themekey_menu() {
  * the current request and returns a custom theme.
  */
 function themekey_custom_theme() {
-
   if (!defined('THEMEKEY_PAGECACHE_UNSUPPORTED')) {
     define('THEMEKEY_PAGECACHE_UNSUPPORTED', 0);
     define('THEMEKEY_PAGECACHE_SUPPORTED', 1);
     define('THEMEKEY_PAGECACHE_TIMEBASED', 2);
   }
 
-//  if (isset($theme)) {
-//    if (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
-//      themekey_set_debug_message('Skipped rule checking because another module already initialized the theme engine. $theme has been set to %theme.<br />This seems to be a bug. Visit !link and help us improving other modules.', array('%theme' => $theme, '!link' => l('drupal.org/node/754970', 'http://drupal.org/node/754970')));
-//    }
-//  }
+  $custom_theme_called = &drupal_static('themekey_custom_theme_called', FALSE);
+  $custom_theme_called = TRUE;
 
   $custom_theme = &drupal_static('themekey_custom_theme', '');
 
@@ -164,17 +160,13 @@ function themekey_custom_theme() {
       }
       elseif (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
         if ($custom_theme) {
-          // static rules set $theme_candidate to 'default and $cutom_theme directly
+          // REVIEW
+          // static rules set $theme_candidate to 'default and $custom_theme directly
           themekey_set_debug_message('$custom_theme has been set to %custom_theme during rule matching.', array('%custom_theme' => $custom_theme));
         }
         else {
           themekey_set_debug_message('Using default theme.');
         }
-      }
-    }
-    elseif (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
-      if ($custom_theme) {
-        themekey_set_debug_message('Skipped rule checking because $custom_theme already set to %custom_theme by another module.', array('%custom_theme' => $custom_theme));
       }
     }
   }
@@ -193,6 +185,29 @@ function themekey_custom_theme() {
   }
 
   return $custom_theme;
+}
+
+
+/**
+ * Implements hook_custom_theme().
+ *
+ * Detects if hook_custom_theme() has been skipped because
+ * a different module already initialized the theme engine.
+ */
+function themekey_init() {
+  if (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
+    $custom_theme_called = &drupal_static('themekey_custom_theme_called', FALSE);
+    if (!$custom_theme_called) {
+      themekey_set_debug_message('Skipped rule checking because another module already initialized the theme engine. $theme has been set to %theme.<br />This seems to be a bug. Visit !link and help us improving other modules.', array('%theme' => $theme, '!link' => l('drupal.org/node/754970', 'http://drupal.org/node/754970')), TRUE, TRUE);
+    }
+    else {
+      global $theme;
+      $custom_theme = &drupal_static('themekey_custom_theme', '');
+      if (!empty($custom_theme) && 'default' != $custom_theme && $theme != $custom_theme) {
+        themekey_set_debug_message('Theme switching to custom theme %custom_theme did not work because theme has been set to %theme by another module.', array('%custom_theme' => $custom_theme, '%theme' => $theme), TRUE, TRUE);
+      }
+    }
+  }
 }
 
 
@@ -251,7 +266,7 @@ function themekey_help($path, $arg) {
  *   boolean, if set to TRUE $msg will be handled by t()
  *   when handed over to drupal_set_message()
  */
-function themekey_set_debug_message($msg, $placeholder = array(), $translate = TRUE) {
+function themekey_set_debug_message($msg, $placeholder = array(), $translate = TRUE, $unshift = FALSE) {
   static $msg_stack = array();
   global $user;
 
@@ -269,11 +284,19 @@ function themekey_set_debug_message($msg, $placeholder = array(), $translate = T
       }
     }
     else {
-      $msg_stack[] = array(
+      $tmp = array(
         'msg' => $msg,
         'placeholder' => $placeholder,
         'translate' => $translate,
       );
+
+      if ($unshift) {
+        $tmp['msg'] = '<b>' . $tmp['msg'] . '</b>';
+        array_unshift($msg_stack, $tmp);
+      }
+      else {
+        $msg_stack[] = $tmp;
+      }
     }
   }
 }

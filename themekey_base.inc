@@ -471,7 +471,7 @@ function themekey_check_theme_enabled($theme, $settings_page = FALSE) {
 
   if (empty($themes_enabled)) {
     if ($result = db_query("SELECT name FROM {system} WHERE type = :type AND status = :status", array(':type' => 'theme', ':status' => 1))) {
-      
+
       foreach ($result as $row) {
         $themes_enabled[] = $row->name;
       }
@@ -497,8 +497,9 @@ function themekey_check_theme_enabled($theme, $settings_page = FALSE) {
     global $user;
 
     if (!$warned && 1 == $user->uid) {
+      // Don't use the l() function at this early stage of bootstrapping because it will initialize the theme engine. Use url() instead.
       themekey_set_debug_message('A matching Theme Switching Rule to select theme %theme was not applied because this theme is disabled. You can enable this theme at !build_themes or remove this Theme Switching Rule at !themekey_properties or edit current node if the theme was selected using ThemeKey UI.',
-        array('%theme' => $theme, '!build_themes' => l(t('!path', array('!path' => 'admin/appearance')), 'admin/appearance'), '!themekey_properties' => l(t('!path', array('!path' => 'admin/config/themekey/properties')), 'admin/config/themekey/properties')));
+        array('%theme' => $theme, '!build_themes' => '<a href="' . url('admin/appearance') . '">admin/appearance</a>', '!themekey_properties' => '<a href="' . url('admin/config/themekey/properties') . '">admin/config/themekey/properties</a>'));
       $warned = TRUE;
     }
   }
