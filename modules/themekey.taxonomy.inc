@@ -139,13 +139,13 @@ function themekey_taxonomy_vid2vid($node_vid) {
   $vid = array();
   // Use SQL instead taxonomy API because this code runs during hook_init() stage.
   // Using taxonomy API will require to load the node using node_load() which is not allowed in this stage.
-  $result = db_query('SELECT td.vid FROM {taxonomy_term_data} td INNER JOIN {taxonomy_term_node} tn ON td.tid = tn.tid WHERE tn.vid = :tn.vid', array(':tn.vid' => $node_vid));
-  
-  foreach ($result as $term) {
-    $vid[] = $term->vid;
-  }
-
-  return count($vid) ? $vid : NULL;
+//  $result = db_query('SELECT td.vid FROM {taxonomy_term_data} td INNER JOIN {taxonomy_term_node} tn ON td.tid = tn.tid WHERE tn.vid = :tn.vid', array(':tn.vid' => $node_vid));
+//
+//  foreach ($result as $term) {
+//    $vid[] = $term->vid;
+//  }
+//
+//  return count($vid) ? $vid : NULL;
 }
 
 
@@ -165,16 +165,62 @@ function themekey_taxonomy_vid2vid($node_vid) {
  *   or NULL if no value could be mapped
  */
 function themekey_taxonomy_vid2tid($node_vid) {
-  $tid = array();
+  $tids = array();
+
   // Use SQL instead taxonomy API because this code runs during hook_init() stage.
   // Using taxonomy API will require to load the node using node_load() which is not allowed in this stage.
-  $result = db_query('SELECT tid FROM {taxonomy_term_node} WHERE vid = :vid', array(':vid' => $node_vid));
-  
-  foreach ($result as  $term) {
-    $tid[] = $term->tid;
+
+  //  GET THE TAXONOMY VOCABULARIES
+  $taxonomy_vocabularies = taxonomy_get_vocabularies();
+
+  if (!empty($taxonomy_vocabularies)) {
+
+    $entities = array();
+
+    $args = array();
+    $sql  = 'SELECT n.* ';
+    $sql .= 'FROM {node_revision} nr ';
+    $sql .= 'INNER JOIN {node} n ON n.nid = nr.nid ';
+    $sql .= 'WHERE nr.vid = :vid';
+    $args[':vid'] = $node_vid;
+    $result = db_query($sql, $args);
+
+    if (!empty($result)) {
+      foreach ($result as $item) {
+        $item->vid = $node_vid;
+        $entities[$item->nid] = $item;
+        $nid = $item->nid;
+      }
+
+      if (!empty($entities)) {
+
+        field_attach_load_revision('node', $entities);
+
+        foreach ($taxonomy_vocabularies as $key => $vocabulary) {
+
+          $field_name = 'field_' . $vocabulary->machine_name;
+
+          if (!empty($entities[$nid]->$field_name)) {
+
+            $field_items = field_get_items('node', $entities[$nid], $field_name);
+
+            if (!empty($field_items)) {
+              foreach ($field_items as $key => $item_array) {
+                $tids[] = $item_array['tid'];
+              }
+            }
+
+          }
+
+        }
+
+      }
+
+    }
+
   }
 
-  return count($tid) ? $tid : NULL;
+  return count($tids) ? $tids : NULL;
 }
 
 
