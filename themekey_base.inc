@@ -499,7 +499,7 @@ function themekey_check_theme_enabled($theme, $settings_page = FALSE) {
     if (!$warned && 1 == $user->uid) {
       // Don't use the l() function at this early stage of bootstrapping because it will initialize the theme engine. Use url() instead.
       themekey_set_debug_message('A matching Theme Switching Rule to select theme %theme was not applied because this theme is disabled. You can enable this theme at !build_themes or remove this Theme Switching Rule at !themekey_properties or edit current node if the theme was selected using ThemeKey UI.',
-        array('%theme' => $theme, '!build_themes' => '<a href="' . url('admin/appearance') . '">admin/appearance</a>', '!themekey_properties' => '<a href="' . url('admin/config/themekey/properties') . '">admin/config/themekey/properties</a>'));
+        array('%theme' => $theme, '!build_themes' => '<a href="' . url('admin/appearance') . '">admin/appearance</a>', '!themekey_properties' => '<a href="' . url('admin/config/user-interface/themekey/properties') . '">admin/config/user-interface/themekey/properties</a>'));
       $warned = TRUE;
     }
   }

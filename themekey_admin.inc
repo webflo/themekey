@@ -39,7 +39,7 @@ function themekey_rule_chain_form($form, &$form_state) {
   $properties = variable_get('themekey_properties', array());
 
   if (empty($properties)) {
-    drupal_goto('admin/config/themekey/settings');
+    drupal_goto('admin/config/user-interface/themekey/settings');
   }
 
   $themes = themekey_theme_options(TRUE, TRUE);
@@ -551,7 +551,7 @@ function theme_themekey_rule_chain_form($variables) {
         if (!empty($num_childs[$key])) {
           $form['old_items'][$key]['theme']['#attributes']['style'] = 'display: none';
           // form items of type markup don't have attributes
-          $form['old_items'][$key]['delete']['#value'] = str_replace('<a', '<a style="display: none"', $form['old_items'][$key]['delete']['#value']);
+          $form['old_items'][$key]['delete']['#markup'] = str_replace('<a', '<a style="display: none"', $form['old_items'][$key]['delete']['#markup']);
         }
 
         if (!empty($parents_disabled[$item['parent']['#value']])) {
@@ -734,7 +734,7 @@ function themekey_page_cache_warning($page_cache_support) {
           }
           else {
             drupal_set_message(t('!page_cache_icon Your site uses !page_caching and the Theme Switching Rule Chain contains properties that require "!cron_page_cache" to be enabled which has been disabled.',
-              array('!page_caching' => l(t('page caching'), 'admin/config/development/performance'), '!cron_page_cache' => l(t('Cron cleans up page cache'), 'admin/config/themekey/settings'), '!page_cache_icon' => theme('themekey_page_cache_icon', array('page_cache_support' => $page_cache_support)))), 'error');
+              array('!page_caching' => l(t('page caching'), 'admin/config/development/performance'), '!cron_page_cache' => l(t('Cron cleans up page cache'), 'admin/config/user-interface/themekey/settings'), '!page_cache_icon' => theme('themekey_page_cache_icon', array('page_cache_support' => $page_cache_support)))), 'error');
           }
           $warnings[THEMEKEY_PAGECACHE_TIMEBASED] = TRUE;
         }
@@ -757,7 +757,7 @@ function themekey_admin_delete_rule_confirm($form, &$form_state, $arg, $themekey
 
   return confirm_form($form,
     t('Are you sure you want to delete ThemeKey rule %title?', array('%title' => $title)),
-    'admin/config/themekey/properties',
+    'admin/config/user-interface/themekey/properties',
     t('This action cannot be undone.'),
     t('Delete'),
     t('Cancel')
@@ -803,6 +803,6 @@ function themekey_get_page_cache_support_desriptions() {
   return array(
     THEMEKEY_PAGECACHE_UNSUPPORTED => t('Unsupported! If you enable page caching on your system you have to ensure that any rule using this property is wrapped by a different rule that excludes anonymous users like "user:uid > 0".'),
     THEMEKEY_PAGECACHE_SUPPORTED => t('Supported'),
-    THEMEKEY_PAGECACHE_TIMEBASED => t('Supported if you enable "Cron cleans up page cache" at !link and run your cron frequently enough. During the cron run ThemeKey deletes the page cache if necessary depending on your Theme Switching Rules.', array('!link' => l(t('!path', array('!path' => '/admin/settings/themekey/settings')), 'admin/config/themekey/settings'))),
+    THEMEKEY_PAGECACHE_TIMEBASED => t('Supported if you enable "Cron cleans up page cache" at !link and run your cron frequently enough. During the cron run ThemeKey deletes the page cache if necessary depending on your Theme Switching Rules.', array('!link' => l(t('!path', array('!path' => 'admin/config/user-interface/themekey/settings')), 'admin/config/user-interface/themekey/settings'))),
   );
 }
