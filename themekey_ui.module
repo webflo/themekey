@@ -94,7 +94,7 @@ function themekey_ui_nid2theme($nid) {
   $node->vid = themekey_node_get_simple_node_property($nid, 'vid');
   $node->type = themekey_node_get_simple_node_property($nid, 'type');
 
-  themekey_ui_nodeapi($node, 'load');
+  themekey_ui_node_load(array($node->nid => $node), array($node->type));
 
   if (!empty($node->themekey_ui_theme) && themekey_check_theme_enabled($node->themekey_ui_theme)) {
     $custom_theme = $node->themekey_ui_theme;
@@ -290,7 +290,10 @@ function themekey_ui_node_insert($node) {
 function themekey_ui_node_update($node) {
   
   if (!empty($node->themekey_ui_theme)) {
-    db_update('mytable')
+    
+    if (!$node->revision && db_query("SELECT 1 FROM {themekey_ui_node_theme} WHERE nid = :nid AND vid = :vid", array(':nid' => $node->nid, ':vid' => $node->vid))->fetchField()) {
+      // UPDATE
+      db_update('themekey_ui_node_theme')
       ->fields(array(
         'nid' => $node->nid,
         'vid' => $node->vid,
@@ -298,8 +301,14 @@ function themekey_ui_node_update($node) {
       ))
       ->condition('nid', $node->nid)
       ->execute();
+    }
+    else {
+      // INSERT
+      themekey_ui_node_insert($node);
+    }
+    
   }
-  
+
 }
 
 
@@ -347,18 +356,18 @@ function themekey_ui_node_delete($node) {
 //      break;
 //
 //    case 'update':
-      if (!empty($node->themekey_ui_theme)) {
-        $item = array(
-          'nid' => $node->nid,
-          'vid' => $node->vid,
-          'theme' => $node->themekey_ui_theme,
-        );
-        $key = array();
-        if (!$node->revision && db_query("SELECT 1 FROM {themekey_ui_node_theme} WHERE nid = :nid AND vid = :vid", array(':nid' => $node->nid, ':vid' => $node->vid))->fetchField()) {
-          $key = array('nid', 'vid');
-        }
-        drupal_write_record('themekey_ui_node_theme', $item, $key);
-      }
+//      if (!empty($node->themekey_ui_theme)) {
+//        $item = array(
+//          'nid' => $node->nid,
+//          'vid' => $node->vid,
+//          'theme' => $node->themekey_ui_theme,
+//        );
+//        $key = array();
+//        if (!$node->revision && db_query("SELECT 1 FROM {themekey_ui_node_theme} WHERE nid = :nid AND vid = :vid", array(':nid' => $node->nid, ':vid' => $node->vid))->fetchField()) {
+//          $key = array('nid', 'vid');
+//        }
+//        drupal_write_record('themekey_ui_node_theme', $item, $key);
+//      }
 //      break;
 //
 //    case 'delete':
@@ -393,7 +402,7 @@ function themekey_ui_user_insert(&$edit, $account, $category) {
         ->execute();
     }
     else {
-      db_update('themekey_ui_author_theme')
+      db_insert('themekey_ui_author_theme')
         ->fields(array(
          'uid' => $account->uid,
          'theme' => $edit['themekey_ui_theme'],
@@ -412,49 +421,63 @@ function themekey_ui_user_insert(&$edit, $account, $category) {
     
 }
 
+/**
+ * Implementation of hook_node_update()
+ */
+function themekey_ui_user_update(&$edit, $account, $category) {
+  themekey_ui_user_insert($edit, $account, $category);
+}
 
-// TODO hook_user_update()
 
 
-// TODO hook_user_delete()
+/**
+ * Implementation of hook_us()er_delete
+ * @param $account
+ */
+function themekey_ui_user_delete($account) {
+  db_delete('themekey_ui_author_theme')
+    ->condition('uid', $account->uid)
+    ->execute();
+}
+
 
 
 /**
  * Implements hook_user().
  */
-function themekey_ui_user($op, &$edit, &$account, $category = NULL) {
-  switch ($op) {
-    case 'insert':
-    case 'update':
-      if (user_access('assign theme to own nodes') && variable_get('themekey_ui_author', 0) && !empty($edit['themekey_ui_theme'])) {
-        $author_theme = array(
-          'uid' => $account->uid,
-          'theme' => $edit['themekey_ui_theme'],
-        );
-
-        if (db_query("SELECT 1 FROM {themekey_ui_author_theme} WHERE uid = :uid", array(':uid' => $account->uid))->fetchField()) {
-          drupal_write_record('themekey_ui_author_theme', $author_theme, array('uid'));
-        }
-        else {
-          drupal_write_record('themekey_ui_author_theme', $author_theme);
-        }
-
-        if ($edit['themekey_ui_theme'] != $account->themekey_ui_theme) {
-          // theme settings changed
-          // fast deletion of page cache (truncate)
-          cache_clear_all('*', 'cache_page', TRUE);
-        }
-
-        $edit['themekey_ui_theme'] = NULL;
-      }
-      break;
-
-    case 'delete':
-      // TODO Please review the conversion of this statement to the D7 database API syntax.
-      /* db_query("DELETE FROM {themekey_ui_author_theme} WHERE uid = %d", $account->uid) */
-      db_delete('themekey_ui_author_theme')
-  ->condition('uid', $account->uid)
-  ->execute();
-      break;
-  }
-}
+//function themekey_ui_user($op, &$edit, &$account, $category = NULL) {
+//  switch ($op) {
+//    case 'insert':
+//    case 'update':
+//      if (user_access('assign theme to own nodes') && variable_get('themekey_ui_author', 0) && !empty($edit['themekey_ui_theme'])) {
+//        $author_theme = array(
+//          'uid' => $account->uid,
+//          'theme' => $edit['themekey_ui_theme'],
+//        );
+//
+//        if (db_query("SELECT 1 FROM {themekey_ui_author_theme} WHERE uid = :uid", array(':uid' => $account->uid))->fetchField()) {
+//          drupal_write_record('themekey_ui_author_theme', $author_theme, array('uid'));
+//        }
+//        else {
+//          drupal_write_record('themekey_ui_author_theme', $author_theme);
+//        }
+//
+//        if ($edit['themekey_ui_theme'] != $account->themekey_ui_theme) {
+//          // theme settings changed
+//          // fast deletion of page cache (truncate)
+//          cache_clear_all('*', 'cache_page', TRUE);
+//        }
+//
+//        $edit['themekey_ui_theme'] = NULL;
+//      }
+//      break;
+//
+//    case 'delete':
+//      // TODO Please review the conversion of this statement to the D7 database API syntax.
+//      /* db_query("DELETE FROM {themekey_ui_author_theme} WHERE uid = %d", $account->uid) */
+//      db_delete('themekey_ui_author_theme')
+//  ->condition('uid', $account->uid)
+//  ->execute();
+//      break;
+//  }
+//}

@@ -143,7 +143,7 @@ function themekey_ui_theme_select_form(&$form, $title, $description, $default = 
   $form['themekey_ui_themes']['default']['screenshot'] = array();
   $form['themekey_ui_themes']['default']['description'] = array(
     '#type' => 'item',
-    '#value' => t("don't switch the theme"),
+    '#markup' => t("don't switch the theme"),
   );
 
   $options = array('default' => '');
@@ -167,11 +167,11 @@ function themekey_ui_theme_select_form(&$form, $title, $description, $default = 
 
     $screenshot = $screenshot ? theme('image', array('path' => $screenshot, 'width' => t('Screenshot for %theme theme', array('%theme' => $info->name)), 'height' => '', 'alt' => array('class' => 'screenshot'), 'title' => FALSE)) : t('no screenshot');
 
-    $form['themekey_ui_themes'][$info->name]['screenshot'] = array('#value' => $screenshot);
+    $form['themekey_ui_themes'][$info->name]['screenshot'] = array('#markup' => $screenshot);
     $form['themekey_ui_themes'][$info->name]['description'] = array(
       '#type' => 'item',
       '#title' => $info->info['name'],
-      '#value' => dirname($info->filename),
+      '#markup' => dirname($info->filename),
     );
   }
 
@@ -184,6 +184,9 @@ function themekey_ui_theme_select_form(&$form, $title, $description, $default = 
   if (!is_null($weight)) {
     $form['themekey_ui_themes']['#weight'] = $weight;
   }
+  
+  // SET GROUP FOR VERTICAL TABS
+  $form['themekey_ui_themes']['#group'] = 'additional_settings';
 }
 
 
@@ -289,13 +292,13 @@ function theme_themekey_ui_table($form) {
 function theme_themekey_ui_theme_select_form($form) {
   // TODO: Should this theme themekey_ui_theme_select_form be declared in hook_theme()?
   $rows = array();
-
-  foreach (element_children($form) as $key) {
+  
+  foreach (element_children($form['form']) as $key) {
     $row = array();
-    if (isset($form[$key]['description']) && is_array($form[$key]['description'])) {
-      $row[] = drupal_render($form[$key]['screenshot']);
-      $row[] = drupal_render($form[$key]['description']);
-      $row[] = drupal_render($form['themekey_ui_theme'][$key]);
+    if (isset($form['form'][$key]['description']) && is_array($form['form'][$key]['description'])) {
+      $row[] = drupal_render($form['form'][$key]['screenshot']);
+      $row[] = drupal_render($form['form'][$key]['description']);
+      $row[] = drupal_render($form['form']['themekey_ui_theme'][$key]);
     }
     $rows[] = $row;
   }
