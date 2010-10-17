@@ -33,14 +33,14 @@ function themekey_help_tutorials_form($form, &$form_state, $collapsed) {
   $form['themekey_help_tutorials']['Rule Chaining: Using a special theme for content creation depending on user roles']['author'] = array(
     '#type' => 'item',
     '#title' => t('Author'),
-    '#value' => l(t('!path', array('!path' => 'mkalkbrenner')), 'http://drupal.org/user/124705'),
+    '#markup' => l(t('!path', array('!path' => 'mkalkbrenner')), 'http://drupal.org/user/124705'),
   );
 
   $img_path = base_path() . drupal_get_path('module', 'themekey') . '/img/tutorials/';
 
   $form['themekey_help_tutorials']['Rule Chaining: Using a special theme for content creation depending on user roles']['item'] = array(
     '#type' => 'item',
-    '#value' => '<p>' . t('Note: This tutorial uses some ThemeKey properties from an additional module called !themekey_properties_link.', array('!themekey_properties_link' => l(t('!path', array('!path' => 'ThemeKey Properties')), 'http://drupal.org/project/themekey_properties'))) . '</p>' .
+    '#markup' => '<p>' . t('Note: This tutorial uses some ThemeKey properties from an additional module called !themekey_properties_link.', array('!themekey_properties_link' => l(t('!path', array('!path' => 'ThemeKey Properties')), 'http://drupal.org/project/themekey_properties'))) . '</p>' .
 '<p>' . t("In this tutorial you'll learn how to define ThemeKey rules and how to cascade them to achieve sophisticated rule chains.") . '</p>' .
 '<p>' . t("The use case is to use a different theme during conent creation for premium users, p.e. you don't want to show advertisements or you want to show some advanced help blocks ...") . '</p>' .
 '<p>' . t('Therefor you created two user roles called "premium user" and "standard user". Using ThemeKey it\'s easy to create a rule that switches the theme in general if a user\'s role is "premium user":') . '<br />' .
@@ -73,13 +73,13 @@ function themekey_help_tutorials_form($form, &$form_state, $collapsed) {
   $form['themekey_help_tutorials']['Rule Chaining: Using a special theme for content creation depending on user roles']['versions']['themekey'] = array(
     '#type' => 'item',
     '#title' => t('ThemeKey'),
-    '#value' => '6.x-2.0',
+    '#markup' => '6.x-2.0',
   );
 
   $form['themekey_help_tutorials']['Rule Chaining: Using a special theme for content creation depending on user roles']['versions']['themekey_ui'] = array(
     '#type' => 'item',
     '#title' => t('ThemeKey Properties'),
-    '#value' => '6.x-2.0',
+    '#markup' => '6.x-2.0',
   );
 
   return $form;
@@ -109,7 +109,7 @@ function themekey_help_examples_form($form, &$form_state, $collapsed) {
 
   $form['themekey_help_examples']['Set a special theme for site administrator']['item'] = array(
     '#type' => 'item',
-    '#value' => t('Create a Theme Switching Rules:') . '<pre>
+    '#markup' => t('Create a Theme Switching Rules:') . '<pre>
 Property: user:uid
 Operator: =
 Value: 1
@@ -126,7 +126,7 @@ Value: 1
 
   $form['themekey_help_examples']['TODO: add some examples using drupal:path and drupal:path:wildcard']['item'] = array(
     '#type' => 'item',
-    '#value' => 'TODO' . '<pre>
+    '#markup' => 'TODO' . '<pre>
 </pre>',
   );
 
@@ -139,7 +139,7 @@ Value: 1
 
   $form['themekey_help_examples']['Select a theme for Firefox 3.0.x, but not Firefox 3.5.x']['item'] = array(
     '#type' => 'item',
-    '#value' => t('Cascade following Theme Switching Rules:') . '<pre>
+    '#markup' => t('Cascade following Theme Switching Rules:') . '<pre>
 Property: system:user_browser_simplified
 Operator: =
 Value: Mozilla Firefox
@@ -163,7 +163,7 @@ Value: Mozilla Firefox
 
   $form['themekey_help_examples']['Select a theme for IE 6']['item'] = array(
     '#type' => 'item',
-    '#value' => t('Cascade following Theme Switching Rules:') . '<pre>
+    '#markup' => t('Cascade following Theme Switching Rules:') . '<pre>
 Property: system:user_browser_simplified
 Operator: =
 Value: Internet Explorer
@@ -187,7 +187,7 @@ Value: Internet Explorer
 
   $form['themekey_help_examples']['Select a theme for Christmas 2009']['item'] = array(
     '#type' => 'item',
-    '#value' => t('Cascade following Theme Switching Rules:') . '<pre>
+    '#markup' => t('Cascade following Theme Switching Rules:') . '<pre>
 Property: system:date
 Operator: >
 Value: 2009-12-24
@@ -207,7 +207,7 @@ Value: 2009-12-24
 
   $form['themekey_help_examples']['Select a theme for New Year 2010']['item'] = array(
     '#type' => 'item',
-    '#value' => t('Create a Theme Switching Rule:') . '<pre>
+    '#markup' => t('Create a Theme Switching Rule:') . '<pre>
 Property: system:date
 Operator: =
 Value: 2010-01-01
@@ -223,7 +223,7 @@ Value: 2010-01-01
 
   $form['themekey_help_examples']['Select a theme dedicated for your start page (front page, index page, ...)']['item'] = array(
     '#type' => 'item',
-    '#value' => t('Create a Theme Switching Rule:') . '<pre>
+    '#markup' => t('Create a Theme Switching Rule:') . '<pre>
 Property: drupal:is_front_page
 Operator: =
 Value: true
@@ -264,13 +264,13 @@ function themekey_help_properties_form($form, &$form_state, $collapsed) {
     $form['themekey_help_properties'][$property]['item'] = array(
       '#type' => 'item',
       '#title' => t('Description'),
-      '#value' => '<div id="themekey-value-help-' . str_replace(array(':', '_'), array('-', '-'), $property) . '" style="display: none">' . htmlentities(strip_tags($attribute['description'])) . '</div>' . $attribute['description'],
+      '#markup' => '<div id="themekey-value-help-' . str_replace(array(':', '_'), array('-', '-'), $property) . '" style="display: none">' . htmlentities(strip_tags($attribute['description'])) . '</div>' . $attribute['description'],
     );
 
     $form['themekey_help_properties'][$property]['page_cache'] = array(
       '#type' => 'item',
       '#title' => t('Page Cache'),
-      '#value' => '<div id="themekey-page-cache-' . str_replace(array(':', '_'), array('-', '-'), $property) . '" style="display: none">' . theme('themekey_page_cache_icon', array('page_cache_support' => $attribute['page cache'])) . '</div>' . $page_cache_support_desriptions[$attribute['page cache']],
+      '#markup' => '<div id="themekey-page-cache-' . str_replace(array(':', '_'), array('-', '-'), $property) . '" style="display: none">' . theme('themekey_page_cache_icon', array('page_cache_support' => $attribute['page cache'])) . '</div>' . $page_cache_support_desriptions[$attribute['page cache']],
     );
   }
 
@@ -293,37 +293,37 @@ function themekey_help_operators_form($form, &$form_state, $collapsed) {
 
   $form['themekey_help_operators']['='] = array(
     '#type' => 'item',
-    '#value' => t('<strong>=</strong><br />equals (exact value of a property, consider ThemeKey Debug to get an impression of the possible values)'),
+    '#markup' => t('<strong>=</strong><br />equals (exact value of a property, consider ThemeKey Debug to get an impression of the possible values)'),
   );
 
   $form['themekey_help_operators']['!'] = array(
     '#type' => 'item',
-    '#value' => t('<strong>!</strong><br />not equals'),
+    '#markup' => t('<strong>!</strong><br />not equals'),
   );
 
   $form['themekey_help_operators']['<'] = array(
     '#type' => 'item',
-    '#value' => t('<strong>&lt;</strong><br />lower than (alpha numeric values are treated in alphabetical order: "A" is lower than "B" but "B" is lower than "a")'),
+    '#markup' => t('<strong>&lt;</strong><br />lower than (alpha numeric values are treated in alphabetical order: "A" is lower than "B" but "B" is lower than "a")'),
   );
 
   $form['themekey_help_operators']['<='] = array(
     '#type' => 'item',
-    '#value' => t('<strong>&lt;=</strong><br />lower than or equal (alpha numeric values are treated in alphabetical order: "a" is lower than "b" but "B" is lower than "a" and "A" is lower than "a")'),
+    '#markup' => t('<strong>&lt;=</strong><br />lower than or equal (alpha numeric values are treated in alphabetical order: "a" is lower than "b" but "B" is lower than "a" and "A" is lower than "a")'),
   );
 
   $form['themekey_help_operators']['>'] = array(
     '#type' => 'item',
-    '#value' => t('<strong>&gt;</strong><br />greater (alpha numeric values are treated in alphabetical order: "b" is grater than "a" but "a" is greater than "B")'),
+    '#markup' => t('<strong>&gt;</strong><br />greater (alpha numeric values are treated in alphabetical order: "b" is grater than "a" but "a" is greater than "B")'),
   );
 
   $form['themekey_help_operators']['=>'] = array(
     '#type' => 'item',
-    '#value' => t('<strong>=&gt;</strong><br />greater than or equal (alpha numeric values are treated in alphabetical order: "b" is grater than "a" but "a" is greater than "B" and "a" is greater than "A")'),
+    '#markup' => t('<strong>=&gt;</strong><br />greater than or equal (alpha numeric values are treated in alphabetical order: "b" is grater than "a" but "a" is greater than "B" and "a" is greater than "A")'),
   );
 
   $form['themekey_help_operators']['~'] = array(
     '#type' => 'item',
-    '#value' => t('<strong>~</strong><br />regular expression including delimiters and modifiers (see !link)', array('!link' => l(t('PHP Manual'), 'http://php.net/manual/en/pcre.pattern.php'))),
+    '#markup' => t('<strong>~</strong><br />regular expression including delimiters and modifiers (see !link)', array('!link' => l(t('PHP Manual'), 'http://php.net/manual/en/pcre.pattern.php'))),
   );
 
   return $form;

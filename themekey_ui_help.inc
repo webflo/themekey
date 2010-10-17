@@ -31,14 +31,14 @@ function themekey_ui_help_tutorials(&$form) {
   $form['themekey_help_tutorials']['Allowing users to select a theme for all content they create']['author'] = array(
     '#type' => 'item',
     '#title' => t('Author'),
-    '#value' => l(t('!path', array('!path' => 'Sansui')), 'http://drupal.org/user/297165'),
+    '#markup' => l(t('!path', array('!path' => 'Sansui')), 'http://drupal.org/user/297165'),
   );
 
   $img_path = base_path() . drupal_get_path('module', 'themekey_ui') . '/img/tutorials/';
 
   $form['themekey_help_tutorials']['Allowing users to select a theme for all content they create']['item'] = array(
     '#type' => 'item',
-    '#value' => '<p>' . t('In this tutorial you will learn how to enable users to select a theme for content they create. For example, if you would like each of your bloggers to display their own theme on each of their blog entries, this tutorial will allow you to grant this option.</p>') .
+    '#markup' => '<p>' . t('In this tutorial you will learn how to enable users to select a theme for content they create. For example, if you would like each of your bloggers to display their own theme on each of their blog entries, this tutorial will allow you to grant this option.</p>') .
 '<p>' . t('First, you must enable any themes you would like available from under !link (Administer -> Site Building -> Themes)</p>', array('!link' => l(t('!path', array('!path' => 'admin/appearance')), 'admin/appearance'))) .
 '<p>' . t('Once you have enabled your themes, navigate to !link (Administer -> Site Configuration -> Themekey -> Settings -> User Interface). You will see a checkbox for "Show theme option in user profile". Click on the checkbox and save your settings.</p>', array('!link' => l(t('!path', array('!path' => 'admin/config/themekey/settings/ui')), 'admin/config/themekey/settings/ui'))) .
 '<p>' . '<img src="' . $img_path . 'themekey_user_profiles_2.png" alt="' . t('Enabling theme selection in user profiles') . '" style="border:solid #d4e7f3 2px;" /></p>' .
@@ -58,13 +58,13 @@ function themekey_ui_help_tutorials(&$form) {
   $form['themekey_help_tutorials']['Allowing users to select a theme for all content they create']['versions']['themekey'] = array(
     '#type' => 'item',
     '#title' => t('ThemeKey'),
-    '#value' => '6.x-2.2',
+    '#markup' => '6.x-2.2',
   );
 
   $form['themekey_help_tutorials']['Allowing users to select a theme for all content they create']['versions']['themekey_ui'] = array(
     '#type' => 'item',
     '#title' => t('ThemeKey UI'),
-    '#value' => '6.x-2.2',
+    '#markup' => '6.x-2.2',
   );
 
   return $form;
