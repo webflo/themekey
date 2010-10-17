@@ -207,8 +207,6 @@ function themekey_taxonomy_vid2vid($node_vid) {
 function themekey_taxonomy_vid2tid($node_vid) {
   $tids = array();
 
-  themekey_taxonomy_vid2vid($node_vid); // TODO DEBUGGING -REMOVE ME
-
   // Use SQL instead taxonomy API because this code runs during hook_init() stage.
   // Using taxonomy API will require to load the node using node_load() which is not allowed in this stage.
 
