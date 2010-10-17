@@ -700,10 +700,10 @@ function theme_themekey_rule_chain_form($variables) {
 function themekey_admin_theme_warning() {
   if (variable_get('admin_theme', '0')) {
     drupal_set_message(t('%admin_theme is configured as administration theme at !link. This setting is more powerful than a corresponding ThemeKey rule.',
-      array('%admin_theme' => variable_get('admin_theme', '0'), '!link' => l(t('!path', array('!path' => 'admin/config/admin')), 'admin/config/admin'))), 'warning');
+      array('%admin_theme' => variable_get('admin_theme', '0'), '!link' => l(t('!path', array('!path' => 'admin/appearance')), 'admin/appearance'))), 'warning');
     if (variable_get('node_admin_theme', '0')) {
       drupal_set_message(t('As configured at !link adding or editing a node will use the administration theme %admin_theme.',
-        array('%admin_theme' => variable_get('admin_theme', '0'), '!link' => l(t('!path', array('!path' => 'admin/config/admin')), 'admin/config/admin'))), 'warning');
+        array('%admin_theme' => variable_get('admin_theme', '0'), '!link' => l(t('!path', array('!path' => 'admin/appearance')), 'admin/appearance'))), 'warning');
     }
   }
 }
