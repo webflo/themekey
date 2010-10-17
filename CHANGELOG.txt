@@ -36,6 +36,7 @@ ThemeKey 7.x-1.0-alpha1, 2010-10-17
 [       ] carstenmueller: modified function themekey_taxonomy_vid2vid() to fit new taxonomy with field api
 [       ] EugenMayer, mkalkbrenner: ported themekey java script to D7
 [       ] mkalkbrenner: sanitized a lot of strings according to coder module
+[       ] carstenmueller: modified function themekey_ui_pathalias() to fit Drupal 7
 
 
 ThemeKey 6.x-3.0, 2010-10-14

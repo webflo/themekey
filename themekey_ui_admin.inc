@@ -199,20 +199,21 @@ function themekey_ui_theme_select_form(&$form, $title, $description, $default = 
  * @ingroup forms
  */
 function themekey_ui_pathalias(&$form) {
-  if (!isset($form['#alias'])) {
+  if (!isset($form['alias'])) {
     return;
   }
 
-  list($id, $theme) = themekey_ui_get_path_theme($form['#alias']['dst']);
+  list($id, $theme) = themekey_ui_get_path_theme($form['alias']['#default_value']);
 
-  themekey_ui_theme_select_form($form, t('Theme configuration'), t('Select a theme that will be used whenever content will be requested using this path alias.'), $theme, $form['submit']['weight'] - 1);
+  themekey_ui_theme_select_form($form, t('Theme configuration'), t('Select a theme that will be used whenever content will be requested using this path alias.'), $theme, -1);
 
   $form['themekey_ui_themes']['themekey_rule_id'] = array(
     '#type' => 'value',
     '#value' => $id,
   );
 
-  array_unshift($form['#submit'], 'themekey_ui_pathalias_submit');
+  $form['#submit'][] = 'themekey_ui_pathalias_submit';
+
 }
 
 
@@ -222,19 +223,20 @@ function themekey_ui_pathalias(&$form) {
  * @see themekey_ui_pathalias()
  */
 function themekey_ui_pathalias_submit($form, &$form_state) {
+
   if ((empty($form_state['values']['themekey_ui_theme']) || 'default' == $form_state['values']['themekey_ui_theme']) && $form_state['values']['themekey_rule_id']) {
     themekey_ui_del_path_theme($form_state['values']['themekey_rule_id']);
   }
   elseif (!empty($form_state['values']['themekey_ui_theme']) && 'default' != $form_state['values']['themekey_ui_theme']) {
-    themekey_ui_set_path_theme($form_state['values']['dst'], $form_state['values']['themekey_ui_theme'], $form_state['values']['themekey_rule_id']);
+    themekey_ui_set_path_theme($form_state['values']['alias'], $form_state['values']['themekey_ui_theme'], $form_state['values']['themekey_rule_id']);
   }
 
-  if ($form['src']['#default_value'] == $form_state['values']['src'] &&
-      $form['dst']['#default_value'] == $form_state['values']['dst'] &&
+  if ($form['source']['#default_value'] == $form_state['values']['source'] &&
+      $form['alias']['#default_value'] == $form_state['values']['alias'] &&
       $form['themekey_ui_themes']['themekey_ui_theme']['#default_value'] != $form_state['values']['themekey_ui_theme']) {
     // only theme changed => clear page cache
     // REVIEW this might be a performance issue on large sites
-    cache_clear_all('%' . $form_state['values']['dst'], 'cache_page', TRUE);
+    cache_clear_all('%' . $form_state['values']['alias'], 'cache_page', TRUE);
   }
 }
 
