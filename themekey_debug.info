@@ -5,3 +5,4 @@ description = "Debug ThemeKey"
 core = 7.x
 dependencies[] = themekey
 package = ThemeKey
+configure = admin/config/user-interface/themekey/settings/debug
