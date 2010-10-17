@@ -23,6 +23,7 @@ ThemeKey 7.x-1.x, 2010-xx-xx
 [       ] carstenmueller: ported themekey_ui.module to Drupal 7 - NOT FINISHED YET
 [       ] mkalkbrenner: themekey_debug prevented theme switching
 [       ] mkalkbrenner: render forms in help section
+[       ] mkalkbrenner: don't scan for new properties provided by other modules on form submission
 
 
 ThemeKey 6.x-3.0, 2010-10-14

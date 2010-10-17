@@ -30,8 +30,11 @@ require_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'themekey') . '/theme
  * @ingroup forms
  */
 function themekey_rule_chain_form($form, &$form_state) {
-  // scan for new properties provided by other modules
-  themekey_rebuild();
+  // BACKPORT
+  if (!empty($form_state['submitted']) || stripos($form_state['method'], 'post') !== FALSE) {
+    // scan for new properties provided by other modules
+    themekey_rebuild();
+  }
 
   $properties = variable_get('themekey_properties', array());
 
