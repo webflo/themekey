@@ -167,7 +167,7 @@ function themekey_rule_chain_form($form, &$form_state) {
     );
 
     $form['old_items'][$item['id']]['delete'] = array(
-      '#value' => $static ? '' : l(t('delete'), 'admin/config/themekey/properties/delete/' . $item['id']),
+      '#markup' => $static ? '' : l(t('delete'), 'admin/config/user-interface/themekey/properties/delete/' . $item['id']),
     );
   }
 
@@ -451,7 +451,7 @@ function themekey_settings_form($form, &$form_state) {
     '#type' => 'checkbox',
     '#title' => t('Force custom theme overriding'),
     '#default_value' => variable_get('themekey_override_custom_theme', 0),
-    '#description' => t('Select this option to force ThemeKey to set the custom theme. Otherwise ThemeKey will set the custom theme only if it\'s not already set by a different module.<br /><b>Note: If you activate this feature it turns off theme switching of some other modules like system (administration theme) or organic groups.</b>'),
+    '#description' => t('Select this option to force ThemeKey to set the custom theme. Otherwise ThemeKey will set the custom theme only if it\'s not already set by a different module.<br /><b>Note: If you activate this feature it turns off theme switching of some other modules like organic groups.</b>'),
   );
 
   $form['settings']['themekey_theme_maintain'] = array(
@@ -542,7 +542,7 @@ function theme_themekey_rule_chain_form($variables) {
         $form['old_items'][$key]['theme']['#attributes']['class'] = array('themekey-property-theme themekey-fadeable');
 
         // form items of type markup don't have attributes
-        $form['old_items'][$key]['delete']['#value'] = str_replace('<a', '<a class="themekey-rule-delete-link"', $form['old_items'][$key]['delete']['#value']);
+        $form['old_items'][$key]['delete']['#markup'] = str_replace('<a', '<a class="themekey-rule-delete-link"', $form['old_items'][$key]['delete']['#markup']);
 
         if ('drupal:path:wildcard' != $item['property']['#value']) {
           $form['old_items'][$key]['wildcard']['#attributes']['style'] = 'display: none';
@@ -773,7 +773,7 @@ function themekey_admin_delete_rule_confirm_submit($form, &$form_state) {
     themekey_rule_del($form_state['values']['themekey_property_id']);
   }
 
-  $form_state['redirect'] = 'admin/config/themekey/properties';
+  $form_state['redirect'] = 'admin/config/user-interface/themekey/properties';
 }
 
 

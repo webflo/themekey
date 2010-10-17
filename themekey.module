@@ -64,21 +64,21 @@ function themekey_permission() {
  */
 function themekey_menu() {
   $items = array();
-  $items['admin/config/themekey'] = array(
+  $items['admin/config/user-interface/themekey'] = array(
     'title' => 'ThemeKey',
-    'description' => 'Map themes to Drupal paths or object properties.',
+    'description' => 'Set up rules to switch the site\'s appearance (theme) dynamically depending on Drupal paths or different properties.',
     'access callback' => 'user_access',
     'access arguments' => array('administer theme assignments'),
     'file' => 'themekey_admin.inc',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('themekey_rule_chain_form'),
   );
-  $items['admin/config/themekey/properties'] = array(
+  $items['admin/config/user-interface/themekey/properties'] = array(
     'title' => 'Theme Switching Rule Chain',
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => 0,
   );
-  $items['admin/config/themekey/properties/delete'] = array(
+  $items['admin/config/user-interface/themekey/properties/delete'] = array(
     'title' => 'Delete ThemeKey Property',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('themekey_admin_delete_rule_confirm', 1),
@@ -87,7 +87,7 @@ function themekey_menu() {
     'file' => 'themekey_admin.inc',
     'type' => MENU_CALLBACK,
   );
-  $items['admin/config/themekey/settings'] = array(
+  $items['admin/config/user-interface/themekey/settings'] = array(
     'title' => 'Settings',
     'access callback' => 'user_access',
     'access arguments' => array('administer themekey settings'),
@@ -97,7 +97,7 @@ function themekey_menu() {
     'type' => MENU_LOCAL_TASK,
     'weight' => 5,
   );
-  $items['admin/config/themekey/settings/general'] = array(
+  $items['admin/config/user-interface/themekey/settings/general'] = array(
     'title' => 'General',
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => 0,
