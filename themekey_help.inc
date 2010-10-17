@@ -15,7 +15,7 @@
  *
  * @see themekey_help()
  */
-function themekey_help_tutorials_form($collapsed = TRUE) {
+function themekey_help_tutorials_form($form, &$form_state, $collapsed) {
   $form['themekey_help_tutorials'] = array(
     '#type' => 'fieldset',
     '#title' => t('Tutorials'),
@@ -91,7 +91,8 @@ function themekey_help_tutorials_form($collapsed = TRUE) {
  *
  * @see themekey_help()
  */
-function themekey_help_examples_form($collapsed = TRUE) {
+function themekey_help_examples_form($form, &$form_state, $collapsed) {
+
   $form['themekey_help_examples'] = array(
     '#type' => 'fieldset',
     '#title' => t('Examples'),
@@ -238,7 +239,7 @@ Value: true
  *
  * @see themekey_help()
  */
-function themekey_help_properties_form($collapsed = TRUE) {
+function themekey_help_properties_form($form, &$form_state, $collapsed) {
   module_load_include('inc', 'themekey', 'themekey_admin');
 
   $page_cache_support_desriptions = themekey_get_page_cache_support_desriptions();
@@ -282,7 +283,7 @@ function themekey_help_properties_form($collapsed = TRUE) {
  *
  * @see themekey_help()
  */
-function themekey_help_operators_form($collapsed = TRUE) {
+function themekey_help_operators_form($form, &$form_state, $collapsed) {
   $form['themekey_help_operators'] = array(
     '#type' => 'fieldset',
     '#title' => t('Operators explained'),
