@@ -51,7 +51,7 @@ function themekey_system_themekey_properties() {
 
   $attributes['system:server_ip'] = array(
     'description' => t("System: 'SERVER_ADDR' - The IP address of the server under which the current script is executing."),
-    'validator' => 'themekey_properties_validator_ip_address',
+    'validator' => 'themekey_validator_ip_address',
     'page cache' => THEMEKEY_PAGECACHE_UNSUPPORTED,
   );
 
@@ -74,7 +74,7 @@ function themekey_system_themekey_properties() {
 
   $attributes['system:remote_ip'] = array(
     'description' => t("System: 'REMOTE_ADDR' - The IP address from which the user is viewing the current page."),
-    'validator' => 'themekey_properties_validator_ip_address',
+    'validator' => 'themekey_validator_ip_address',
     'page cache' => THEMEKEY_PAGECACHE_UNSUPPORTED,
   );
 
@@ -225,40 +225,40 @@ foo
   $maps = array();
   $maps[] = array('src'       => 'system:dummy',
                   'dst'       => 'system:query_param',
-                  'callback'  => 'themekey_properties_dummy2query_param');
+                  'callback'  => 'themekey_dummy2query_param');
   $maps[] = array('src'       => 'system:dummy',
                   'dst'       => 'system:cookie',
-                  'callback'  => 'themekey_properties_dummy2cookie');
+                  'callback'  => 'themekey_dummy2cookie');
   $maps[] = array('src'       => 'system:dummy',
                   'dst'       => 'system:query_string',
-                  'callback'  => 'themekey_properties_dummy2query_string');
+                  'callback'  => 'themekey_dummy2query_string');
   $maps[] = array('src'       => 'system:dummy',
                   'dst'       => 'system:date_time',
-                  'callback'  => 'themekey_properties_dummy2date_time');
+                  'callback'  => 'themekey_dummy2date_time');
   $maps[] = array('src'       => 'system:dummy',
                   'dst'       => 'system:date',
-                  'callback'  => 'themekey_properties_dummy2date');
+                  'callback'  => 'themekey_dummy2date');
   $maps[] = array('src'       => 'system:dummy',
                   'dst'       => 'system:time',
-                  'callback'  => 'themekey_properties_dummy2time');
+                  'callback'  => 'themekey_dummy2time');
   $maps[] = array('src'       => 'system:dummy',
                   'dst'       => 'system:day_of_week',
-                  'callback'  => 'themekey_properties_dummy2day_of_week');
+                  'callback'  => 'themekey_dummy2day_of_week');
   $maps[] = array('src'       => 'system:dummy',
                   'dst'       => 'system:user_browser',
-                  'callback'  => 'themekey_properties_dummy2user_browser');
+                  'callback'  => 'themekey_dummy2user_browser');
   $maps[] = array('src'       => 'system:dummy',
                   'dst'       => 'system:user_os',
-                  'callback'  => 'themekey_properties_dummy2user_os');
+                  'callback'  => 'themekey_dummy2user_os');
   $maps[] = array('src'       => 'system:user_browser',
                   'dst'       => 'system:user_browser_simplified',
-                  'callback'  => 'themekey_properties_user_browser2user_browser_simplified');
+                  'callback'  => 'themekey_user_browser2user_browser_simplified');
   $maps[] = array('src'       => 'system:user_os',
                   'dst'       => 'system:user_os_simplified',
-                  'callback'  => 'themekey_properties_user_os2user_os_simplified');
+                  'callback'  => 'themekey_user_os2user_os_simplified');
   $maps[] = array('src'       => 'system:dummy',
                   'dst'       => 'system:session',
-                  'callback'  => 'themekey_properties_dummy2session');
+                  'callback'  => 'themekey_dummy2session');
 
 
   return array('attributes' => $attributes, 'maps' => $maps);
@@ -307,7 +307,7 @@ function themekey_system_themekey_global() {
  *   array of system:query_param values
  *   or NULL if no value could be mapped
  */
-function themekey_properties_dummy2query_param($dummy) {
+function themekey_dummy2query_param($dummy) {
   $filtered_params = array();
   $query_params = $_GET;
   unset($query_params['q']);
@@ -333,7 +333,7 @@ function themekey_properties_dummy2query_param($dummy) {
  *   array of system:cookie values
  *   or NULL if no value could be mapped
  */
-function themekey_properties_dummy2cookie($dummy) {
+function themekey_dummy2cookie($dummy) {
   $filtered_cookies = array();
   foreach ($_COOKIE as $key => $value) {
     $filtered_cookies[] = $key . (!empty($value) ? '=' . $value : '');
@@ -357,7 +357,7 @@ function themekey_properties_dummy2cookie($dummy) {
  *   system:query_string as string
  *   or NULL if no value could be mapped
  */
-function themekey_properties_dummy2query_string($dummy) {
+function themekey_dummy2query_string($dummy) {
   if (!empty($_SERVER['QUERY_STRING'])) {
     $query_string = trim(preg_replace("/q=[^&]*/", '', $_SERVER['QUERY_STRING']), '&');
     if (!empty($query_string)) {
@@ -383,7 +383,7 @@ function themekey_properties_dummy2query_string($dummy) {
  * @return
  *   current time as string formatted like "2009-12-24 23:56:15"
  */
-function themekey_properties_dummy2date_time($dummy) {
+function themekey_dummy2date_time($dummy) {
   return format_date(time(), 'custom', 'Y-m-d H:i:s', variable_get('date_default_timezone', 0));
 }
 
@@ -402,7 +402,7 @@ function themekey_properties_dummy2date_time($dummy) {
  * @return
  *   current date as string formatted like "2009-12-24"
  */
-function themekey_properties_dummy2date($dummy) {
+function themekey_dummy2date($dummy) {
   return format_date(time(), 'custom', 'Y-m-d', variable_get('date_default_timezone', 0));
 }
 
@@ -421,7 +421,7 @@ function themekey_properties_dummy2date($dummy) {
  * @return
  *   current time as string formatted like "23:56:15"
  */
-function themekey_properties_dummy2time($dummy) {
+function themekey_dummy2time($dummy) {
   return format_date(time(), 'custom', 'H:i:s', variable_get('date_default_timezone', 0));
 }
 
@@ -440,7 +440,7 @@ function themekey_properties_dummy2time($dummy) {
  * @return
  *   current user's browser as string
  */
-function themekey_properties_dummy2user_browser($dummy) {
+function themekey_dummy2user_browser($dummy) {
   return ThemekeyBrowserDetection::getBrowser($_SERVER['HTTP_USER_AGENT']);
 }
 
@@ -459,7 +459,7 @@ function themekey_properties_dummy2user_browser($dummy) {
  * @return
  *   current user's operating system as string
  */
-function themekey_properties_dummy2user_os($dummy) {
+function themekey_dummy2user_os($dummy) {
   return ThemekeyBrowserDetection::getOs($_SERVER['HTTP_USER_AGENT']);
 }
 
@@ -478,7 +478,7 @@ function themekey_properties_dummy2user_os($dummy) {
  * @return
  *   current user's browser as simplified string
  */
-function themekey_properties_user_browser2user_browser_simplified($user_browser) {
+function themekey_user_browser2user_browser_simplified($user_browser) {
   return ThemekeyBrowserDetection::getBrowserSimplified($user_browser);
 }
 
@@ -497,7 +497,7 @@ function themekey_properties_user_browser2user_browser_simplified($user_browser)
  * @return
  *   current user's operating system as simplified string
  */
-function themekey_properties_user_os2user_os_simplified($user_os) {
+function themekey_user_os2user_os_simplified($user_os) {
   return ThemekeyBrowserDetection::getOsSimplified($user_os);
 }
 
@@ -517,7 +517,7 @@ function themekey_properties_user_os2user_os_simplified($user_os) {
  *   array of system:session values
  *   or NULL if no value could be mapped
  */
-function themekey_properties_dummy2session($dummy) {
+function themekey_dummy2session($dummy) {
   $filtered_params = array();
   if (!empty($_SESSION)) {
     foreach ($_SESSION as $key => $value) {
@@ -550,7 +550,7 @@ function themekey_properties_dummy2session($dummy) {
  * @return
  *   current day of the week as three letters from "Mon" through "Sun"
  */
-function themekey_properties_dummy2day_of_week($dummy) {
+function themekey_dummy2day_of_week($dummy) {
   return format_date(time(), 'custom', 'D', variable_get('date_default_timezone', 0));
 }
 
