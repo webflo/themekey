@@ -132,8 +132,8 @@ function themekey_ui_theme_select_form(&$form, $title, $description, $default = 
 
   $form['themekey_ui_themes'] = array(
     '#type' => 'fieldset',
-    '#title' => $title,
-    '#description' => $description,
+    '#title' => check_plain($title),
+    '#description' => filter_xss($description),
     '#collapsible' => TRUE,
     '#collapsed' => $collapsed,
     '#theme' => 'themekey_ui_theme_select_form',
@@ -170,7 +170,7 @@ function themekey_ui_theme_select_form(&$form, $title, $description, $default = 
     $form['themekey_ui_themes'][$info->name]['screenshot'] = array('#markup' => $screenshot);
     $form['themekey_ui_themes'][$info->name]['description'] = array(
       '#type' => 'item',
-      '#title' => $info->info['name'],
+      '#title' => check_plain($info->info['name']),
       '#markup' => dirname($info->filename),
     );
   }
@@ -184,7 +184,7 @@ function themekey_ui_theme_select_form(&$form, $title, $description, $default = 
   if (!is_null($weight)) {
     $form['themekey_ui_themes']['#weight'] = $weight;
   }
-  
+
   // SET GROUP FOR VERTICAL TABS
   $form['themekey_ui_themes']['#group'] = 'additional_settings';
 }
@@ -249,9 +249,9 @@ function themekey_ui_pathalias_submit($form, &$form_state) {
  * @ingroup themeable
  */
 function theme_themekey_ui_table($form) {
-  
+
   $form = $form['form'];
-  
+
   // TODO: Should this theme themekey_ui_table be declared in hook_theme()?
   $header = isset($form['#header']) ? $form['#header'] : array();
   $attributes = isset($form['#attributes']) ? $form['#attributes'] : array();
@@ -274,7 +274,7 @@ function theme_themekey_ui_table($form) {
         'class' => 'message',
       ));
   }
-  
+
   return count($rows) ? theme('table', array('header' => $header, 'rows' => $rows, 'attributes' => $attributes)) : '';
 }
 
@@ -292,7 +292,7 @@ function theme_themekey_ui_table($form) {
 function theme_themekey_ui_theme_select_form($form) {
   // TODO: Should this theme themekey_ui_theme_select_form be declared in hook_theme()?
   $rows = array();
-  
+
   foreach (element_children($form['form']) as $key) {
     $row = array();
     if (isset($form['form'][$key]['description']) && is_array($form['form'][$key]['description'])) {

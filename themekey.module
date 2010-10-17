@@ -296,7 +296,7 @@ function themekey_set_debug_message($msg, $placeholder = array(), $translate = T
     if ('flush' == $msg) {
       $messages = array();
       foreach ($msg_stack as $key => $msg) {
-        $messages[] = $msg['translate'] ? t($msg['msg'], $msg['placeholder']) : $msg['msg'];
+        $messages[] = filter_xss($msg['translate'] ? t($msg['msg'], $msg['placeholder']) : $msg['msg'], array('a', 'b', 'br', 'li', 'ul'));
         unset($msg_stack[$key]);
       }
 

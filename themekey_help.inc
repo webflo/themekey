@@ -256,7 +256,7 @@ function themekey_help_properties_form($form, &$form_state, $collapsed) {
   foreach ($attributes as $property => $attribute) {
     $form['themekey_help_properties'][$property] = array(
       '#type' => 'fieldset',
-      '#title' => $property,
+      '#title' => check_plain($property),
       '#collapsible' => TRUE,
       '#collapsed' => $collapsed,
     );

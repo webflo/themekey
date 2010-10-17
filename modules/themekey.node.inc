@@ -218,11 +218,11 @@ function themekey_node_get_simple_node_property($nid, $property) {
   if (!isset($nodes[$nid])) {
     // node_load() must not be called from hook_init(). Therefor we have to execute SQL here
     $result = db_query('SELECT * FROM {node} WHERE nid = :nid', array(':nid' => $nid));
-      
+
     foreach ($result as $item) {
       $nodes[$nid] = clone $item;
     }
-      
+
   }
 
   if (isset($nodes[$nid]->$property)) {
@@ -498,6 +498,6 @@ function _themekey_node_callback(&$item, &$parameters) {
   global $user;
 
   if (1 == $user->uid) {
-    drupal_set_message(t('You uploaded a new version of ThemeKey. Please !link your site!', array('!link' => l(t('update'), '/update.php'))));
+    drupal_set_message(filter_xss(t('You uploaded a new version of ThemeKey. Please !link your site!', array('!link' => l(t('update'), '/update.php')))));
   }
 }

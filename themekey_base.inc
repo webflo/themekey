@@ -488,8 +488,8 @@ function themekey_check_theme_enabled($theme, $settings_page = FALSE) {
 
   if ($settings_page) {
     if (!$displayed_error) {
-      drupal_set_message(t("Your current configuration of theme rules uses at least one theme that is not enabled. Nevertheless this configuration is stored but affected rules won't be applied until the targeted theme will be enabled at !build_themes.",
-        array('!build_themes' => l(t('!path', array('!path' => 'admin/appearance')), 'admin/appearance'))), 'error');
+      drupal_set_message(filter_xss(t("Your current configuration of theme rules uses at least one theme that is not enabled. Nevertheless this configuration is stored but affected rules won't be applied until the targeted theme will be enabled at !build_themes.",
+        array('!build_themes' => l(t('!path', array('!path' => 'admin/appearance')), 'admin/appearance')))), 'error');
       $displayed_error = TRUE;
     }
   }

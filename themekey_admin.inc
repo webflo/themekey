@@ -363,7 +363,7 @@ function themekey_rule_chain_form_set_error(&$form, $rule_id = 0, $element = '',
       $error_counter++;
       $form['old_items'][$rule_id]['id']['#prefix'] = '<span class="error">' . $error_counter . '</span>';
       foreach ($errors as $error) {
-        form_set_error($error[0], $error_counter . ') ' . $error[1]);
+        form_set_error($error[0], filter_xss($error_counter . ') ' . $error[1]));
       }
     }
 
@@ -699,11 +699,11 @@ function theme_themekey_rule_chain_form($variables) {
  */
 function themekey_admin_theme_warning() {
   if (variable_get('admin_theme', '0')) {
-    drupal_set_message(t('%admin_theme is configured as administration theme at !link. This setting is more powerful than a corresponding ThemeKey rule.',
-      array('%admin_theme' => variable_get('admin_theme', '0'), '!link' => l(t('!path', array('!path' => 'admin/appearance')), 'admin/appearance'))), 'warning');
+    drupal_set_message(filter_xss(t('%admin_theme is configured as administration theme at !link. This setting is more powerful than a corresponding ThemeKey rule.',
+      array('%admin_theme' => variable_get('admin_theme', '0'), '!link' => l(t('!path', array('!path' => 'admin/appearance')), 'admin/appearance')))), 'warning');
     if (variable_get('node_admin_theme', '0')) {
-      drupal_set_message(t('As configured at !link adding or editing a node will use the administration theme %admin_theme.',
-        array('%admin_theme' => variable_get('admin_theme', '0'), '!link' => l(t('!path', array('!path' => 'admin/appearance')), 'admin/appearance'))), 'warning');
+      drupal_set_message(filter_xss(t('As configured at !link adding or editing a node will use the administration theme %admin_theme.',
+        array('%admin_theme' => variable_get('admin_theme', '0'), '!link' => l(t('!path', array('!path' => 'admin/appearance')), 'admin/appearance')))), 'warning');
     }
   }
 }
@@ -720,8 +720,8 @@ function themekey_page_cache_warning($page_cache_support) {
     switch ($page_cache_support) {
       case THEMEKEY_PAGECACHE_UNSUPPORTED:
         if (!isset($warnings[THEMEKEY_PAGECACHE_UNSUPPORTED])) {
-          drupal_set_message(t('!page_cache_icon Your site uses !page_caching, but the Theme Switching Rule Chain contains properties that do not support page caching. You have to ensure that any rule using those properties are wrapped by a different rule that excludes anonymous users like "user:uid > 0".',
-            array('!page_caching' => l(t('page caching'), 'admin/config/development/performance'), '!page_cache_icon' => theme('themekey_page_cache_icon', array('page_cache_support' => $page_cache_support)))), 'warning');
+          drupal_set_message(filter_xss(t('!page_cache_icon Your site uses !page_caching, but the Theme Switching Rule Chain contains properties that do not support page caching. You have to ensure that any rule using those properties are wrapped by a different rule that excludes anonymous users like "user:uid > 0".',
+            array('!page_caching' => l(t('page caching'), 'admin/config/development/performance'), '!page_cache_icon' => theme('themekey_page_cache_icon', array('page_cache_support' => $page_cache_support)))), array('a', 'img')), 'warning');
           $warnings[THEMEKEY_PAGECACHE_UNSUPPORTED] = TRUE;
         }
         break;
@@ -729,12 +729,12 @@ function themekey_page_cache_warning($page_cache_support) {
       case THEMEKEY_PAGECACHE_TIMEBASED:
         if (!isset($warnings[THEMEKEY_PAGECACHE_TIMEBASED])) {
           if (variable_get('themekey_cron_page_cache', 1)) {
-            drupal_set_message(t('!page_cache_icon Your site uses !page_caching and the Theme Switching Rule Chain contains properties that require your cron to run frequently enough. During the cron run ThemeKey deletes the page cache if necessary depending on your Theme Switching Rules.',
-              array('!page_caching' => l(t('page caching'), 'admin/config/development/performance'), '!page_cache_icon' => theme('themekey_page_cache_icon', array('page_cache_support' => $page_cache_support)))), 'warning');
+            drupal_set_message(filter_xss(t('!page_cache_icon Your site uses !page_caching and the Theme Switching Rule Chain contains properties that require your cron to run frequently enough. During the cron run ThemeKey deletes the page cache if necessary depending on your Theme Switching Rules.',
+              array('!page_caching' => l(t('page caching'), 'admin/config/development/performance'), '!page_cache_icon' => theme('themekey_page_cache_icon', array('page_cache_support' => $page_cache_support)))), array('a', 'img')), 'warning');
           }
           else {
-            drupal_set_message(t('!page_cache_icon Your site uses !page_caching and the Theme Switching Rule Chain contains properties that require "!cron_page_cache" to be enabled which has been disabled.',
-              array('!page_caching' => l(t('page caching'), 'admin/config/development/performance'), '!cron_page_cache' => l(t('Cron cleans up page cache'), 'admin/config/user-interface/themekey/settings'), '!page_cache_icon' => theme('themekey_page_cache_icon', array('page_cache_support' => $page_cache_support)))), 'error');
+            drupal_set_message(filter_xss(t('!page_cache_icon Your site uses !page_caching and the Theme Switching Rule Chain contains properties that require "!cron_page_cache" to be enabled which has been disabled.',
+              array('!page_caching' => l(t('page caching'), 'admin/config/development/performance'), '!cron_page_cache' => l(t('Cron cleans up page cache'), 'admin/config/user-interface/themekey/settings'), '!page_cache_icon' => theme('themekey_page_cache_icon', array('page_cache_support' => $page_cache_support)))), array('a', 'img')), 'error');
           }
           $warnings[THEMEKEY_PAGECACHE_TIMEBASED] = TRUE;
         }
