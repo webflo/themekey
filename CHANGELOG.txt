@@ -34,6 +34,7 @@ ThemeKey 7.x-1.x, 2010-xx-xx
 [       ] mkalkbrenner: addded Configure links to module page
 [       ] carstenmueller: modified function themekey_taxonomy_vid2tid() to fit new taxonomy with field api
 [       ] carstenmueller: modified function themekey_taxonomy_vid2vid() to fit new taxonomy with field api
+[       ] EugenMayer, mkalkbrenner: ported themekey java script to D7
 
 
 ThemeKey 6.x-3.0, 2010-10-14
