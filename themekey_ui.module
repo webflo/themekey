@@ -209,11 +209,16 @@ function themekey_ui_form_alter(&$form, $form_state, $form_id) {
 
       // to avoid a sql query to load his nodes themes every time a user is loaded we do this query here
       $theme = FALSE;
-      if (!empty($form['#uid'])) {
-        $theme = db_query("SELECT theme FROM {themekey_ui_author_theme} WHERE uid = :uid", array(':uid' => $form['#uid']))->fetchField();
+      if (!empty($form['#user']->uid)) {
+        $theme = db_query("SELECT theme FROM {themekey_ui_author_theme} WHERE uid = :uid", array(':uid' => $form['#user']->uid))->fetchField();
       }
 
-      themekey_ui_theme_select_form($form, t('Theme configuration for my nodes'), t('Every node I create will be shown to other users using this theme.'), $theme ? $theme : 'default', $form['theme_select']['#weight'], FALSE);
+      $weight = 0;
+      if (!empty($form['theme_select']['#weight'])) {
+        $weight = $form['theme_select']['#weight'];
+      }
+      
+      themekey_ui_theme_select_form($form, t('Theme configuration for my nodes'), t('Every node I create will be shown to other users using this theme.'), $theme ? $theme : 'default', $weight, FALSE);
     }
   }
   elseif ('themekey_help_tutorials_form' == $form_id) {
