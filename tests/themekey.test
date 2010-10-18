@@ -1,0 +1,27 @@
+<?php
+
+
+class ThemekeyWebTestCase extends DrupalWebTestCase {
+  protected $privileged_user;
+
+  public static function getInfo() {
+    return array(
+      'name' => 'Themekey test',
+      'description' => 'Test the themekey module.',
+      'group' => 'Themekey',
+    );
+  }
+
+  public function setUp() {
+    parent::setUp('themekey');
+
+    $this->privileged_user = $this->drupalCreateUser(array('administer theme assignments', 'administer themekey settings'));
+    $this->drupalLogin($this->privileged_user);
+  }
+
+  public function testThemekeybasic() {
+    $this->assertFalse(FALSE, 'Dummy test');
+  }
+
+}
+
