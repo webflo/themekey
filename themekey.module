@@ -197,19 +197,19 @@ function themekey_custom_theme() {
 function themekey_init() {
   if (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
     if (path_is_admin($_GET['q']) && variable_get('admin_theme', '0')) {
-      themekey_set_debug_message('%admin_theme is configured as administration theme at !link. This setting is more powerful than a corresponding ThemeKey rule.',
+      themekey_set_debug_message('"%admin_theme" is configured as administration theme at !link. This setting is more powerful than a corresponding ThemeKey rule.',
         array('%admin_theme' => variable_get('admin_theme', '0'), '!link' => l(t('!path', array('!path' => 'admin/appearance')), 'admin/appearance')), TRUE, TRUE);
     }
 
     $custom_theme_called = &drupal_static('themekey_custom_theme_called', FALSE);
     if (!$custom_theme_called) {
-      themekey_set_debug_message('Skipped rule checking because another module already initialized the theme engine. $theme has been set to %theme.<br />This seems to be a bug. Visit !link and help us improving other modules.', array('%theme' => $theme, '!link' => l('drupal.org/node/754970', 'http://drupal.org/node/754970')), TRUE, TRUE);
+      themekey_set_debug_message('Skipped rule checking because another module already initialized the theme engine. Theme has been set to "%theme".<br />This seems to be a bug. Visit !link and help us improving other modules.', array('%theme' => $theme, '!link' => l('drupal.org/node/754970', 'http://drupal.org/node/754970')), TRUE, TRUE);
     }
     else {
       global $theme;
       $custom_theme = &drupal_static('themekey_custom_theme', '');
       if (!empty($custom_theme) && 'default' != $custom_theme && $theme != $custom_theme) {
-        themekey_set_debug_message('Theme switching to custom theme %custom_theme did not work because theme has been set to %theme by another module.', array('%custom_theme' => $custom_theme, '%theme' => $theme), TRUE, TRUE);
+        themekey_set_debug_message('Theme switching to custom theme "%custom_theme" did not work because theme has been set to "%theme" by another module.', array('%custom_theme' => $custom_theme, '%theme' => $theme), TRUE, TRUE);
       }
     }
   }

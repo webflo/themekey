@@ -1,5 +1,10 @@
 // $Id$
 
+ThemeKey 7.x-1.0-alpha2, 2010-xx-xx
+-----------------------------------
+[       ] mkalkbrenner: rewritten rule chain form validation
+
+
 ThemeKey 7.x-1.0-alpha1, 2010-10-17
 -----------------------------------
 [       ] mkalkbrenner: used new hook_custom_theme instead of hook_init and replaced global variable $custom_theme by drupal_static
