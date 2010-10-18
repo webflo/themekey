@@ -112,8 +112,15 @@ function themekey_debug_init() {
     else {
       global $theme;
       $custom_theme = &drupal_static('themekey_custom_theme', '');
-      if (!empty($custom_theme) && 'default' != $custom_theme && $theme != $custom_theme) {
-        themekey_set_debug_message('Theme switching to custom theme "%custom_theme" did not work because theme has been set to "%theme" by another module.', array('%custom_theme' => $custom_theme, '%theme' => $theme), TRUE, TRUE);
+      if (!empty($custom_theme) && 'default' != $custom_theme) {
+        if($theme != $custom_theme) {
+          themekey_set_debug_message('Theme switching to custom theme "%custom_theme" did not work because theme has been set to "%theme" by another module.', array('%custom_theme' => $custom_theme, '%theme' => $theme), TRUE, TRUE);
+        }
+      }
+      else {
+        if (variable_get('theme_default', 'bartik') != $theme) {
+          themekey_set_debug_message('ThemeKey did not switch the theme because no rule matched. But something else set the theme to "%theme".', array('%theme' => $theme), TRUE, TRUE);
+        }
       }
     }
   }
