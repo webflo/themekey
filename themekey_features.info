@@ -1,7 +1,7 @@
 ; $Id$
 
-name = "ThemeKey Features"
-description = "Integrates ThemeKey with Features."
+name = "ThemeKey Features (Experimental!)"
+description = "Integrates ThemeKey with Features. Warning! Don't use in production! Highly Experimental!"
 core = 6.x
 dependencies[]= themekey
 dependencies[]= features

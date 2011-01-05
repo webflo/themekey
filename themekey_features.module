@@ -23,7 +23,8 @@ function themekey_features_rule_chain_features_export_options() {
 
   if (!empty($rules)) {
     foreach ($rules[0] as $rule) {
-      $options[$rule['id']] = themekey_format_rule_as_string($rule['id']);
+      $string = themekey_format_rule_as_string($rule['id']);
+      $options[md5($string)] = $string;
     }
   }
 
@@ -38,8 +39,8 @@ function themekey_features_rule_chain_features_export($data, &$export, $module_n
   $export['dependencies']['features'] = 'features';
   // TODO set dependencies to providers of each single themekey property
 
-  foreach ($data as $rule_id) {
-    $export['features']['themekey_features_rule_chain'][$rule_id] = $rule_id;
+  foreach ($data as $rule_md5) {
+    $export['features']['themekey_features_rule_chain'][$rule_md5] = $rule_md5;
   }
 
   return array();
@@ -56,10 +57,17 @@ function themekey_features_rule_chain_features_export_render($module_name, $data
   $code[] = '$rules = array();';
   $code[] = '';
 
-  foreach ($data as $rule_id) {
-    $rule = themekey_rule_get($rule_id);
-    $childs = themekey_features_load_rule_childs($rule_id);
-    $code[] = '$rules[\'' . $rule_id . '\'] = '. features_var_export(array('rule' => $rule, 'childs' => $childs)) .';';
+  $rules = themekey_features_load_rule_childs();
+  foreach ($data as $rule_md5) {
+    $parent = array();
+    foreach ($rules[0] as $rule) {
+      if (md5(themekey_format_rule_as_string($rule['id'])) == $rule_md5) {
+        $parent = $rule;
+        break;
+      }
+    }
+    $childs = themekey_features_load_rule_childs($parent['id']);
+    $code[] = '$rules[\'' . $parent['id'] . '\'] = '. features_var_export(array('rule' => $rule, 'childs' => $childs)) .';';
   }
 
   $code[] = '  return $rules;';
@@ -113,10 +121,12 @@ function themekey_features_rule_chain_features_revert($module) {
 
 
 function themekey_features_load_rule_childs($parent = 0) {
+  module_load_include('inc', 'themekey', 'themekey_build');
+
   $rules = array();
-  if ($result = db_query("SELECT * FROM {themekey_properties} WHERE parent = %d ORDER BY weight", $parent)) {
+  if ($result = db_query("SELECT id FROM {themekey_properties} WHERE parent = %d ORDER BY weight", $parent)) {
     while ($item = db_fetch_array($result)) {
-      $rules[$parent][$item['id']] = $item;
+      $rules[$parent][$item['id']] = themekey_rule_get($item['id']); // we have to load the rule again using this function which applies some transformations
       $tmp = themekey_features_load_rule_childs($item['id']);
       if (!empty($tmp)) {
         $rules[$item['id']] = $tmp[$item['id']];
