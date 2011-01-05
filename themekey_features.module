@@ -60,14 +60,18 @@ function themekey_features_rule_chain_features_export_render($module_name, $data
   $rules = themekey_features_load_rule_childs();
   foreach ($data as $rule_md5) {
     $parent = array();
+
     foreach ($rules[0] as $rule) {
       if (md5(themekey_format_rule_as_string($rule['id'])) == $rule_md5) {
         $parent = $rule;
         break;
       }
     }
-    $childs = themekey_features_load_rule_childs($parent['id']);
-    $code[] = '$rules[\'' . $parent['id'] . '\'] = '. features_var_export(array('rule' => $rule, 'childs' => $childs)) .';';
+
+    if (!empty($parent)) {
+      $childs = themekey_features_load_rule_childs($parent['id']);
+      $code[] = '$rules[\'' . $parent['id'] . '\'] = '. features_var_export(array('rule' => $rule, 'childs' => $childs)) .';';
+    }
   }
 
   $code[] = '  return $rules;';
