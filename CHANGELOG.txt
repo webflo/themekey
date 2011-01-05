@@ -1,5 +1,10 @@
 // $Id$
 
+ThemeKey 6.x-3.1, 2011-xx-xx
+----------------------------
+[       ] mkalkbrenner, cspitzlay: fixed signature of help form functions so default value for "collapsed" works
+
+
 ThemeKey 6.x-3.0, 2010-10-14
 ----------------------------
 [       ] mkalkbrenner: Show tooltips about possible property values at rule chain edit form

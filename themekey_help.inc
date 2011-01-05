@@ -15,7 +15,7 @@
  *
  * @see themekey_help()
  */
-function themekey_help_tutorials_form($collapsed = TRUE) {
+function themekey_help_tutorials_form($form_state, $collapsed = TRUE) {
   $form['themekey_help_tutorials'] = array(
     '#type' => 'fieldset',
     '#title' => t('Tutorials'),
@@ -92,7 +92,7 @@ function themekey_help_tutorials_form($collapsed = TRUE) {
  *
  * @see themekey_help()
  */
-function themekey_help_examples_form($collapsed = TRUE) {
+function themekey_help_examples_form($form_state, $collapsed = TRUE) {
   $form['themekey_help_examples'] = array(
     '#type' => 'fieldset',
     '#title' => t('Examples'),
@@ -104,7 +104,7 @@ function themekey_help_examples_form($collapsed = TRUE) {
     '#type' => 'fieldset',
     '#title' => t('Set a special theme for site administrator'),
     '#collapsible' => TRUE,
-    '#collapsed' => $form['themekey_help_examples']['#collapsed'],
+    '#collapsed' => TRUE,
   );
 
   $form['themekey_help_examples']['Set a special theme for site administrator']['item'] = array(
@@ -121,7 +121,7 @@ Value: 1
     '#type' => 'fieldset',
     '#title' => 'TODO: add some examples using drupal:path and drupal:path:wildcard',
     '#collapsible' => TRUE,
-    '#collapsed' => $form['themekey_help_examples']['#collapsed'],
+    '#collapsed' => TRUE,
   );
 
   $form['themekey_help_examples']['TODO: add some examples using drupal:path and drupal:path:wildcard']['item'] = array(
@@ -139,7 +139,7 @@ Value: 1
  *
  * @see themekey_help()
  */
-function themekey_help_properties_form($collapsed = TRUE) {
+function themekey_help_properties_form($form_state, $collapsed = TRUE) {
   module_load_include('inc', 'themekey', 'themekey_admin');
 
   $page_cache_support_desriptions = themekey_get_page_cache_support_desriptions();
@@ -158,7 +158,7 @@ function themekey_help_properties_form($collapsed = TRUE) {
       '#type' => 'fieldset',
       '#title' => $property,
       '#collapsible' => TRUE,
-      '#collapsed' => $collapsed,
+      '#collapsed' => TRUE,
     );
 
     $form['themekey_help_properties'][$property]['item'] = array(
@@ -183,7 +183,7 @@ function themekey_help_properties_form($collapsed = TRUE) {
  *
  * @see themekey_help()
  */
-function themekey_help_operators_form($collapsed = TRUE) {
+function themekey_help_operators_form($form_state, $collapsed = TRUE) {
   $form['themekey_help_operators'] = array(
     '#type' => 'fieldset',
     '#title' => t('Operators explained'),
