@@ -1,0 +1,127 @@
+<?php
+// $Id$
+
+/**
+ * Implementation of hook_features_api()
+ */
+function themekey_features_features_api() {
+  return array(
+    'themekey_features_rule_chain' => array(
+      'name' => t('ThemeKey Rule Chain'),
+      'default_hook' => 'themekey_features_rule_chain_import'
+    ),
+  );
+}
+
+
+/**
+ * Implementation of hook_features_export_options().
+ */
+function themekey_features_rule_chain_features_export_options() {
+  $options = array();
+  $rules = themekey_features_load_rule_childs();
+
+  if (!empty($rules)) {
+    foreach ($rules[0] as $rule) {
+      $options[$rule['id']] = themekey_format_rule_as_string($rule['id']);
+    }
+  }
+
+  return $options;
+}
+
+
+/**
+ * Implementation of hook_features_export()
+ */
+function themekey_features_rule_chain_features_export($data, &$export, $module_name = '') {
+  $export['dependencies']['features'] = 'features';
+  // TODO set dependencies to providers of each single themekey property
+
+  foreach ($data as $rule_id) {
+    $export['features']['themekey_features_rule_chain'][$rule_id] = $rule_id;
+  }
+
+  return array();
+}
+
+
+/**
+ * Implementation of hook_features_export_render()
+ */
+function themekey_features_rule_chain_features_export_render($module_name, $data, $export = NULL) {
+  module_load_include('inc', 'themekey', 'themekey_build');
+
+  $code = array();
+  $code[] = '$rules = array();';
+  $code[] = '';
+
+  foreach ($data as $rule_id) {
+    $rule = themekey_rule_get($rule_id);
+    $childs = themekey_features_load_rule_childs($rule_id);
+    $code[] = '$rules[\'' . $rule_id . '\'] = '. features_var_export(array('rule' => $rule, 'childs' => $childs)) .';';
+  }
+
+  $code[] = '  return $rules;';
+  $code = implode("\n", $code);
+
+  return array('themekey_features_rule_chain_import' => $code);
+}
+
+
+/**
+ * Implementation of hook_features_rebuild()
+ */
+function themekey_features_rule_chain_features_rebuild($module) {
+  module_load_include('inc', 'themekey', 'themekey_build');
+
+  db_query('TRUNCATE {themekey_properties}');
+
+  $rules = module_invoke($module, 'themekey_features_rule_chain_import');
+  $new_ids = array();
+
+  foreach ($rules as $rule_id => $chain) {
+    unset($chain['rule']['id']);
+    themekey_rule_set($chain['rule']);
+    $new_ids[$rule_id] = $chain['rule']['id'];
+
+    foreach ($chain['childs'] as $parent_id => $childs) {
+      foreach ($childs as $child_id => $child) {
+        unset($child['id']);
+        $child['parent'] = $new_ids[$parent_id];
+        themekey_rule_set($child);
+        $new_ids[$child_id] = $child['id'];
+      }
+    }
+  }
+
+  themekey_rebuild();
+
+  // fast deletion of page cache (truncate)
+  cache_clear_all('*', 'cache_page', TRUE);
+
+  return TRUE;
+}
+
+
+/**
+ * Implementation of hook_features_revert()
+ */
+function themekey_features_rule_chain_features_revert($module) {
+  return themekey_features_rule_chain_features_rebuild($module);
+}
+
+
+function themekey_features_load_rule_childs($parent = 0) {
+  $rules = array();
+  if ($result = db_query("SELECT * FROM {themekey_properties} WHERE parent = %d ORDER BY weight", $parent)) {
+    while ($item = db_fetch_array($result)) {
+      $rules[$parent][$item['id']] = $item;
+      $tmp = themekey_features_load_rule_childs($item['id']);
+      if (!empty($tmp)) {
+        $rules[$item['id']] = $tmp[$item['id']];
+      }
+    }
+  }
+  return $rules;
+}
