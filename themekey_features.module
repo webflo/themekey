@@ -22,9 +22,8 @@ function themekey_features_rule_chain_features_export_options() {
   $rules = themekey_features_load_rule_childs();
 
   if (!empty($rules)) {
-    foreach ($rules[0] as $rule) {
-      $string = themekey_format_rule_as_string($rule['id']);
-      $options[md5($string)] = $string;
+    foreach ($rules as $rule) {
+      $options[md5($rule['string'])] = $rule['string'];
     }
   }
 
@@ -37,6 +36,7 @@ function themekey_features_rule_chain_features_export_options() {
  */
 function themekey_features_rule_chain_features_export($data, &$export, $module_name = '') {
   $export['dependencies']['features'] = 'features';
+  $export['dependencies']['themekey_features'] = 'themekey_features';
   // TODO set dependencies to providers of each single themekey property
 
   foreach ($data as $rule_md5) {
@@ -51,33 +51,21 @@ function themekey_features_rule_chain_features_export($data, &$export, $module_n
  * Implementation of hook_features_export_render()
  */
 function themekey_features_rule_chain_features_export_render($module_name, $data, $export = NULL) {
-  module_load_include('inc', 'themekey', 'themekey_build');
-
-  $code = array();
-  $code[] = '$rules = array();';
-  $code[] = '';
-
   $rules = themekey_features_load_rule_childs();
-  foreach ($data as $rule_md5) {
-    $parent = array();
+  $keep_rules = array();
 
-    foreach ($rules[0] as $rule) {
-      if (md5(themekey_format_rule_as_string($rule['id'])) == $rule_md5) {
-        $parent = $rule;
-        break;
-      }
-    }
-
-    if (!empty($parent)) {
-      $childs = themekey_features_load_rule_childs($parent['id']);
-      $code[] = '$rules[\'' . $parent['id'] . '\'] = '. features_var_export(array('rule' => $rule, 'childs' => $childs)) .';';
+  foreach ($rules as $rule) {
+    if (in_array(md5($rule['string']), $data)) {
+      $keep_rules[] = $rule;
     }
   }
 
-  $code[] = '  return $rules;';
-  $code = implode("\n", $code);
+  $code = array();
+  $code[] = '$rules = '. features_var_export($keep_rules) .';';
+  $code[] = '';
+  $code[] = 'return $rules;';
 
-  return array('themekey_features_rule_chain_import' => $code);
+  return array('themekey_features_rule_chain_import' => implode("\n", $code));
 }
 
 
@@ -86,28 +74,12 @@ function themekey_features_rule_chain_features_export_render($module_name, $data
  */
 function themekey_features_rule_chain_features_rebuild($module) {
   module_load_include('inc', 'themekey', 'themekey_build');
-
   db_query('TRUNCATE {themekey_properties}');
+  themekey_rebuild();
 
   $rules = module_invoke($module, 'themekey_features_rule_chain_import');
-  $new_ids = array();
 
-  foreach ($rules as $rule_id => $chain) {
-    unset($chain['rule']['id']);
-    themekey_rule_set($chain['rule']);
-    $new_ids[$rule_id] = $chain['rule']['id'];
-
-    foreach ($chain['childs'] as $parent_id => $childs) {
-      foreach ($childs as $child_id => $child) {
-        unset($child['id']);
-        $child['parent'] = $new_ids[$parent_id];
-        themekey_rule_set($child);
-        $new_ids[$child_id] = $child['id'];
-      }
-    }
-  }
-
-  themekey_rebuild();
+  themekey_features_save_rule_childs($rules);
 
   // fast deletion of page cache (truncate)
   cache_clear_all('*', 'cache_page', TRUE);
@@ -125,17 +97,35 @@ function themekey_features_rule_chain_features_revert($module) {
 
 
 function themekey_features_load_rule_childs($parent = 0) {
+  module_load_include('inc', 'themekey', 'themekey_base');
   module_load_include('inc', 'themekey', 'themekey_build');
 
   $rules = array();
   if ($result = db_query("SELECT id FROM {themekey_properties} WHERE parent = %d ORDER BY weight", $parent)) {
     while ($item = db_fetch_array($result)) {
-      $rules[$parent][$item['id']] = themekey_rule_get($item['id']); // we have to load the rule again using this function which applies some transformations
-      $tmp = themekey_features_load_rule_childs($item['id']);
-      if (!empty($tmp)) {
-        $rules[$item['id']] = $tmp[$item['id']];
+      // we have to load the rule again using themekey_rule_get() which applies some transformations
+      $rule = themekey_rule_get($item['id']);
+      if ('drupal:path' != $rule['property']) {
+        themekey_complete_path($rule);
       }
+      unset($rule['id']);
+      unset($rule['parent']);
+      unset($rule['weight']);
+
+      $rules[] = array('rule' => $rule, 'string' => themekey_format_rule_as_string($item['id']), 'childs' => themekey_features_load_rule_childs($item['id']));
     }
   }
+
   return $rules;
+}
+
+
+function themekey_features_save_rule_childs($childs, $parent = 0) {
+  module_load_include('inc', 'themekey', 'themekey_build');
+
+  foreach ($childs as $child) {
+    $child['rule']['parent'] = $parent;
+    themekey_rule_set($child['rule']);
+    themekey_features_save_rule_childs($child['childs'], $child['rule']['id']);
+  }
 }
