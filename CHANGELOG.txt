@@ -4,6 +4,7 @@ ThemeKey 6.x-3.1, 2011-xx-xx
 ----------------------------
 [       ] mkalkbrenner, cspitzlay: fixed signature of help form functions so default value for "collapsed" works
 [#948444] mkalkbrenner: added experimental features support
+[       ] mkalkbrenner: fixed debug message constraints on settings page
 
 
 ThemeKey 6.x-3.0, 2010-10-14

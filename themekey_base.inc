@@ -494,7 +494,7 @@ function themekey_check_theme_enabled($theme, $settings_page = FALSE) {
   else {
     global $user;
 
-    if (!$warned && 1 == $user->uid) {
+    if (!$warned && variable_get('themekey_debug_trace_rule_switching', FALSE)) {
       themekey_set_debug_message('A matching Theme Switching Rule to select theme %theme was not applied because this theme is disabled. You can enable this theme at !build_themes or remove this Theme Switching Rule at !themekey_properties or edit current node if the theme was selected using ThemeKey UI.',
         array('%theme' => $theme, '!build_themes' => l(t('!path', array('!path' => 'admin/build/themes')), 'admin/build/themes'), '!themekey_properties' => l(t('!path', array('!path' => 'admin/settings/themekey/properties')), 'admin/settings/themekey/properties')));
       $warned = TRUE;
