@@ -29,11 +29,11 @@
 /**
  * Browser Detection class
  * contains common static method for
- * getting browser version and os
+ * getting browser version and OS
  *
- * It supports most popular browsers (IE, FF, Safari, Opera, Chrome ...)
- * As well as some not so popular (lynx etc.)
- * It doesn't recognize bots (like google, yahooo etc)
+ * It supports most popular browsers (IE, FF, Safari, Opera, Chrome ...),
+ * as well as some not-so-popular (lynx etc.)
+ * It doesn't recognize bots (like google, yahoo etc)
  *
  * usage
  * <code>
@@ -45,16 +45,16 @@
 class ThemekeyBrowserDetection {
 
   /**
-   * Get browsername and version
+   * Get browser name and version
    * @param string user agent
    * @return string browser name and version or 'unknown' if unrecognized
    * @static
    * @access public
    */
   function getBrowser($useragent) {
-    //check for most popular browsers first
-    //unfortunately that's ie. We also ignore opera and netscape 8
-    //because they sometimes send msie agent
+    // check for most popular browsers first
+    // unfortunately, that's IE. We also ignore Opera and Netscape 8
+    // because they sometimes send msie agent
     if (strpos($useragent, 'MSIE') !== FALSE && strpos($useragent, 'Opera') === FALSE && strpos($useragent, 'Netscape') === FALSE) {
       //deal with Blazer
       if (preg_match("/Blazer\/([0-9]{1}\.[0-9]{1}(\.[0-9])?)/", $useragent, $matches)) {

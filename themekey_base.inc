@@ -51,7 +51,7 @@ function themekey_invoke_modules($hook) {
  *
  * @param $parameters
  *   reference to an array containing all
- *   ThemeKey properties an their values
+ *   ThemeKey properties and their values
  *
  * @return
  *   boolean
@@ -112,10 +112,10 @@ function themekey_match_path($condition, &$parameters) {
  * wildcards "%" and "#".
  *
  * @param $path_parts
- *   array containg single parts of a path
+ *   array containing single parts of a path
  *
  * @param $condition_parts
- *   array containg single parts of a path
+ *   array containing single parts of a path
  *   whereas a part could be a wildcard
  *
  * @return
@@ -160,7 +160,7 @@ function themekey_match_path_parts($path_parts, $condition_parts) {
 
 /**
  * Assigns global parameters' values to ThemeKey properties.
- * Therefor it calls hook_themekey_global()
+ * Therefore it calls hook_themekey_global()
  *
  * @return
  *   associative array containing some
@@ -221,7 +221,7 @@ function themekey_match_rules() {
  *
  * @param $parameters
  *   reference to an array containing all
- *   ThemeKey properties an their values
+ *   ThemeKey properties and their values
  *
  * @param $parent
  *   id of parent rule
@@ -236,7 +236,7 @@ function themekey_match_rule_childs(&$parameters, $parent = 0) {
   static $child_lookups = array();
 
   if (isset($child_lookups[$parent])) {
-    // prevent endless recursion in case of malformated data in database
+    // prevent endless recursion in case of malformatted data in database
     return $child_lookups[$parent];
   }
 
@@ -394,14 +394,14 @@ function themekey_match_condition($condition, &$parameters) {
  *
  * @param $parameters
  *   reference to an array containing all
- *   ThemeKey properties an their values
+ *   ThemeKey properties and their values
  *
  * @param $property
  *   the name of the property as string
  *
  * @return
  *   The value of the property:
- *   - string i it's a single value
+ *   - string if it's a single value
  *   - array of strings if there're multiple values
  *   - NULL if no value
  */
@@ -488,17 +488,15 @@ function themekey_check_theme_enabled($theme, $settings_page = FALSE) {
 
   if ($settings_page) {
     if (!$displayed_error) {
-      drupal_set_message(filter_xss(t("Your current configuration of theme rules uses at least one theme that is not enabled. Nevertheless this configuration is stored but affected rules won't be applied until the targeted theme will be enabled at !build_themes.",
+      drupal_set_message(filter_xss(t("Your current configuration of theme rules uses at least one theme that is not enabled. Nevertheless, this configuration is stored, but affected rules won't be applied until the targeted theme is enabled at !build_themes.",
         array('!build_themes' => l(t('!path', array('!path' => 'admin/appearance')), 'admin/appearance')))), 'error');
       $displayed_error = TRUE;
     }
   }
   else {
-    global $user;
-
     if (!$warned && variable_get('themekey_debug_trace_rule_switching', FALSE)) {
       // Don't use the l() function at this early stage of bootstrapping because it will initialize the theme engine. Use url() instead.
-      themekey_set_debug_message('A matching Theme Switching Rule to select theme %theme was not applied because this theme is disabled. You can enable this theme at !build_themes or remove this Theme Switching Rule at !themekey_properties or edit current node if the theme was selected using ThemeKey UI.',
+      themekey_set_debug_message('A matching Theme Switching Rule to select theme %theme was not applied because this theme is disabled. You can enable this theme at !build_themes, remove this Theme Switching Rule at !themekey_properties, or edit the current node if the theme was selected using ThemeKey UI.',
         array('%theme' => $theme, '!build_themes' => '<a href="' . url('admin/appearance') . '">admin/appearance</a>', '!themekey_properties' => '<a href="' . url('admin/config/user-interface/themekey/properties') . '">admin/config/user-interface/themekey/properties</a>'));
       $warned = TRUE;
     }

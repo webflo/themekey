@@ -10,10 +10,10 @@
  */
 
 /**
- * Checks rules containing time based properties when cron runs.
- * ThemeKey will carefully clean up the page cache if necessary
+ * Checks rules containing time-based properties when cron runs.
+ * ThemeKey will carefully clean up the page cache, if necessary,
  * to provide the right theme to anonymous users automatically,
- * p.e. a Christmas theme.
+ * e.g. a Christmas theme.
  */
 function themekey_cron_clear_page_cache() {
   $clear_page_cache = FALSE;
@@ -29,7 +29,7 @@ function themekey_cron_clear_page_cache() {
     foreach ($result as $item) {
 
       if (THEMEKEY_PAGECACHE_TIMEBASED == $attributes[$item->property]['page cache']) {
-        $md5 = md5(serialize($item)); // use md5 instead of item id, because we want a track if an item's weight changed
+        $md5 = md5(serialize($item)); // use md5 instead of item id, because we want a track if an item's weight changes
         $match = themekey_match_condition($item, $parameters);
         $processed = in_array($md5, $rules_processed);
         if ($match && !$processed) {

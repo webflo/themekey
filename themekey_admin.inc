@@ -365,7 +365,7 @@ function themekey_rule_chain_form_validate(&$form, $form_state) {
           }
         }
         else {
-          form_set_error('new_item][property', filter_xss(t('ThemeKey requested an unknown validator called %validator to validate property %property', array('%validator' => $validator, '%property' => $value_1['property']))), array('em'));
+          form_set_error('new_item][property', filter_xss(t('ThemeKey requested an unknown validator called %validator to validate the property, %property', array('%validator' => $validator, '%property' => $value_1['property']))), array('em'));
         }
       }
     }
@@ -413,7 +413,7 @@ function themekey_rule_chain_form_submit($form, &$form_state) {
     themekey_rule_set($item);
   }
 
-  drupal_set_message(check_plain(t('The configuration options have been saved. Try to clear page cache ...')));
+  drupal_set_message(check_plain(t('The configuration options have been saved. Trying to clear page cache ...')));
 
   // fast deletion of page cache (truncate)
   cache_clear_all('*', 'cache_page', TRUE);
@@ -437,7 +437,7 @@ function themekey_settings_form($form, &$form_state) {
     '#type' => 'checkbox',
     '#title' => t('Property drupal:path is case sensitive'),
     '#default_value' => variable_get('themekey_path_case_sensitive', 0),
-    '#description' => t('Drupal paths are case insesitive by default. Modules like Global Redirect might change this behavior.'),
+    '#description' => t('Drupal paths are case insensitive by default. Modules like Global Redirect might change this behavior.'),
   );
 
   $form['settings']['themekey_allthemes'] = array(
@@ -451,14 +451,14 @@ function themekey_settings_form($form, &$form_state) {
     '#type' => 'checkbox',
     '#title' => t('Force custom theme overriding'),
     '#default_value' => variable_get('themekey_override_custom_theme', 0),
-    '#description' => t('Select this option to force ThemeKey to set the custom theme. Otherwise ThemeKey will set the custom theme only if it\'s not already set by a different module.<br /><b>Note: If you activate this feature it turns off theme switching of some other modules like organic groups.</b>'),
+    '#description' => t('Select this option to force ThemeKey to set the custom theme. Otherwise ThemeKey will set the custom theme only if it\'s not already set by a different module.<br /><b>Note: If you activate this feature it turns off theme switching of some other modules like Organic Groups.</b>'),
   );
 
   $form['settings']['themekey_theme_maintain'] = array(
     '#type' => 'checkbox',
     '#title' => t('Retain the theme until a new theme is set'),
     '#default_value' => variable_get('themekey_theme_maintain', 0),
-    '#description' => t('Select this option to have users logged in stay in the same theme until they browse to a new page with an explicit theme set.'),
+    '#description' => t('Select this option to have logged-in users stay in the same theme until they browse to a new page with an explicit theme set.'),
   );
 
   $form['settings']['themekey_theme_maintain_anonymous'] = array(
@@ -466,7 +466,7 @@ function themekey_settings_form($form, &$form_state) {
     '#title' => t('Retain the theme until a new theme is set for anonymous users'),
     '#default_value' => variable_get('themekey_theme_maintain_anonymous', 0),
     '#description' => t('Select this option to have anonymous users stay in the same theme until they browse to a new page with an explicit theme set.
-<br /><b>Warning: This feature is only working correctly if you turn off page caching or use a drupal core that supports lazy session initialization like !cdclink or !pflink.</b>',
+<br /><b>Warning: This feature is only working correctly if you turn off page caching or use a Drupal core that supports lazy session initialization like !cdclink or !pflink.</b>',
       array('!cdclink' => l(t('!path', array('!path' => 'Cocomore Drupal Core')), 'http://drupal.cocomore.com/node/175', array('attributes' => array('target' => '_blank'))), '!pflink' => l(t('!path', array('!path' => 'Pressflow')), 'https://launchpad.net/pressflow/6.x/', array('attributes' => array('target' => '_blank'))))),
   );
 
@@ -475,7 +475,7 @@ function themekey_settings_form($form, &$form_state) {
       '#type' => 'checkbox',
       '#title' => t('Forum pages trigger property taxonomy:vid'),
       '#default_value' => variable_get('themekey_module_forum_triggers_taxonomy_vid', 0),
-      '#description' => t('Property taxonomy:vid is set when a single node is shown (p.e. /node/17). If this option is selected, forum pages like /forum/28 will set taxonomy:vid as well.'),
+      '#description' => t('Property taxonomy:vid is set when a single node is shown (e.g. /node/17). If this option is selected, forum pages like /forum/28 will set taxonomy:vid as well.'),
     );
   }
 
@@ -483,7 +483,7 @@ function themekey_settings_form($form, &$form_state) {
     '#type' => 'checkbox',
     '#title' => t('Cron cleans up page cache'),
     '#default_value' => variable_get('themekey_cron_page_cache', 1),
-    '#description' => t('Select this option if ThemeKey should check rules containing time based properties when cron runs. ThemeKey will carefully clean up the page cache if necessary to provide the right theme to anonymous users automatically, p.e. a Christmas theme.'),
+    '#description' => t('Select this option if ThemeKey should check rules containing time-based properties when cron runs. ThemeKey will carefully clean up the page cache if necessary to provide the right theme to anonymous users automatically, e.g. a Christmas theme.'),
   );
 
   return system_settings_form($form);
@@ -491,7 +491,7 @@ function themekey_settings_form($form, &$form_state) {
 
 
 /**
- * Themes hemekey_rule_chain_form() and adds drag'n'drop features.
+ * Themes themekey_rule_chain_form() and adds drag'n'drop features.
  *
  * @ingroup themeable
  */
@@ -702,7 +702,7 @@ function themekey_admin_theme_warning() {
     drupal_set_message(filter_xss(t('%admin_theme is configured as administration theme at !link. This setting is more powerful than a corresponding ThemeKey rule.',
       array('%admin_theme' => variable_get('admin_theme', '0'), '!link' => l(t('!path', array('!path' => 'admin/appearance')), 'admin/appearance')))), 'warning');
     if (variable_get('node_admin_theme', '0')) {
-      drupal_set_message(filter_xss(t('As configured at !link adding or editing a node will use the administration theme %admin_theme.',
+      drupal_set_message(filter_xss(t('As configured at !link, adding or editing a node will use the administration theme, %admin_theme.',
         array('%admin_theme' => variable_get('admin_theme', '0'), '!link' => l(t('!path', array('!path' => 'admin/appearance')), 'admin/appearance')))), 'warning');
     }
   }
@@ -733,7 +733,7 @@ function themekey_page_cache_warning($page_cache_support) {
               array('!page_caching' => l(t('page caching'), 'admin/config/development/performance'), '!page_cache_icon' => theme('themekey_page_cache_icon', array('page_cache_support' => $page_cache_support)))), array('a', 'img')), 'warning');
           }
           else {
-            drupal_set_message(filter_xss(t('!page_cache_icon Your site uses !page_caching and the Theme Switching Rule Chain contains properties that require "!cron_page_cache" to be enabled which has been disabled.',
+            drupal_set_message(filter_xss(t('!page_cache_icon Your site uses !page_caching and the Theme Switching Rule Chain contains properties that require "!cron_page_cache" to be enabled, but it is disabled.',
               array('!page_caching' => l(t('page caching'), 'admin/config/development/performance'), '!cron_page_cache' => l(t('Cron cleans up page cache'), 'admin/config/user-interface/themekey/settings'), '!page_cache_icon' => theme('themekey_page_cache_icon', array('page_cache_support' => $page_cache_support)))), array('a', 'img')), 'error');
           }
           $warnings[THEMEKEY_PAGECACHE_TIMEBASED] = TRUE;
@@ -756,7 +756,7 @@ function themekey_admin_delete_rule_confirm($form, &$form_state, $arg, $themekey
   $title = themekey_format_rule_as_string($themekey_property_id);
 
   return confirm_form($form,
-    t('Are you sure you want to delete ThemeKey rule %title?', array('%title' => $title)),
+    t('Are you sure you want to delete the ThemeKey rule, %title?', array('%title' => $title)),
     'admin/config/user-interface/themekey/properties',
     t('This action cannot be undone.'),
     t('Delete'),
@@ -801,7 +801,7 @@ function theme_themekey_page_cache_icon($variables) {
  */
 function themekey_get_page_cache_support_desriptions() {
   return array(
-    THEMEKEY_PAGECACHE_UNSUPPORTED => t('Unsupported! If you enable page caching on your system you have to ensure that any rule using this property is wrapped by a different rule that excludes anonymous users like "user:uid > 0".'),
+    THEMEKEY_PAGECACHE_UNSUPPORTED => t('Unsupported! If you enable page caching on your system, you have to ensure that any rule using this property is wrapped by another rule that excludes anonymous users, such as "user:uid > 0".'),
     THEMEKEY_PAGECACHE_SUPPORTED => t('Supported'),
     THEMEKEY_PAGECACHE_TIMEBASED => t('Supported if you enable "Cron cleans up page cache" at !link and run your cron frequently enough. During the cron run ThemeKey deletes the page cache if necessary depending on your Theme Switching Rules.', array('!link' => l(t('!path', array('!path' => 'admin/config/user-interface/themekey/settings')), 'admin/config/user-interface/themekey/settings'))),
   );

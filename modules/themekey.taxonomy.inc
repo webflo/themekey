@@ -16,7 +16,7 @@
 /**
  * Implements hook_themekey_properties().
  *
- * Provides additional properties for module ThemeKey:
+ * Provides additional properties for the Themekey module:
  * - taxonomy:vid
  * - taxonomy:tid
  * - taxonomy:tid_and_childs
@@ -39,7 +39,7 @@ function themekey_taxonomy_themekey_properties() {
     'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
   $attributes['taxonomy:tid_and_childs'] = array(
-    'description' => t('Taxonomy: Term and its childs - The term id (tid) of a taxonomy term. If set all child terms of this term will be used too.'),
+    'description' => t('Taxonomy: Term and its childs - The term id (tid) of a taxonomy term. If set, all child terms of this term will be used too.'),
     'validator' => 'themekey_validator_ctype_digit',
     'page cache' => THEMEKEY_PAGECACHE_UNSUPPORTED,
   );
@@ -208,7 +208,7 @@ function themekey_taxonomy_vid2tid($node_vid) {
   $tids = array();
 
   // Use SQL instead taxonomy API because this code runs during hook_init() stage.
-  // Using taxonomy API will require to load the node using node_load() which is not allowed in this stage.
+  // Using taxonomy API will require loading the node using node_load() which is not allowed in this stage.
 
   //  GET THE TAXONOMY VOCABULARIES
   $taxonomy_vocabularies = taxonomy_get_vocabularies();

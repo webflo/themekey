@@ -3,7 +3,7 @@
 
 /**
  * @file
- * Cleans up variables when unistalling
+ * Cleans up variables when uninstalling
  * @see themekey_debug.module
  *
  * @author Markus Kalkbrenner | Cocomore AG

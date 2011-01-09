@@ -16,7 +16,7 @@
 /**
  * Implements hook_themekey_properties().
  *
- * Provides additional properties for module ThemeKey:
+ * Provides additional properties for the Themekey module:
  * - book:bid
  * - book:has_children
  *
@@ -32,7 +32,7 @@ function themekey_book_themekey_properties() {
     'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
   $attributes['book:has_children'] = array(
-    'description' => t('Book: Has Children - Wheter the book has child pages or not. Possible values are "0" for false and "1" for true.'),
+    'description' => t('Book: Has Children - Whether the book has child pages or not. Possible values are "0" for false and "1" for true.'),
     'validator' => 'themekey_validator_nummeric_boolean',
     'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
@@ -114,7 +114,7 @@ function themekey_book_get_simple_book_property($nid, $property) {
     $node->nid = $nid;
 
     // node_load() must not be called from hook_init().
-    // Therefor we have to execute SQL here using book's hook_nodeapi().
+    // Therefore we have to execute SQL here using book's hook_nodeapi().
     $info = book_nodeapi($node, 'load', NULL, NULL);
 
     if (!empty($info['book'])) {

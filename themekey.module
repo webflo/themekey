@@ -3,11 +3,11 @@
 
 /**
  * @file
- * ThemeKey is meant to be a generic theme switching module.
+ * ThemeKey is designed as a generic theme-switching module.
  *
  * ThemeKey allows you to define simple or sophisticated Theme Switching Rules.
  * Using these rules you are able to use a different theme depending on current
- * path, taxonomy terms, language, node type and many many more properties.
+ * path, taxonomy terms, language, node type and many, many more properties.
  * It can also be easily extended to support additional properties as exposed by
  * other modules:
  * @see themekey_properties.module
@@ -62,7 +62,7 @@ function themekey_menu() {
   $items = array();
   $items['admin/config/user-interface/themekey'] = array(
     'title' => 'ThemeKey',
-    'description' => 'Set up rules to switch the site\'s appearance (theme) dynamically depending on Drupal paths or different properties.',
+    'description' => 'Set up rules to switch the site\'s appearance (theme) dynamically, depending on Drupal paths or different properties.',
     'access callback' => 'user_access',
     'access arguments' => array('administer theme assignments'),
     'file' => 'themekey_admin.inc',
@@ -106,7 +106,7 @@ function themekey_menu() {
 /**
  * Implements hook_custom_theme().
  *
- * Here happens all the magic of ThemeKey.
+ * This is where all of ThemeKey's magic happens.
  * ThemeKey detects if any Theme Switching Rule matches
  * the current request and returns a custom theme.
  */
@@ -135,7 +135,7 @@ function themekey_custom_theme() {
            && (!$custom_theme || $custom_theme == variable_get('theme_default', 'bartik'))) {
         $theme_candidate = $_SESSION['themekey_theme'];
         if (variable_get('themekey_debug_trace_rule_switching', FALSE)) {
-          themekey_set_debug_message('ThemeKey Debug: No rule triggered a different theme. Reusing last theme from users session: %custom_theme', array('%custom_theme' => $theme_candidate));
+          themekey_set_debug_message('ThemeKey Debug: No rule triggered a different theme. Reusing last theme from user\'s session: %custom_theme', array('%custom_theme' => $theme_candidate));
         }
       }
 
@@ -196,12 +196,12 @@ function themekey_themekey_load_validators() {
  * Implements hook_help().
  */
 function themekey_help($path, $arg) {
-  $text_1 = t('For every page request Drupal steps through this Theme Switching Rule Chain until an activated rule matches or it reaches the end. If a rule matches the theme associated to this rule will be applied to render the requested page.');
+  $text_1 = t('For every page request, Drupal steps through this Theme Switching Rule Chain until an activated rule matches or it reaches the end. If a rule matches, the theme associated with this rule will be applied to render the requested page.');
 
   switch ($path) {
     case 'admin/help#themekey':
       module_load_include('inc', 'themekey', 'themekey_help');
-      return '<p>' . t('ThemeKey allows you to define simple or sophisticated Theme Switching Rules. Using these rules you are able to use a different theme depending on current path, taxonomy terms, language, node type and many many more properties. It can also be easily extended to support additional properties as exposed by other modules.') . '</p>' .
+      return '<p>' . t('ThemeKey allows you to define simple or sophisticated Theme Switching Rules. Using these rules, you can use a different theme depending on the current path, taxonomy terms, language, node type, and many, many other properties. It can also be easily extended to support additional properties, as exposed by other modules.') . '</p>' .
         '<p>' . $text_1 . '</p>' .
         drupal_render(drupal_get_form('themekey_help_tutorials_form', FALSE)) .
         drupal_render(drupal_get_form('themekey_help_examples_form', FALSE)) .
@@ -210,7 +210,7 @@ function themekey_help($path, $arg) {
 
     case 'admin/config/user-interface/themekey':
       module_load_include('inc', 'themekey', 'themekey_help');
-      return '<p>' . $text_1 . '<br />' . t('To get an idea how to get started you might have a look at the !tutorials_link.', array('!tutorials_link' => l(t('tutorials'), 'admin/help/themekey'))) . '</p> ' .
+      return '<p>' . $text_1 . '<br />' . t('To get an idea how to get started, you might have a look at the !tutorials_link.', array('!tutorials_link' => l(t('tutorials'), 'admin/help/themekey'))) . '</p> ' .
         drupal_render(drupal_get_form('themekey_help_examples_form', TRUE)) .
         drupal_render(drupal_get_form('themekey_help_properties_form', TRUE)) .
         drupal_render(drupal_get_form('themekey_help_operators_form', TRUE));
@@ -220,15 +220,14 @@ function themekey_help($path, $arg) {
 
 /**
  * Replacement for drupal_set_message() during ThemeKey's initialization.
- * drupal_set_message() might call inititialize the theme engine to early
+ * drupal_set_message() might inititialize the theme engine too early,
  * which causes ThemeKey to not switch the theme.
  *
  * themekey_set_debug_message() put the untranslated messages on a stack and
  * hands them over to drupal_set_message() on demand.
  *
- * This function simply wraps themekey_debug_set_debug_message() to avoid
- * that module_exists('themekey_debug') calls needs to be done all over
- * the code.
+ * This function simply wraps themekey_debug_set_debug_message() to avoid the need
+ * for module_exists('themekey_debug') calls all over the code.
  *
  * @param $msg
  *   the message as string. If the message is 'flush'
@@ -252,8 +251,8 @@ function themekey_set_debug_message($msg, $placeholder = array(), $translate = T
 
 /**
  * Returns the content of $_GET['q'] as expected.
- * Therefor $_GET['q'] gets transformed if necessary.
- * P.e. ajax views rewrites the q parameter.
+ * Therefore, $_GET['q'] gets transformed if necessary.
+ * E.g., Ajax Views rewrites the q parameter.
  *
  * @return string
  */
@@ -262,7 +261,7 @@ function themekey_get_q() {
 
   if (empty($get_q)) {
     if ('views/ajax' == $_GET['q'] && !empty($_GET['view_path'])) {
-      // required for ajax views. see http://drupal.org/node/567222
+      // required for Ajax Views. see http://drupal.org/node/567222
       $get_q = $_GET['view_path'];
     }
     else {

@@ -64,7 +64,7 @@
             enabledElement.removeAttr('checked');
             enabledElement.css('display', 'none');
             rowElement.addClass('themekey-fade-out');
-            // hide and disable childs
+            // hide and disable children
             var id = enabledElement.attr('name').replace('old_items[', '').replace('][enabled]', '');
             ThemeKey.disableChilds(id);
           }
@@ -131,7 +131,7 @@
           else {
             rowElement.addClass('themekey-fade-out');
             ThemeKey.adjustChildCounter(parentId, -1);
-            // hide and disable childs
+            // hide and disable children
             ThemeKey.disableChilds(id);
           }
         }

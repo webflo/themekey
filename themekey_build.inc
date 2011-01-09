@@ -4,7 +4,7 @@
 /**
  * @file
  * The functions in this file are the back end of ThemeKey which should be
- * used only if you configure something but not when ThemeKey switches themes.
+ * used only if you configure something, but not when ThemeKey switches themes.
  *
  * @author Markus Kalkbrenner | Cocomore AG
  *   @see http://drupal.org/user/124705
@@ -56,7 +56,7 @@ function themekey_theme_options($default = TRUE, $admin = FALSE) {
 
 
 /**
- * Rebuilds all ThemeKey related drupal variables
+ * Rebuilds all ThemeKey-related Drupal variables
  * by calling ThemeKey's hooks:
  * - hook_themekey_properties()
  * - hook_themekey_paths()
@@ -97,7 +97,7 @@ function themekey_rebuild() {
   // Get (and register) paths from themekey modules
   $paths = array_merge_recursive(themekey_invoke_modules('themekey_paths'), module_invoke_all('themekey_paths'));
 
-  // assign fit factor and wight to this item
+  // assign fit factor and weight to this item
   array_walk($paths, 'themekey_path_set');
 
   $paths_sort = array();
@@ -123,7 +123,7 @@ function themekey_rebuild() {
 /**
  * Scans directory themekey/modules for suitable files
  * which provide ThemeKey properties mapping function and so on
- * and stores the file names for later usage in a drupal variable
+ * and stores the file names, for later use, in a Drupal variable
  * called 'themekey_modules'.
  *
  * @see themekey_rebuild()
@@ -147,9 +147,9 @@ function themekey_scan_modules() {
  * Named wildcards in ThemeKey rules based on property
  * drupal:path are stored as serialized array in the database.
  *
- * This function deserializes those wildcards and inject them back
+ * This function deserializes those wildcards and injects them back
  * into the value of the rule. This format is needed by ThemeKey's
- * administartion interface.
+ * administration interface.
  *
  * It's the counterpart of these functions:
  * @see themekey_prepare_path()
@@ -158,7 +158,7 @@ function themekey_scan_modules() {
  * @see themekey_load_rules()
  *
  * @param $item
- *   reference to an onject
+ *   reference to an inject
  *   containing a ThemeKey rule as returned
  *   directly from database
  */
@@ -177,7 +177,7 @@ function themekey_complete_path($item) {
 /**
  * Examines ThemeKey paths created by modules
  * via hook_themekey_paths() in database and
- * assignes a fit factor and a wight.
+ * assigns a fit factor and a weight.
  *
  * @see themekey_rebuild()
  *
@@ -265,14 +265,14 @@ function themekey_prepare_custom_path($path) {
 
 /**
  * Loads all ThemeKey Rules from the database.
- * Therefor it uses a recursion to build the rule chains.
+ * Therefore, it uses recursion to build the rule chains.
  *
  * @param $parent
  *   id of the parent rule. Default is '0'.
  *   During the recursion this parameter changes.
  *
  * @param $depth
- *   Integer that represents the 'indention'
+ *   Integer that represents the 'indentation'
  *   in current rule chain. Default is '0'.
  *   During the recursion this parameter changes.
  *
@@ -372,12 +372,12 @@ function themekey_rule_del($id) {
       ->condition('id', $id)
       ->execute();
       if (!$result) {
-        drupal_set_message(t('Error while deleteing ThemeKey rule'), 'error');
+        drupal_set_message(t('Error while deleting ThemeKey rule'), 'error');
       }
     }
   }
   else {
-    drupal_set_message(t('Error while deleteing ThemeKey rule'), 'error');
+    drupal_set_message(t('Error while deleting ThemeKey rule'), 'error');
   }
   
   // $txn goes out of scope here, and the entire transaction commits.
@@ -410,9 +410,9 @@ function themekey_rule_get($id) {
 
 
 /**
- * Adds or modifies a so called static rule in the
- * database. Static rules could be moved around in the chain
- * and enabled or disabled by the site administrator but the values
+ * Adds or modifies a so-called static rule in the
+ * database. Static rules can be moved around in the chain
+ * and enabled or disabled by the site administrator, but the values
  * are immutable. There's one static rule per static property.
  *
  * @param $property

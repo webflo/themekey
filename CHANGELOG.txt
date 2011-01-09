@@ -3,6 +3,7 @@
 ThemeKey 7.x-1.0-beta1, 2011-xx-xx
 -----------------------------------
 [       ] mkalkbrenner: fixed debug message constraints on settings page
+[#958174] LoMo: Edited English strings
 
 
 ThemeKey 7.x-1.0-alpha2, 2010-10-18

@@ -16,7 +16,7 @@
 /**
  * Implements hook_themekey_properties().
  *
- * Provides additional properties for module ThemeKey:
+ * Provides additional properties for the ThemeKey module:
  * - comment:cid
  *
  * @return

@@ -4,7 +4,7 @@
 /**
  * @file
  * helper functions for ThemeKey UI feature to add a theme option to the
- * 'URL aliases' administration if module "Path" is enabled.
+ * 'URL aliases' administration if the "Path" module is enabled.
  *
  * @see themekey_ui.module
  * @see themekey_ui_admin.inc
@@ -19,14 +19,14 @@
 require_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'themekey') . '/themekey_build.inc';
 
 /**
- * Returns a theme assigned to a drupal path alias using
+ * Returns a theme assigned to a Drupal path alias using
  * a ThemeKey Theme Switching Rule which is not part of a chain
  *
  * @param $path
- *   drupal path as string
+ *   Drupal path as string
  *
  * @return
- *   array with to elements:
+ *   array with two elements:
  *   - id of the database entry in table themekey_properties
  *     or '0' if no entry exists
  *   - the theme
@@ -54,10 +54,10 @@ function themekey_ui_get_path_theme($path) {
  * @see themekey_rule_set()
  *
  * @param $path
- *   drupa path alias as string
+ *   Drupal path alias as string
  *
  * @param $theme
- *   assigned drupal theme as string
+ *   assigned Drupal theme as string
  *
  * @param $id
  *   the id of an existing rule if this

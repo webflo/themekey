@@ -16,7 +16,7 @@
 /**
  * Implements hook_themekey_properties().
  *
- * Provides additional properties for module ThemeKey:
+ * Provides additional properties for the ThemeKey module:
  * - node:changed
  * - node:created
  * - node:changed_date_time
@@ -35,7 +35,7 @@
  *   array of themekey properties and mapping functions
  */
 function themekey_node_themekey_properties() {
-  // Attributes for properties
+  // Attributes of properties
   $attributes = array();
   $attributes['node:changed'] = array(
     'description' => t('Node: Changed date - The date when the node was last edited/updated, formatted as unix timestamp like "1248873565".'),
@@ -94,13 +94,13 @@ function themekey_node_themekey_properties() {
     'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
   $attributes['node:type'] = array(
-    'description' => t('Node: Type - The machine readable content type of the node. See !link for your content types (use column "Type"). Drupal default types are "page" and "story".',
+    'description' => t('Node: Type - The machine-readable content type of the node. See !link for your content types (use column "Type"). Drupal default types are "page" and "story".',
       array('!link' => l(t('!path', array('!path' => 'admin/structure/types')), 'admin/structure/types'))),
     'validator' => 'themekey_validator_node_type',
     'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
   $attributes['node:uid'] = array(
-    'description' => t('Node: User ID - The user id (uid) of the author of the node. The user id can be found in the URL of the users profile page, "user/23" or "user/23/edit" (23 = uid). See !link for your users.',
+    'description' => t('Node: User ID - The node author\'s user id (uid). The user id can be found in the URL of the user\'s profile page, "user/23" or "user/23/edit" (23 = uid). See !link for your users.',
       array('!link' => l(t('!path', array('!path' => 'admin/user/user/list')), 'admin/user/user/list'))),
     'validator' => 'themekey_validator_ctype_digit',
     'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
@@ -207,7 +207,7 @@ function themekey_node_themekey_paths() {
  *   a node id
  *
  * @param $property
- *   name of a nodes attribute as string
+ *   name of a node's attribute as string
  *
  * @return
  *   the value of the property or NULL
@@ -216,7 +216,7 @@ function themekey_node_get_simple_node_property($nid, $property) {
   static $nodes = array();
 
   if (!isset($nodes[$nid])) {
-    // node_load() must not be called from hook_init(). Therefor we have to execute SQL here
+    // node_load() must not be called from hook_init(). Therefore, we have to execute SQL here
     $result = db_query('SELECT * FROM {node} WHERE nid = :nid', array(':nid' => $nid));
 
     foreach ($result as $item) {
@@ -463,11 +463,11 @@ function themekey_node_timestamp2date($timestamp) {
  * ThemeKey property's value (destination)
  * with the aid of another ThemeKey property (source).
  *
- * src: drupal path
+ * src: Drupal path
  * dst: node type
  *
  * @param $patch
- *   a drupal path
+ *   a Drupal path
  *
  * @return
  *   string
@@ -484,7 +484,7 @@ function themekey_node_get_q2type($q) {
 /**
  * This function isn't needed anymore and has been removed with ThemeKey 6.x-2.0-beta2.
  * But if it's missing a fatal error occurs if you upgrade from any version before
- * 6.x-2.0-beta2 until you called update.php. That should be avoided.
+ * 6.x-2.0-beta2 until you call update.php. That should be avoided.
  * So this function is available again and does nothing else than reminding the
  * administrator to call update.php
  *

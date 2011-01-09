@@ -11,14 +11,14 @@
 
 
 /**
- * Adds exmples to themekey_help_form().
+ * Adds examples to themekey_help_form().
  *
  * @see themekey_help()
  * @see themekey_help_form()
  * @see themekey_ui_form_alter()
  *
  * @param $form
- *   reference to a drupal form
+ *   reference to a Drupal form
  */
 function themekey_ui_help_tutorials(&$form) {
   $form['themekey_help_tutorials']['Allowing users to select a theme for all content they create'] = array(
@@ -38,11 +38,11 @@ function themekey_ui_help_tutorials(&$form) {
 
   $form['themekey_help_tutorials']['Allowing users to select a theme for all content they create']['item'] = array(
     '#type' => 'item',
-    '#markup' => '<p>' . t('In this tutorial you will learn how to enable users to select a theme for content they create. For example, if you would like each of your bloggers to display their own theme on each of their blog entries, this tutorial will allow you to grant this option.</p>') .
-'<p>' . t('First, you must enable any themes you would like available from under !link (Administer -> Site Building -> Themes)</p>', array('!link' => l(t('!path', array('!path' => 'admin/appearance')), 'admin/appearance'))) .
-'<p>' . t('Once you have enabled your themes, navigate to !link (Administer -> Site Configuration -> Themekey -> Settings -> User Interface). You will see a checkbox for "Show theme option in user profile". Click on the checkbox and save your settings.</p>', array('!link' => l(t('!path', array('!path' => 'admin/config/user-interface/themekey/settings/ui')), 'admin/config/user-interface/themekey/settings/ui'))) .
+    '#markup' => '<p>' . t('In this tutorial, you will learn how to enable users to select a theme for content they create. For example, if you would like each of your bloggers to display their own theme on each of their blog entries, this tutorial will allow you to grant this option.</p>') .
+'<p>' . t('First, you must enable any themes you would like available from under !link (Administer -> Appearance)</p>', array('!link' => l(t('!path', array('!path' => 'admin/appearance')), 'admin/appearance'))) .
+'<p>' . t('Once you have enabled your themes, navigate to !link (Administer -> Configuration -> Themekey -> Settings -> User Interface). You will see a checkbox for "Show theme option in user profile". Click on the checkbox and save your settings.</p>', array('!link' => l(t('!path', array('!path' => 'admin/config/user-interface/themekey/settings/ui')), 'admin/config/user-interface/themekey/settings/ui'))) .
 '<p>' . '<img src="' . $img_path . 'themekey_user_profiles_2.png" alt="' . t('Enabling theme selection in user profiles') . '" style="border:solid #d4e7f3 2px;" /></p>' .
-'<p>' . t('Next, you must grant permission to the roles that you would like to be able to change themes for their own content. Navigate to !link (Administer -> User Management -> Permissions) and check the boxes for "Assign theme to own nodes" to all roles you want to enable this option.</p>', array('!link' => l(t('!path', array('!path' => 'admin/user/permissions')), 'admin/user/permissions'))) . '<br />' .
+'<p>' . t('Next, you must grant permission to the roles that you would like to be able to change themes for their own content. Navigate to !link (Administer -> People -> Permissions) and check the boxes for "Assign theme to own nodes" for all roles you want to have this option.</p>', array('!link' => l(t('!path', array('!path' => 'admin/people/permissions')), 'admin/people/permissions'))) . '<br />' .
 '<p>' . '<img src="' . $img_path . 'themekey_user_profiles_3.png" alt="' . t('Enable correct permissions to use themekey for your users') . '" style="border:solid #d4e7f3 2px;" /></p>' .
 '<p>' . t('Once you have done this, your users can log in, navigate to My Account -> Edit and a new option will appear under their account settings. A full select list of your enabled themes will appear for them to select from. Once they have chosen a new theme, any node that is authored by this user will display the theme they have selected.</p>') .
 '<p>' . '<img src="' . $img_path . 'themekey_user_profiles_4.png" alt="' . t('ThemeKey rule chain that switches to different themes on content creation forms for different user roles') . '" style="border:solid #d4e7f3 2px;" /></p>' .

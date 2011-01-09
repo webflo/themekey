@@ -35,7 +35,7 @@ function themekey_system_themekey_properties() {
   );
 
   $attributes['system:query_param'] = array(
-    'description' => t("System: Query Parameter - Every single query parameter other than 'q' and it's value if present. Note that values are url decoded. Example: '?q=node&foo=bar&dummy&filter=tid%3A27' will cause three entries 'foo=bar', 'dummy' and 'filter=tid:27'. For 'q' see property drupal:get_q."),
+    'description' => t("System: Query Parameter - Every single query parameter other than 'q' and its value, if present. Note that values are url decoded. Example: '?q=node&foo=bar&dummy&filter=tid%3A27' will cause three entries 'foo=bar', 'dummy' and 'filter=tid:27'. For 'q', see property drupal:get_q."),
     'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
 
@@ -45,7 +45,7 @@ function themekey_system_themekey_properties() {
   );
 
   $attributes['system:cookie'] = array(
-    'description' => t("System: Cookie - Every single cookie and it's value if present will be formatted like 'COOKIE_NAME=COOKIE_VALUE'"),
+    'description' => t("System: Cookie - Every single cookie and its value if present will be formatted like 'COOKIE_NAME=COOKIE_VALUE'"),
     'page cache' => THEMEKEY_PAGECACHE_UNSUPPORTED,
   );
 
@@ -84,7 +84,7 @@ function themekey_system_themekey_properties() {
   );
 
   $attributes['system:user_agent'] = array(
-    'description' => t("System: 'HTTP_USER_AGENT' - Contents of the User-Agent: header from the current request, if there is one. This is a string denoting the user agent being which is accessing the page. A typical example is: Mozilla/4.5 [en] (X11; U; Linux 2.2.9 i586)."),
+    'description' => t("System: 'HTTP_USER_AGENT' - Contents of the User-Agent: header from the current request, if there is one. This is a string denoting the user agent which is accessing the page. A typical example is: Mozilla/4.5 [en] (X11; U; Linux 2.2.9 i586)."),
     'page cache' => THEMEKEY_PAGECACHE_UNSUPPORTED,
   );
 
@@ -133,12 +133,12 @@ function themekey_system_themekey_properties() {
   );
 
   $attributes['system:dummy'] = array(
-    'description' => t("System: Dummy - Dummy property. Value is allways 'dummy'"),
+    'description' => t("System: Dummy - Dummy property. Value is always 'dummy'"),
     'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
 
   $attributes['system:session'] = array(
-    'description' => t("System: Session - Every single session parameter and it's value if value is present and a simple type (string, integer, boolean). Booleans are represented as integers '1' as TRUE and '0' as FALSE."),
+    'description' => t("System: Session - Every single session parameter and its value, if a value is present and a simple type (string, integer, boolean). Booleans are represented as integers; '1' as TRUE and '0' as FALSE."),
     'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
 
@@ -150,7 +150,7 @@ function themekey_system_themekey_properties() {
 
   $attributes['drupal:path'] = array(
     'description' => t('Drupal: Drupal path like "node/add/story" or path alias with support for wildcards.<br />
-Query parameters are stripped off before the path gets examined. P.e. "node/add/story?destination=node" becomes "node/add/story" first. If you want to access query parameters have a look at property system:query_param provided by !link.<br />
+Query parameters are stripped off before the path gets examined. P.e. "node/add/story?destination=node" becomes "node/add/story" first. If you want to access query parameters, have a look at the system:query_param property provided by !link.<br />
 Wildcard characters are "#" for numeric parts and "%" for all characters. To match conditions against a certain part, use an identifier with the wildcard. For example "comment/reply/#xyz" matches all paths with "comment/reply" and a numeric third argument. You can then specify conditions for every wildcard argument using the property "drupal:path:wildcard" and the identifier you choose ("xyz" in this example).<br />
 These are the possible wildcard replacements for foo/bar/42/test.html:', array('!link' => l(t('!path', array('!path' => 'ThemeKey Properties')), 'http://drupal.org/project/themekey_properties'))) .
 '<pre>
@@ -201,18 +201,18 @@ foo
     'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
   $attributes['drupal:path:wildcard'] = array(
-    'description' => t('Wildcard of "drupal:path". See explaination of "drupal:path" for details.'),
+    'description' => t('Wildcard of "drupal:path". See explanation of "drupal:path" for details.'),
     'validator' => 'themekey_validator_wildcard',
     'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
   $attributes['drupal:get_q'] = array(
-    'description' => t('Drupal: $_GET[\'q\'] - Current value of drupal\'s query parameter "q"'),
+    'description' => t('Drupal: $_GET[\'q\'] - Current value of Drupal\'s query parameter "q"'),
     'validator' => '',
     'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
 
   $attributes['drupal:base_path'] = array(
-    'description' => t("Drupal: Base path - If Drupal is installed in a subdirectory the base path will be '/[subdirectory]/', otherwise just '/'."),
+    'description' => t("Drupal: Base path - If Drupal is installed in a subdirectory, the base path will be '/[subdirectory]/', otherwise just '/'."),
     'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
 
@@ -435,7 +435,7 @@ function themekey_dummy2time($dummy) {
  * dst: system:user_browser
  *
  * @param $dummy
- *   string containing current value of ThemeKey property system:dummy
+ *   string containing current value of the ThemeKey property, system:dummy
  *
  * @return
  *   current user's browser as string
