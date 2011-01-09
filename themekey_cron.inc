@@ -10,10 +10,10 @@
  */
 
 /**
- * Checks rules containing time based properties when cron runs.
+ * Checks rules containing time-based properties when cron runs.
  * ThemeKey will carefully clean up the page cache if necessary
  * to provide the right theme to anonymous users automatically,
- * p.e. a Christmas theme.
+ * e.g., a Christmas theme.
  */
 function themekey_cron_clear_page_cache() {
   $clear_page_cache = FALSE;

@@ -14,10 +14,10 @@ Sponsor: Cocomore AG - http://www.cocomore.com
 Description
 ===========
 
-ThemeKey is meant to be a generic theme switching module. It
+ThemeKey is designed to be a generic theme switching module. It
 allows you to switch the theme for different paths and based
 on object properties (e.g. node field values). It can also be
-easily extended to support additional paths or properties as
+easily extended to support additional paths or properties, as
 exposed by other modules.
 
 Documentation for users and developers is very sparse at the
@@ -28,13 +28,13 @@ Thanks for your patience :)
 Installation
 ============
 
-1. Place whole themekey folder into your Drupal modules/ or better
+1. Place the entire themekey folder into your Drupal modules/ or better
    sites/x/modules/ directory.
 
 2. Enable the themekey module by navigating to
      administer > modules
 
-3. Bring up themekey configuration screens by navigating to
+3. Bring up the themekey configuration screens by navigating to
      administer > settings > themekey
 
 
@@ -51,7 +51,7 @@ How to use ThemeKey UI on node forms ...
 ThemeKey Properties
 ===================
 
-"ThemeKey Properties" adds additional properties to ThemeKey module.
+"ThemeKey Properties" adds additional properties to the ThemeKey module.
 Download it from http://drupal.org/project/themekey_properties
 
 
