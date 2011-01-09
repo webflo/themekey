@@ -162,6 +162,9 @@ class ThemekeyBrowserDetection {
     if (strpos($useragent, 'windows nt 5.1') !== FALSE) {
       return 'Windows XP';
     }
+    elseif (strpos($useragent, 'windows nt 6.1') !== FALSE) {
+      return 'Windows 7';
+    }
     elseif (strpos($useragent, 'windows nt 6.0') !== FALSE) {
       return 'Windows Vista';
     }

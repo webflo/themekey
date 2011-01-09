@@ -4,6 +4,7 @@ ThemeKey 7.x-1.0-beta1, 2011-xx-xx
 -----------------------------------
 [       ] mkalkbrenner: fixed debug message constraints on settings page
 [#958174] LoMo: Edited English strings
+[#958824] LoMo: Extend themekey_browser_detection to include recognition of Windows 7 as useragent.
 
 
 ThemeKey 7.x-1.0-alpha2, 2010-10-18
