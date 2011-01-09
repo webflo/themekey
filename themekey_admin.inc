@@ -361,7 +361,7 @@ function themekey_rule_chain_form_validate(&$form, $form_state) {
           );
           $errors = $validator($rule);
           foreach ($errors as $element => $msg) {
-            form_set_error('new_item][' . $element, check_plain($msg));
+            form_set_error('new_item][' . $element, filter_xss($msg));
           }
         }
         else {
