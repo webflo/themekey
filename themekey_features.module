@@ -23,7 +23,7 @@ function themekey_features_rule_chain_features_export_options() {
 
   if (!empty($rules)) {
     foreach ($rules as $rule) {
-      $options[md5($rule['string'])] = $rule['string'];
+      $options[md5(serialize($rule))] = $rule['string'];
     }
   }
 
@@ -55,7 +55,7 @@ function themekey_features_rule_chain_features_export_render($module_name, $data
   $keep_rules = array();
 
   foreach ($rules as $rule) {
-    if (in_array(md5($rule['string']), $data)) {
+    if (in_array(md5(serialize($rule)), $data)) {
       $keep_rules[] = $rule;
     }
   }
