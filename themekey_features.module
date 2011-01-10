@@ -2,7 +2,7 @@
 // $Id$
 
 /**
- * Implementation of hook_features_api()
+ * Implementation of hook_features_api().
  */
 function themekey_features_features_api() {
   return array(
@@ -32,7 +32,7 @@ function themekey_features_rule_chain_features_export_options() {
 
 
 /**
- * Implementation of hook_features_export()
+ * Implementation of hook_features_export().
  */
 function themekey_features_rule_chain_features_export($data, &$export, $module_name = '') {
   $export['dependencies']['features'] = 'features';
@@ -48,7 +48,7 @@ function themekey_features_rule_chain_features_export($data, &$export, $module_n
 
 
 /**
- * Implementation of hook_features_export_render()
+ * Implementation of hook_features_export_render().
  */
 function themekey_features_rule_chain_features_export_render($module_name, $data, $export = NULL) {
   $rules = themekey_features_load_rule_childs();
@@ -70,7 +70,7 @@ function themekey_features_rule_chain_features_export_render($module_name, $data
 
 
 /**
- * Implementation of hook_features_rebuild()
+ * Implementation of hook_features_rebuild().
  */
 function themekey_features_rule_chain_features_rebuild($module) {
   module_load_include('inc', 'themekey', 'themekey_build');
@@ -89,13 +89,21 @@ function themekey_features_rule_chain_features_rebuild($module) {
 
 
 /**
- * Implementation of hook_features_revert()
+ * Implementation of hook_features_revert().
  */
 function themekey_features_rule_chain_features_revert($module) {
   return themekey_features_rule_chain_features_rebuild($module);
 }
 
-
+/**
+ * Loads current ThemeKey Rule Chain as array.
+ *
+ * @param $parent
+ *   internal use in recursion
+ *
+ * @return
+ *   serialized ThemeKey Rule Chain as array
+ */
 function themekey_features_load_rule_childs($parent = 0) {
   module_load_include('inc', 'themekey', 'themekey_base');
   module_load_include('inc', 'themekey', 'themekey_build');
@@ -120,6 +128,16 @@ function themekey_features_load_rule_childs($parent = 0) {
 }
 
 
+/**
+ * Takes a serialized ThemeKey Rule Chain as created by
+ * themekey_features_load_rule_childs() and replaces the current
+ * one in the database eith it.
+ *
+ * @param $childs
+ *   serialized ThemeKey Rule Chain as array
+ * @param $parent
+ *   internal use in recursion
+ */
 function themekey_features_save_rule_childs($childs, $parent = 0) {
   module_load_include('inc', 'themekey', 'themekey_build');
 

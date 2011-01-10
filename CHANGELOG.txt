@@ -1,6 +1,6 @@
 // $Id$
 
-ThemeKey 6.x-3.1, 2011-xx-xx
+ThemeKey 6.x-3.1, 2011-01-10
 ----------------------------
 [       ] mkalkbrenner, cspitzlay: fixed signature of help form functions so default value for "collapsed" works
 [#948444] mkalkbrenner: added experimental features support
