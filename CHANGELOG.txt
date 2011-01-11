@@ -7,6 +7,7 @@ ThemeKey 7.x-1.0-beta1, 2011-xx-xx
 [#958824] LoMo: Extend themekey_browser_detection to include recognition of Windows 7 as useragent.
 [#997330] technicolorenvy: fixed formatting of error messages
 [#997330] technicolorenvy: fixed undefined function in themekey.install
+[#1022166] mkalkbrenner: Call to undefined function themekey_invoke_modules() during database update when updating from an old version
 
 
 ThemeKey 7.x-1.0-alpha2, 2010-10-18
