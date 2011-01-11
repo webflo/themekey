@@ -337,15 +337,7 @@ function themekey_update_6202() {
  * Implements hook_update_N().
  */
 function themekey_update_6203() {
-  // calling themekey_rebuild() at this point will cause an error because
-  // modified schema is not yet populated
-  // therefor we show a message
-  drupal_set_message(t("ThemeKey won't work correctly until you click 'Save configuration' at !settings_link. If you don't see a 'Save configuration' button you need to clear your cache first.", array('!settings_link' => l(t("ThemeKey settings"), 'admin/settings/themekey/settings'))), 'error');
-
-  if (module_exists('themekey_ui')) {
-    drupal_set_message(t("ThemeKey UI won't work correctly until click 'Save configuration' at !settings_link. If you don't see a 'Save configuration' button you need to clear your cache first.", array('!settings_link' => l(t("ThemeKey UI settings"), 'admin/settings/themekey/settings/ui'))), 'error');
-  }
-
+  // moved themekey_rebuild() to themekey_update_6300()
   return array();
 }
 
@@ -354,14 +346,7 @@ function themekey_update_6203() {
  * Implements hook_update_N().
  */
 function themekey_update_6300() {
-  if (!defined('THEMEKEY_PAGECACHE_UNSUPPORTED')) {
-    define('THEMEKEY_PAGECACHE_UNSUPPORTED', 0);
-    define('THEMEKEY_PAGECACHE_SUPPORTED', 1);
-    define('THEMEKEY_PAGECACHE_TIMEBASED', 2);
-  }
-
-  module_load_include('inc', 'themekey', 'themekey_build');
-  themekey_rebuild();
+  // moved themekey_rebuild() to themekey_update_6301()
 
   $ret = array();
   db_drop_table($ret, 'themekey_paths');
@@ -379,6 +364,7 @@ function themekey_update_6301() {
     define('THEMEKEY_PAGECACHE_TIMEBASED', 2);
   }
 
+  module_load_include('inc', 'themekey', 'themekey_base');
   module_load_include('inc', 'themekey', 'themekey_build');
   themekey_rebuild();
 
