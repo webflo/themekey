@@ -1,6 +1,6 @@
 // $Id$
 
-ThemeKey 6.x-3.2, 2011-01-xx
+ThemeKey 6.x-3.2, 2011-01-13
 ----------------------------
 [#1022166] mkalkbrenner: Call to undefined function themekey_invoke_modules() during database update when updating from an old version
 
