@@ -63,14 +63,15 @@ function themekey_match_path($condition, &$parameters) {
     return FALSE;
   }
 
+  $get_q = $get_q_to_split = themekey_get_q();
+
   if (!variable_get('themekey_path_case_sensitive', 0)) {
     $condition->value = drupal_strtolower($condition->value);
+    $get_q_to_split = drupal_strtolower($get_q_to_split);
   }
 
   $condition_parts = explode('/', $condition->value);
-
-  $get_q = themekey_get_q();
-  $get_q_parts = explode('/', $get_q);
+  $get_q_parts = explode('/', $get_q_to_split);
 
   $wildcards = themekey_match_path_parts($get_q_parts, $condition_parts);
   if (FALSE === $wildcards && module_exists('path')) {
