@@ -1,5 +1,10 @@
 // $Id$
 
+ThemeKey 6.x-3.3, 2011-xx-xx
+----------------------------
+[#1030268] mkalkbrenner: Toggle "Property drupal:path is case sensitive" does not work; drupal:path is always case sensitive
+
+
 ThemeKey 6.x-3.2, 2011-01-13
 ----------------------------
 [#1022166] mkalkbrenner: Call to undefined function themekey_invoke_modules() during database update when updating from an old version
