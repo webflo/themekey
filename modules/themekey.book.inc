@@ -110,15 +110,17 @@ function themekey_book_get_simple_book_property($nid, $property) {
   static $books = array();
 
   if (!isset($books[$nid])) {
-    $node = new stdClass();
-    $node->nid = $nid;
+    $nodes = array($nid => new stdClass());
 
     // node_load() must not be called from hook_init().
-    // Therefore we have to execute SQL here using book's hook_nodeapi().
-    $info = book_nodeapi($node, 'load', NULL, NULL);
+    // Therefore we have to execute SQL here using book's hook_node_load().
+    book_node_load($nodes, NULL);
 
-    if (!empty($info['book'])) {
-      $books[$nid] = $info['book'];
+    if (isset($nodes[$nid]->book)) {
+      $books[$nid] = $nodes[$nid]->book;
+    }
+    else {
+      $books[$nid] = array();
     }
   }
 
