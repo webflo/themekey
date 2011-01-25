@@ -3,6 +3,7 @@
 ThemeKey 6.x-3.3, 2011-xx-xx
 ----------------------------
 [#1030268] mkalkbrenner: Toggle "Property drupal:path is case sensitive" does not work; drupal:path is always case sensitive
+[#1038554] mkalkbrenner: Fixed Warning: First argument is expected to be a valid callback, 'theme_themekey_ui_theme_select_form' was given...
 
 
 ThemeKey 6.x-3.2, 2011-01-13

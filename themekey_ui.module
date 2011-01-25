@@ -138,9 +138,11 @@ function themekey_ui_author2theme($nid) {
 function themekey_ui_theme() {
   return array(
     'themekey_ui_table' => array(
+      'file' => 'themekey_ui_admin.inc',
       'arguments' => array('form' => NULL),
     ),
     'themekey_ui_theme_select_form' => array(
+      'file' => 'themekey_ui_admin.inc',
       'arguments' => array('form' => NULL),
     ),
   );
