@@ -45,7 +45,7 @@ function themekey_debug_properties() {
         $links = array();
         foreach ($values as $single_value) {
           // Don't use the l() function at this early stage of bootstrapping because it will initialize the theme engine. Use url() instead.
-          $links[] = '<a href="' . url('admin/config/themekey', array('fragment' => 'themekey_new_rule', 'query' => array('property' => $property, 'value' => $single_value))) . '">' . $single_value . '</a>';
+          $links[] = '<a href="' . url('admin/config/user-interface/themekey', array('fragment' => 'themekey_new_rule', 'query' => array('property' => $property, 'value' => $single_value))) . '">' . $single_value . '</a>';
         }
 
         $value = implode('<br />', $links);
