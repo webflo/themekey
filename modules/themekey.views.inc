@@ -10,21 +10,27 @@ function themekey_views_themekey_properties() {
   // Attributes of properties
   $attributes = array();
 
-  $attributes['views:vid'] = array(
-    'description' => t('Views: VID - The vid of a view (vid)'),
-    'validator' => 'themekey_validator_ctype_digit',
-    'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
-  );
+  if (module_exists('views')) {
 
-  // Mapping functions
-  $maps = array();
-  $maps[] = array(
-    'src' => 'drupal:get_q',
-    'dst' => 'views:vid',
-    'callback' => 'themekey_views_vid2getq',
-  );
+    $attributes['views:vid'] = array(
+      'description' => t('Views: VID - The vid of a view (vid)'),
+      'validator' => 'themekey_validator_ctype_digit',
+      'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
+    );
 
-  return array('attributes' => $attributes, 'maps' => $maps);
+    // Mapping functions
+    $maps = array();
+    $maps[] = array(
+      'src' => 'drupal:get_q',
+      'dst' => 'views:vid',
+      'callback' => 'themekey_views_vid2getq',
+    );
+
+    $return = array('attributes' => $attributes, 'maps' => $maps);
+
+  }
+
+  return $return;
 }
 
 
