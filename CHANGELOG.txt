@@ -11,6 +11,7 @@ ThemeKey 7.x-1.0-beta1, 2011-xx-xx
 [#1030268] mkalkbrenner: Toggle "Property drupal:path is case sensitive" does not work; drupal:path is always case sensitive
 [#1036138] mkalkbrenner: book_nodeapi() is not used on D7 : fatal error
 [        ] mkalkbrenner: created basic test framwork for further simple Tests
+[#731728] carstenmueller: added new property views:vid
 
 
 ThemeKey 7.x-1.0-alpha2, 2010-10-18
