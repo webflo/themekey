@@ -111,25 +111,27 @@ function themekey_features_load_rule_childs($parent = 0) {
 
   $rules = array();
 
-
-
   if ($result = db_query("SELECT id FROM {themekey_properties} WHERE parent = :parent ORDER BY weight", array(':parent' => $parent))) {
-    while ($item = db_fetch_array($result)) {
+
+    foreach ($result as $record) {
+
       // we have to load the rule again using themekey_rule_get() which applies some transformations
-      $rule = themekey_rule_get($item['id']);
-      if ('drupal:path' != $rule['property']) {
+      $rule = themekey_rule_get($record->id);
+      if ('drupal:path' != $rule->property) {
         themekey_complete_path($rule);
       }
-      unset($rule['id']);
-      unset($rule['parent']);
-      unset($rule['weight']);
+      unset($rule->id);
+      unset($rule->parent);
+      unset($rule->weight);
 
       $rules[] = array(
         'rule' => $rule,
-        'string' => themekey_format_rule_as_string($item['id']),
-        'childs' => themekey_features_load_rule_childs($item['id']),
+        'string' => themekey_format_rule_as_string($record->id),
+        'childs' => themekey_features_load_rule_childs($record->id),
       );
+
     }
+
   }
 
   return $rules;
