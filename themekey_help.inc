@@ -104,7 +104,7 @@ function themekey_help_examples_form($form, &$form_state, $collapsed) {
     '#type' => 'fieldset',
     '#title' => t('Set a special theme for site administrator'),
     '#collapsible' => TRUE,
-    '#collapsed' => $form['themekey_help_examples']['#collapsed'],
+    '#collapsed' => TRUE,
   );
 
   $form['themekey_help_examples']['Set a special theme for site administrator']['item'] = array(
@@ -121,7 +121,7 @@ Value: 1
     '#type' => 'fieldset',
     '#title' => 'TODO: add some examples using drupal:path and drupal:path:wildcard',
     '#collapsible' => TRUE,
-    '#collapsed' => $form['themekey_help_examples']['#collapsed'],
+    '#collapsed' => TRUE,
   );
 
   $form['themekey_help_examples']['TODO: add some examples using drupal:path and drupal:path:wildcard']['item'] = array(
@@ -134,7 +134,7 @@ Value: 1
     '#type' => 'fieldset',
     '#title' => t('Select a theme for Firefox 3.0.x, but not Firefox 3.5.x'),
     '#collapsible' => TRUE,
-    '#collapsed' => $form['themekey_help_examples']['#collapsed'],
+    '#collapsed' => TRUE,
   );
 
   $form['themekey_help_examples']['Select a theme for Firefox 3.0.x, but not Firefox 3.5.x']['item'] = array(
@@ -158,7 +158,7 @@ Value: Mozilla Firefox
     '#type' => 'fieldset',
     '#title' => t('Select a theme for IE 6'),
     '#collapsible' => TRUE,
-    '#collapsed' => $form['themekey_help_examples']['#collapsed'],
+    '#collapsed' => TRUE,
   );
 
   $form['themekey_help_examples']['Select a theme for IE 6']['item'] = array(
@@ -182,7 +182,7 @@ Value: Internet Explorer
     '#type' => 'fieldset',
     '#title' => t('Select a theme for Christmas 2009'),
     '#collapsible' => TRUE,
-    '#collapsed' => $form['themekey_help_examples']['#collapsed'],
+    '#collapsed' => TRUE,
   );
 
   $form['themekey_help_examples']['Select a theme for Christmas 2009']['item'] = array(
@@ -202,7 +202,7 @@ Value: 2009-12-24
     '#type' => 'fieldset',
     '#title' => t('Select a theme for New Year 2010'),
     '#collapsible' => TRUE,
-    '#collapsed' => $form['themekey_help_examples']['#collapsed'],
+    '#collapsed' => TRUE,
   );
 
   $form['themekey_help_examples']['Select a theme for New Year 2010']['item'] = array(
@@ -218,7 +218,7 @@ Value: 2010-01-01
     '#type' => 'fieldset',
     '#title' => t('Select a theme dedicated for use on your start page (front page, index page, ...)'),
     '#collapsible' => TRUE,
-    '#collapsed' => $form['themekey_help_examples']['#collapsed'],
+    '#collapsed' => TRUE,
   );
 
   $form['themekey_help_examples']['Select a theme dedicated for your start page (front page, index page, ...)']['item'] = array(
@@ -258,7 +258,7 @@ function themekey_help_properties_form($form, &$form_state, $collapsed) {
       '#type' => 'fieldset',
       '#title' => check_plain($property),
       '#collapsible' => TRUE,
-      '#collapsed' => $collapsed,
+      '#collapsed' => TRUE,
     );
 
     $form['themekey_help_properties'][$property]['item'] = array(
