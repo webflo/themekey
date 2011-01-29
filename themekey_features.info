@@ -1,0 +1,10 @@
+; $Id$
+
+name = "ThemeKey Features (Experimental!)"
+description = "Integrates ThemeKey with Features. Warning! Don't use in production! Highly Experimental!"
+core = 7.x
+dependencies[]= themekey
+dependencies[]= features
+package = ThemeKey
+
+
