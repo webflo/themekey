@@ -9,7 +9,7 @@ function themekey_features_features_api() {
     'themekey_features_rule_chain' => array(
       'name' => t('ThemeKey Rule Chain'),
       'default_hook' => 'themekey_features_rule_chain_import',
-    ),
+  ),
   );
 }
 
@@ -61,9 +61,16 @@ function themekey_features_rule_chain_features_export_render($module_name, $data
   }
 
   $code = array();
+  $code[] = "if (!defined('THEMEKEY_PAGECACHE_UNSUPPORTED')) {
+    define('THEMEKEY_PAGECACHE_UNSUPPORTED', 0);
+    define('THEMEKEY_PAGECACHE_SUPPORTED', 1);
+    define('THEMEKEY_PAGECACHE_TIMEBASED', 2);
+  }";
   $code[] = '$rules = ' . features_var_export($keep_rules) . ';';
   $code[] = '';
   $code[] = 'return $rules;';
+
+
 
   return array('themekey_features_rule_chain_import' => implode("\n", $code));
 }
