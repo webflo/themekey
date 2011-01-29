@@ -24,11 +24,36 @@ class ThemekeyWebTestCase extends DrupalWebTestCase {
 
     $this->privileged_user = $this->drupalCreateUser(array('administer theme assignments', 'administer themekey settings'));
     $this->drupalLogin($this->privileged_user);
+    theme_enable(array('garland'));
   }
 
   public function testThemekeybasic() {
-    $this->assertFalse(FALSE, 'Dummy test');
+    // load front page
+    $this->drupalGet('');
+    // theme is bartik
+    $this->assertTheme('bartik');
+    // create ThemeKey Rule: system:dummy = dummy >>> garland
+    $this->addThemeKeyRule('system:dummy', '=', 'dummy', 'garland');
+    // load front page again
+    $this->drupalGet('');
+    // theme is garland
+    $this->assertTheme('garland');
   }
 
+  public function assertTheme($theme) {
+    $this->assertRaw('themes/' . $theme, 'current theme is ' . $theme);
+  }
+
+  public function addThemeKeyRule($property, $operator, $value, $theme, $enabled = '1', $wildcard = '') {
+    $edit = array(
+      'new_item[property]' => $property,
+      'new_item[wildcard]' => $wildcard,
+      'new_item[operator]' => $operator,
+      'new_item[value]' => $value,
+      'new_item[theme]' => $theme,
+      'new_item[enabled]' => $enabled,
+    );
+    $this->drupalPost('admin/config/user-interface/themekey/properties', $edit, t('Save configuration'));
+  }
 }
 
