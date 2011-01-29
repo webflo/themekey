@@ -113,7 +113,7 @@ function themekey_debug_init() {
       global $theme;
       $custom_theme = &drupal_static('themekey_custom_theme', '');
       if (!empty($custom_theme) && 'default' != $custom_theme) {
-        if($theme != $custom_theme) {
+        if ($theme != $custom_theme) {
           themekey_set_debug_message('Theme switching to custom theme "%custom_theme" did not work because theme has been set to "%theme" by another module.', array('%custom_theme' => $custom_theme, '%theme' => $theme), TRUE, TRUE);
         }
       }
