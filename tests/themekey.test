@@ -1,5 +1,12 @@
 <?php
 
+// $Id$
+
+/**
+ * @file
+ * Implements tests for the theme switching rules.
+ */
+
 
 class ThemekeyWebTestCase extends DrupalWebTestCase {
   protected $privileged_user;
