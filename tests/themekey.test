@@ -47,6 +47,45 @@ class ThemekeyWebTestCase extends DrupalWebTestCase {
     $this->assertTheme('garland');
   }
 
+
+  /**
+   * add multiple properties
+   * @param array $properties
+   *  - property: the property
+   *  - operator: the operator for the rule
+   *  - value: the value
+   *  - url: the url to call (array)
+   */
+  public function multiplePropertyTest($properties_array) {
+
+    if (!empty($properties_array)) {
+      foreach ($properties_array as $key => $property) {
+
+        if (empty($property['url']['path'])) {
+          $property['path'] = '<front>';
+        }
+        if (empty($property['url']['options'])) {
+          $property['url']['options'] = array();
+        }
+
+        debug($property['property'] . $property['operator'], $property['value']);
+
+        // load page
+        $this->drupalGet($property['url']['path'], $property['url']['options']);
+        // theme is bartik
+        $this->assertTheme('bartik');
+        // create ThemeKey Rule
+        $this->addThemeKeyRule($property['property'], $property['operator'], $property['value'], 'garland');
+        // load page
+        $this->drupalGet($property['url']['path'], $property['url']['options']);
+        // theme is garland
+        $this->assertTheme('garland');
+
+      }
+    }
+
+  }
+
   public function assertTheme($theme) {
     $this->assertRaw('themes/' . $theme, 'current theme is ' . $theme);
   }
