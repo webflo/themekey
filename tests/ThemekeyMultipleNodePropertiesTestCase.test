@@ -40,34 +40,69 @@ class ThemekeyMultipleNodePropertiesTestCase extends ThemekeyWebTestCase {
       'url' => array('path' => 'node/' . $node->nid),
     );
 
-    // CREATE RULES
-    if (!empty($propertiesArray as $key => $propertyArray)) {
-      // create ThemeKey Rule
-      $this->addThemeKeyRule($propertyArray['property'], $propertyArray['operator'], $propertyArray['value'], $propertyArray['theme']);
-    }
-
     // CHECK DEFAULT THEME  = BARTIK
     // load page
-    $this->drupalGet($property['url']['path'], $property['url']['options']);
+    $this->drupalGet('node/' . $node->nid, array());
     // theme is bartik
     $this->assertTheme('bartik');
 
-    // CHECK RULES
-    if (!empty($propertiesArray as $key => $propertyArray)) {
-
-      if (empty($propertyArray['url']['path'])) {
-        $propertyArray['path'] = '<front>';
+    // CREATE RULES
+    if (!empty($propertiesArray)) {
+      foreach ($propertiesArray as $key => $propertyArray) {
+        // create ThemeKey Rule
+        $this->addThemeKeyRule($propertyArray['property'], $propertyArray['operator'], $propertyArray['value'], $propertyArray['theme']);
       }
-      if (empty($propertyArray['url']['options'])) {
-        $propertyArray['url']['options'] = array();
-      }
-
-      // load page
-      $this->drupalGet($propertyArray['url']['path'], $propertyArray['url']['options']);
-      // theme is garland
-      $this->assertTheme('garland');
-
     }
+
+
+    $rules = themekey_load_rules();
+
+    if (!empty($rules)) {
+      $last_rule = array();
+      $cntr = 0;
+      foreach ($rules as $key => $rule) {
+        if ($key > 1) {
+          $cntr++;
+          $rule['parent'] = $last_rule['id'];
+          $rule['depth'] = $cntr;
+          debug($rule);
+          themekey_rule_set($rule);
+          debug($rule);
+        }
+
+        $last_rule = $rule;
+      }
+    }
+
+
+    // TODO RULES ARE NOT SAVED CORRECTLY - DEPTH AND PARENT ARE NOT SET FOR SECOND RULE !!
+
+    cache_clear_all('*', 'cache_page', TRUE);
+    themekey_rebuild();
+
+    $rules = themekey_load_rules();
+
+    debug($rules, 'Testing Rules');
+
+
+    // CHECK RULES
+//    if (!empty($propertiesArray)) {
+//
+//      foreach ($propertiesArray as $key => $propertyArray) {
+//        if (empty($propertyArray['url']['path'])) {
+//          $propertyArray['path'] = '<front>';
+//        }
+//        if (empty($propertyArray['url']['options'])) {
+//          $propertyArray['url']['options'] = array();
+//        }
+//
+//        // load page
+//        $this->drupalGet($propertyArray['url']['path'], $propertyArray['url']['options']);
+//        // theme is garland
+//        $this->assertTheme('garland');
+//      }
+//
+//    }
 
 
   }
