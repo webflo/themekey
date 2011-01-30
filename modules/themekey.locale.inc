@@ -26,7 +26,7 @@ function themekey_locale_themekey_properties() {
   // Attributes for properties
   $attributes = array();
   $attributes['locale:language'] = array(
-    'description' => t('Locale: Language - The code of the current site language, formatted like "en" or "de". See !link for the codes of your enabled languages',
+    'description' => t('Locale: Language - The code of the current site language, formatted like "en" or "de" or "neutral". See !link for the codes of your enabled languages',
       array('!link' => l(t('!path', array('!path' => 'admin/config/language')), 'admin/config/language'))),
     'validator' => 'themekey_validator_language',
     'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
@@ -43,7 +43,12 @@ function themekey_locale_themekey_global() {
   global $language;
 
   $parameters = array();
-  $parameters['locale:language'] = !empty($language->language) ? $language->language : NULL;
+  if (empty($language->language) || LANGUAGE_NONE == $language->language) {
+    $parameters['locale:language'] = 'neutral';
+  }
+  else {
+    $parameters['locale:language'] = $language->language;
+  }
 
   return $parameters;
 }

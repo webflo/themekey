@@ -176,8 +176,8 @@ function themekey_validator_language($rule) {
   switch ($rule['operator']) {
     case '=':
       $languages = language_list();
-      // add 'und' to the list of languages
-      $languages['und'] = TRUE;
+      // add 'neutral' to the list of languages
+      $languages['neutral'] = TRUE;
       if (!array_key_exists($rule['value'], $languages)) {
         $errors['value'] = t('Possible values are %languages', array('%languages' => '"' . implode('", "', array_keys($languages)) . '"'));
       }

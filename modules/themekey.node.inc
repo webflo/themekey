@@ -68,7 +68,7 @@ function themekey_node_themekey_properties() {
     'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
   );
   $attributes['node:language'] = array(
-    'description' => t('Node: Language - The code of the selected language of a node (formatted like "en" or "de") or "und" ("undefined"). See !link for the codes of your enabled languages',
+    'description' => t('Node: Language - The code of the selected language of a node (formatted like "en" or "de") or "neutral". See !link for the codes of your enabled languages',
       array('!link' => l(t('!path', array('!path' => 'admin/config/language')), 'admin/config/language'))),
     'validator' => 'themekey_validator_language',
     'page cache' => THEMEKEY_PAGECACHE_SUPPORTED,
@@ -223,12 +223,12 @@ function themekey_node_get_simple_node_property($nid, $property) {
                    ->execute()
                    ->fetchObject();
   }
-  
+
   if (isset($nodes[$nid]->$property)) {
     return $nodes[$nid]->$property;
   }
   return NULL;
-  
+
 }
 
 
@@ -289,8 +289,8 @@ function themekey_node_nid2created($nid) {
  */
 function themekey_node_nid2language($nid) {
   $language = themekey_node_get_simple_node_property($nid, 'language');
-  if (empty($language)) {
-    $language = LANGUAGE_NONE;
+  if (empty($language) || LANGUAGE_NONE == $language) {
+    $language = 'neutral';
   }
   return $language;
 }

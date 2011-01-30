@@ -28,7 +28,7 @@ class ThemekeyNodePropertiesTestCase extends ThemekeyWebTestCase {
 
   public function testPropertyNodeLanguage() {
     $node = $this->drupalCreateNode(array('language' => LANGUAGE_NONE));
-    $this->simplePropertyTest('node:language', '=', LANGUAGE_NONE, array('path' => 'node/' . $node->nid));
+    $this->simplePropertyTest('node:language', '=', 'neutral', array('path' => 'node/' . $node->nid));
   }
 
 //  public function testPropertyNodeLanguageEnglish() {
