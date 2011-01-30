@@ -28,7 +28,7 @@ class ThemekeyWebTestCase extends DrupalWebTestCase {
   }
 
   public function simplePropertyTest($property, $operator, $value, $url = array()) {
-    debug($property . $operator, $value);
+    debug($property . $operator . $value, 'Testing Rule');
 
     $url += array(
       'path' => '<front>',
