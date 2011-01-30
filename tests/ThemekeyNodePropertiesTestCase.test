@@ -27,8 +27,8 @@ class ThemekeyNodePropertiesTestCase extends ThemekeyWebTestCase {
   }
 
   public function testPropertyNodeLanguage() {
-    $node = $this->drupalCreateNode(array('language' => 'und'));
-    $this->simplePropertyTest('node:language', '=', 'und', array('path' => 'node/' . $node->nid));
+    $node = $this->drupalCreateNode(array('language' => LANGUAGE_NONE));
+    $this->simplePropertyTest('node:language', '=', LANGUAGE_NONE, array('path' => 'node/' . $node->nid));
   }
 
 //  public function testPropertyNodeLanguageEnglish() {
@@ -72,4 +72,5 @@ class ThemekeyNodePropertiesTestCase extends ThemekeyWebTestCase {
     $node = $this->drupalCreateNode(array('title' => 'Node title test'));
     $this->simplePropertyTest('node:title', '=', 'Node title test', array('path' => 'node/' . $node->nid));
   }
+
 }

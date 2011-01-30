@@ -292,7 +292,7 @@ function themekey_node_nid2created($nid) {
 function themekey_node_nid2language($nid) {
   $language = themekey_node_get_simple_node_property($nid, 'language');
   if (empty($language)) {
-    $language = 'und';
+    $language = LANGUAGE_NONE;
   }
   return $language;
 }

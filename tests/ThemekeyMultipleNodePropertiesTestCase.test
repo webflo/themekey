@@ -1,0 +1,74 @@
+<?php
+
+// $Id$
+
+/**
+ * @file
+ * Implements tests for the theme switching rules.
+ */
+
+class ThemekeyMultipleNodePropertiesTestCase extends ThemekeyWebTestCase {
+  public static function getInfo() {
+    return array(
+      'name' => 'Themekey Multiple Node Properties',
+      'description' => 'Test multiple themekey node properties (node:).',
+      'group' => 'Themekey',
+    );
+  }
+
+
+  public function testMultipleProperties() {
+    $node = $this->drupalCreateNode(array('title' => 'Node title test', 'uid' => 1));
+
+    $propertiesArray = array();
+
+    // NODE:TITLE
+    $propertiesArray[] = array(
+      'property' => 'node:title',
+      'operator' => '=',
+      'value' => 'Node title test',
+      'theme' => 'garland',
+      'url' => array('path' => 'node/' . $node->nid),
+    );
+
+    // node:uid
+    $propertiesArray[] = array(
+      'property' => 'node:uid',
+      'operator' => '=',
+      'value' => '1',
+      'theme' => 'garland',
+      'url' => array('path' => 'node/' . $node->nid),
+    );
+
+    // CREATE RULES
+    if (!empty($propertiesArray as $key => $propertyArray)) {
+      // create ThemeKey Rule
+      $this->addThemeKeyRule($propertyArray['property'], $propertyArray['operator'], $propertyArray['value'], $propertyArray['theme']);
+    }
+
+    // CHECK DEFAULT THEME  = BARTIK
+    // load page
+    $this->drupalGet($property['url']['path'], $property['url']['options']);
+    // theme is bartik
+    $this->assertTheme('bartik');
+
+    // CHECK RULES
+    if (!empty($propertiesArray as $key => $propertyArray)) {
+
+      if (empty($propertyArray['url']['path'])) {
+        $propertyArray['path'] = '<front>';
+      }
+      if (empty($propertyArray['url']['options'])) {
+        $propertyArray['url']['options'] = array();
+      }
+
+      // load page
+      $this->drupalGet($propertyArray['url']['path'], $propertyArray['url']['options']);
+      // theme is garland
+      $this->assertTheme('garland');
+
+    }
+
+
+  }
+}
