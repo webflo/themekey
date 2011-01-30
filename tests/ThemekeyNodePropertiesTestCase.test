@@ -31,10 +31,10 @@ class ThemekeyNodePropertiesTestCase extends ThemekeyWebTestCase {
     $this->simplePropertyTest('node:language', '=', 'und', array('path' => 'node/' . $node->nid));
   }
 
-  public function testPropertyNodeLanguageEnglish() {
-    $node = $this->drupalCreateNode(array('language' => 'en'));
-    $this->simplePropertyTest('node:language', '=', 'en', array('path' => 'node/' . $node->nid));
-  }
+//  public function testPropertyNodeLanguageEnglish() {
+//    $node = $this->drupalCreateNode(array('language' => 'en'));
+//    $this->simplePropertyTest('node:language', '=', 'en', array('path' => 'node/' . $node->nid));
+//  }
 
   public function testPropertyNodeNid() {
     $node = $this->drupalCreateNode();
