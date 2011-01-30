@@ -6,7 +6,7 @@
  * @file
  * Implements tests for the theme switching rules.
  */
- 
+
 class ThemekeyNodePropertiesTestCase extends ThemekeyWebTestCase {
   public static function getInfo() {
     return array(
@@ -15,7 +15,7 @@ class ThemekeyNodePropertiesTestCase extends ThemekeyWebTestCase {
       'group' => 'Themekey',
     );
   }
-  
+
   public function testPropertyNodeChanged() {
     $node = $this->drupalCreateNode();
     $this->simplePropertyTest('node:changed', '=', $node->changed, array('path' => 'node/' . $node->nid));
@@ -25,17 +25,22 @@ class ThemekeyNodePropertiesTestCase extends ThemekeyWebTestCase {
     $node = $this->drupalCreateNode();
     $this->simplePropertyTest('node:created', '=', $node->changed, array('path' => 'node/' . $node->nid));
   }
-  
+
   public function testPropertyNodeLanguage() {
     $node = $this->drupalCreateNode(array('language' => 'und'));
-    $this->simplePropertyTest('node:language', '=', $node->language, array('path' => 'node/' . $node->nid));
+    $this->simplePropertyTest('node:language', '=', 'und', array('path' => 'node/' . $node->nid));
   }
-  
+
+  public function testPropertyNodeLanguageEnglish() {
+    $node = $this->drupalCreateNode(array('language' => 'en'));
+    $this->simplePropertyTest('node:language', '=', 'en', array('path' => 'node/' . $node->nid));
+  }
+
   public function testPropertyNodeNid() {
     $node = $this->drupalCreateNode();
     $this->simplePropertyTest('node:nid', '=', $node->nid, array('path' => 'node/' . $node->nid));
   }
-  
+
   public function testPropertyNodeVid() {
     $node = $this->drupalCreateNode();
     $node->revision = TRUE;
