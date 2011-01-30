@@ -16,6 +16,7 @@ ThemeKey 7.x-1.0-beta1, 2011-xx-xx
 [        ] carstenmueller: fixed wrong uri in themekey debug properties to set new rule
 [#1045094] webflo: more SimpleTests
 [        ] carstenmueller: fixed undefined language from 'neutral' to LANGUAGE_NONE ('und')
+[        ] pixeltank: ported some DB statements to the new API
 
 
 ThemeKey 7.x-1.0-alpha2, 2010-10-18

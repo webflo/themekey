@@ -216,21 +216,19 @@ function themekey_node_get_simple_node_property($nid, $property) {
   static $nodes = array();
 
   if (!isset($nodes[$nid])) {
-    // node_load() must not be called from hook_init(). Therefore, we have to execute SQL here
-    $result = db_query('SELECT * FROM {node} WHERE nid = :nid', array(':nid' => $nid));
-
-    foreach ($result as $item) {
-      $nodes[$nid] = clone $item;
-    }
-
+    //node_load() must not be called from hook_init(). Therefore, we have to execute SQL here
+    $nodes[$nid] = db_select('node', 'n')
+                   ->fields('n')
+                   ->condition('n.nid', $nid)
+                   ->execute()
+                   ->fetchObject();
   }
-
+  
   if (isset($nodes[$nid]->$property)) {
     return $nodes[$nid]->$property;
   }
-  else {
-    return NULL;
-  }
+  return NULL;
+  
 }
 
 

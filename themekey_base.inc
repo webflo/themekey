@@ -241,7 +241,15 @@ function themekey_match_rule_childs(&$parameters, $parent = 0) {
     return $child_lookups[$parent];
   }
 
-  if ($result = db_query("SELECT * FROM {themekey_properties} WHERE enabled = :enabled AND parent = :parent AND value <> :value ORDER BY weight", array(':enabled' => 1, ':parent' => $parent, ':value' => ''))) {
+  if ($result = db_select('themekey_properties', 'tp')
+  ->fields('tp')
+  ->condition('enabled', 1)
+  ->condition('parent', $parent)
+  ->condition('value', '', '<>')
+  ->orderBy('weight', 'asc')
+  ->execute()
+  ){
+
     $num_childs = 0;
 
     foreach ($result as $item) {
@@ -471,8 +479,13 @@ function themekey_check_theme_enabled($theme, $settings_page = FALSE) {
   }
 
   if (empty($themes_enabled)) {
-    if ($result = db_query("SELECT name FROM {system} WHERE type = :type AND status = :status", array(':type' => 'theme', ':status' => 1))) {
 
+    if($result = db_select('system', 's')
+      ->fields('s', array('name'))
+      ->condition('type', 'theme')
+      ->condition('status', '1')
+      ->execute()
+    ){
       foreach ($result as $row) {
         $themes_enabled[] = $row->name;
       }

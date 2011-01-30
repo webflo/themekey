@@ -288,8 +288,12 @@ function themekey_load_rules($parent = 0, $depth = 0) {
     return $properties;
   }
 
-  $query = 'SELECT * FROM {themekey_properties} WHERE parent = %d ORDER BY weight';
-  $result = db_query('SELECT * FROM {themekey_properties} WHERE parent = :parent ORDER BY weight', array(':parent' => $parent));
+  $result = db_select('themekey_properties', 'tp')
+	  ->fields('tp')
+	  ->condition('parent', $parent)
+	  ->orderBy('weight', 'asc')
+	  ->execute();
+
   foreach ($result as $item) {
     if ('drupal:path' == $item->property) {
       themekey_complete_path($item);
@@ -336,7 +340,10 @@ function themekey_rule_set(&$item) {
     $txn = db_transaction();
     
     // new entry should be added at the end of the chain
-    $weight = db_query("SELECT MAX(weight) FROM {themekey_properties}")->fetchField();
+    $result = db_select('themekey_properties', 'tp');
+    $result->addExpression('MAX(weight)', 'weight');
+    $weight = $result->execute()->fetchField();
+
     // if query fails $weight will be FALSE which will cause $item['weight'] to be set to '1'
     $item['weight'] = 1 + $weight;
     drupal_write_record('themekey_properties', $item, array());
@@ -361,8 +368,12 @@ function themekey_rule_del($id) {
   // TRANSACTIONS - SEE http://drupal.org/node/355875
   // The transaction opens here.
   $txn = db_transaction();
-  
-  $num_childs = db_query("SELECT COUNT(*) FROM {themekey_properties} WHERE parent = :parent", array(':parent' => $id))->fetchField();
+
+  $result = db_select('themekey_properties', 'tp');
+  $result->condition('parent',$id);
+  $result->addExpression('COUNT(*)', 'num_childs');
+  $num_childs = $result->execute()->fetchField();	
+
   if (FALSE !== $num_childs) {
     if ($num_childs > 0) {
       drupal_set_message(t('ThemeKey rule could not be deleted because it has children in the chain'), 'error');
@@ -394,8 +405,12 @@ function themekey_rule_del($id) {
  *   the rule as associative array or NULL
  */
 function themekey_rule_get($id) {
-  if ($result = db_query('SELECT * FROM {themekey_properties} WHERE id = :id', array(':id' => $id))) {
-    
+
+    if ($result = db_select('themekey_properties','tp')
+		->fields('tp')
+		->condition('id',$id)
+		->execute() ){	
+
     foreach ($result as $item) {
       if ('drupal:path' == $item->property) {
         themekey_complete_path($item);
@@ -424,7 +439,14 @@ function themekey_rule_get($id) {
  *   - FALSE the rule should be deleted
  */
 function themekey_update_static_rule($property, $state) {
-  $id = db_query("SELECT id FROM {themekey_properties} WHERE property = :property", array(':property' => $property))->fetchField();
+
+  $id = db_select('themekey_properties', 'tp')
+	->fields('tp',array('id'))
+	->condition('property', $property)
+	->execute()
+	->fetchField();
+
+
   if ($state) {
     $item = array(
       'property' => $property,
