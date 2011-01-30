@@ -14,6 +14,7 @@ ThemeKey 7.x-1.0-beta1, 2011-xx-xx
 [#731728] carstenmueller: added new property views:vid
 [#1037902] mkalkbrenner: D7: Errors in help section after installation
 [        ] carstenmueller: fixed wrong uri in themekey debug properties to set new rule
+[#1045094] webflo: more SimpleTests
 
 
 ThemeKey 7.x-1.0-alpha2, 2010-10-18

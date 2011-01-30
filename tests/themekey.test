@@ -27,23 +27,22 @@ class ThemekeyWebTestCase extends DrupalWebTestCase {
     theme_enable(array('garland'));
   }
 
-  public function testPropertySystemDummy() {
-    $this->simplePropertyTest('system:dummy', '=', 'dummy');
-  }
+  public function simplePropertyTest($property, $operator, $value, $url = array()) {
+    debug($property . $operator, $value);
 
-  public function testPropertyDrupalIsFrontPage() {
-    $this->simplePropertyTest('drupal:is_front_page', '=', 'true');
-  }
+    $url += array(
+      'path' => '<front>',
+      'options' => array(),
+    );
 
-  public function simplePropertyTest($property, $operator, $value) {
-    // load front page
-    $this->drupalGet('<front>');
+    // load page
+    $this->drupalGet($url['path'], $url['options']);
     // theme is bartik
     $this->assertTheme('bartik');
     // create ThemeKey Rule
     $this->addThemeKeyRule($property, $operator, $value, 'garland');
-    // load front page again
-    $this->drupalGet('<front>');
+    // load page
+    $this->drupalGet($url['path'], $url['options']);
     // theme is garland
     $this->assertTheme('garland');
   }
@@ -64,4 +63,3 @@ class ThemekeyWebTestCase extends DrupalWebTestCase {
     $this->drupalPost('admin/config/user-interface/themekey/properties', $edit, t('Save configuration'));
   }
 }
-

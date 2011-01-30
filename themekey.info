@@ -15,4 +15,6 @@ files[] = themekey_build.inc
 files[] = themekey_cron.inc
 files[] = modules/themekey_browser_detection.php
 files[] = tests/themekey.test
-
+files[] = tests/ThemekeyDrupalPropertiesTestCase.test
+files[] = tests/ThemekeyNodePropertiesTestCase.test
+files[] = tests/ThemekeySystemPropertiesTestCase.test
