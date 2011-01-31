@@ -14,7 +14,7 @@ ThemeKey 7.x-1.0-beta1, 2011-xx-xx
 [#731728] carstenmueller: added new property views:vid
 [#1037902] mkalkbrenner: D7: Errors in help section after installation
 [        ] carstenmueller: fixed wrong uri in themekey debug properties to set new rule
-[#1045094] webflo: more SimpleTests
+[#1045094] webflo, LoMo: more SimpleTests
 [        ] carstenmueller, mkalkbrenner: set undefined language and LANGUAGE_NONE ('und') to 'neutral'
 [        ] pixeltank: ported some DB statements to the new API
 
