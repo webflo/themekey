@@ -185,6 +185,7 @@ function themekey_ui_theme_select_form(&$form, $title, $description, $default = 
     $form['themekey_ui_themes']['#weight'] = $weight;
   }
 
+  // REVIEW should we hardcode this here?
   // SET GROUP FOR VERTICAL TABS
   $form['themekey_ui_themes']['#group'] = 'additional_settings';
 }
@@ -292,7 +293,6 @@ function theme_themekey_ui_table($form) {
  * @ingroup themeable
  */
 function theme_themekey_ui_theme_select_form($form) {
-  // TODO: Should this theme themekey_ui_theme_select_form be declared in hook_theme()?
   $rows = array();
 
   foreach (element_children($form['form']) as $key) {
