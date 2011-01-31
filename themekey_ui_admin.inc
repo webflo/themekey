@@ -126,7 +126,7 @@ function themekey_ui_settings_form_submit($form, &$form_state) {
  * @param $collapsed
  *   boolean
  */
-function themekey_ui_theme_select_form(&$form, $title, $description, $default = 'default', $weight = NULL, $collapsed = TRUE) {
+function themekey_ui_theme_select_form(&$form, $title, $description, $default = 'default', $weight = NULL, $collapsed = TRUE, $element_key = 'themekey_ui_theme') {
   $themes = list_themes();
   $theme_options = themekey_theme_options();
 
@@ -137,6 +137,7 @@ function themekey_ui_theme_select_form(&$form, $title, $description, $default = 
     '#collapsible' => TRUE,
     '#collapsed' => $collapsed,
     '#theme' => 'themekey_ui_theme_select_form',
+    '#themekey_ui_theme_select_form_element_key' => $element_key,
   );
 
 
@@ -175,7 +176,7 @@ function themekey_ui_theme_select_form(&$form, $title, $description, $default = 
     );
   }
 
-  $form['themekey_ui_themes']['themekey_ui_theme'] = array(
+  $form['themekey_ui_themes'][$element_key] = array(
     '#type' => 'radios',
     '#options' => $options,
     '#default_value' => $default,
@@ -300,7 +301,7 @@ function theme_themekey_ui_theme_select_form($form) {
     if (isset($form['form'][$key]['description']) && is_array($form['form'][$key]['description'])) {
       $row[] = drupal_render($form['form'][$key]['screenshot']);
       $row[] = drupal_render($form['form'][$key]['description']);
-      $row[] = drupal_render($form['form']['themekey_ui_theme'][$key]);
+      $row[] = drupal_render($form['form'][$form['form']['#themekey_ui_theme_select_form_element_key']][$key]);
     }
     $rows[] = $row;
   }
