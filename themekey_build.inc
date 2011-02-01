@@ -334,11 +334,11 @@ function themekey_rule_set(&$item) {
   }
 
   if (empty($item['id'])) {
-    
+
     // TRANSACTIONS - SEE http://drupal.org/node/355875
     // The transaction opens here.
     $txn = db_transaction();
-    
+
     // new entry should be added at the end of the chain
     $result = db_select('themekey_properties', 'tp');
     $result->addExpression('MAX(weight)', 'weight');
@@ -347,12 +347,12 @@ function themekey_rule_set(&$item) {
     // if query fails $weight will be FALSE which will cause $item['weight'] to be set to '1'
     $item['weight'] = 1 + $weight;
     drupal_write_record('themekey_properties', $item, array());
-    
+
   }
   else {
     drupal_write_record('themekey_properties', $item, 'id');
   }
-  
+
   // $txn goes out of scope here, and the entire transaction commits.
 }
 
@@ -364,7 +364,7 @@ function themekey_rule_set(&$item) {
  *   id of the rule to be deleted from database
  */
 function themekey_rule_del($id) {
-  
+
   // TRANSACTIONS - SEE http://drupal.org/node/355875
   // The transaction opens here.
   $txn = db_transaction();
@@ -372,7 +372,7 @@ function themekey_rule_del($id) {
   $result = db_select('themekey_properties', 'tp');
   $result->condition('parent',$id);
   $result->addExpression('COUNT(*)', 'num_childs');
-  $num_childs = $result->execute()->fetchField();	
+  $num_childs = $result->execute()->fetchField();
 
   if (FALSE !== $num_childs) {
     if ($num_childs > 0) {
@@ -390,7 +390,7 @@ function themekey_rule_del($id) {
   else {
     drupal_set_message(t('Error while deleting ThemeKey rule'), 'error');
   }
-  
+
   // $txn goes out of scope here, and the entire transaction commits.
 }
 
@@ -409,7 +409,7 @@ function themekey_rule_get($id) {
     if ($result = db_select('themekey_properties','tp')
 		->fields('tp')
 		->condition('id',$id)
-		->execute() ){	
+		->execute() ){
 
     foreach ($result as $item) {
       if ('drupal:path' == $item->property) {
@@ -417,7 +417,7 @@ function themekey_rule_get($id) {
       }
       return $item;
     }
-    
+
   }
 
   return NULL;
@@ -441,10 +441,10 @@ function themekey_rule_get($id) {
 function themekey_update_static_rule($property, $state) {
 
   $id = db_select('themekey_properties', 'tp')
-	->fields('tp',array('id'))
-	->condition('property', $property)
-	->execute()
-	->fetchField();
+    ->fields('tp',array('id'))
+    ->condition('property', $property)
+    ->execute()
+    ->fetchField();
 
 
   if ($state) {
