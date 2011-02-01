@@ -42,12 +42,14 @@ function themekey_user_profile_help_tutorials(&$form) {
 '<p>' . t('Quick and dirty (screenshots will follow):<ol>
 <li>Install ThemeKey User Profile which is part of the ThemeKey module package</li>
 <li>Assign the permission "Select different theme" to the roles at !link1</li>
-<li>Activate "Add theme option to user profile " at !link2</li>
-<li>Optional: Prioritize the static ThemeKey property "user:profile_triggers_theme" at !link3</li>
+<li>Activate "Add theme option to user profile" at !link2</li>
+<li>Configure "Selectable Thems" at !link3</li>
+<li>Optional: Prioritize the static ThemeKey property "user:profile_triggers_theme" at !link4</li>
 </ol>', array(
       '!link1' => l(t('!path', array('!path' => '/admin/people/permissions')), 'admin/people/permissions'),
       '!link2' => l(t('!path', array('!path' => '/admin/config/user-interface/themekey/settings/ui')), 'admin/config/user-interface/themekey/settings/ui'),
-      '!link3' => l(t('!path', array('!path' => '/admin/config/user-interface/themekey')), 'admin/config/user-interface/themekey'),
+      '!link3' => l(t('!path', array('!path' => '/admin/config/user-interface/themekey/settings/ui')), 'admin/config/user-interface/themekey/settings/ui'),
+      '!link4' => l(t('!path', array('!path' => '/admin/config/user-interface/themekey')), 'admin/config/user-interface/themekey'),
     )) . '</p>',
   );
 
