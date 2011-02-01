@@ -26,6 +26,19 @@ require_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'themekey_ui') . '/th
  * @ingroup forms
  */
 function themekey_ui_settings_form() {
+  themekey_ui_theme_build_select_form(
+    $form,
+    t('Selectable Themes'),
+    t('Select all the the themes that should be provided in theme selectors.'),
+    variable_get('themekey_ui_selectable_themes', array('default')),
+    NULL,
+    TRUE,
+    'themekey_ui_selectable_themes',
+    list_themes(),
+    FALSE);
+
+  $form['themekey_ui_themes']['themekey_ui_selectable_themes']['#type'] = 'checkboxes';
+
   $form['themekey_ui'] = array(
     '#type' => 'fieldset',
     '#title' => t('UI Settings'),
@@ -107,9 +120,9 @@ function themekey_ui_settings_form_submit($form, &$form_state) {
 
 
 /**
- * Adds theme selector to a form
+ * Adds theme selector to a form.
  *
- * @see system_theme_select_form()
+ * @see themekey_ui_theme_build_select_form()
  *
  * @param $form
  *   form array
@@ -125,9 +138,55 @@ function themekey_ui_settings_form_submit($form, &$form_state) {
  *
  * @param $collapsed
  *   boolean
+ *
+ * @param $element_key
+ *   the name of form element
  */
 function themekey_ui_theme_select_form(&$form, $title, $description, $default = 'default', $weight = NULL, $collapsed = TRUE, $element_key = 'themekey_ui_theme') {
   $themes = list_themes();
+  $selectable_themes = variable_get('themekey_ui_selectable_themes', array('default' => t('System default')));
+  foreach (array_keys($themes) as $name) {
+    if (!array_key_exists($name, $selectable_themes) || empty($selectable_themes[$name])) {
+      unset($themes[$name]);
+    }
+  }
+  themekey_ui_theme_build_select_form($form, $title, $description, $default, $weight, $collapsed, $element_key, $themes, /*add_default*/ TRUE);
+}
+
+
+/**
+ * Internal function to add a theme selector to a form.
+ *
+ * The API for contrib modules is provided by
+ * @see themekey_ui_theme_select_form()
+ *
+ * @param $form
+ *   form array
+ *
+ * @param $title
+ *   title as string
+ *
+ * @param $description
+ *   description as string
+ *
+ * @param $weight
+ *   integer
+ *
+ * @param $collapsed
+ *   boolean
+ *
+ * @param $element_key
+ *   the name of form element
+ *
+ * @param $themes
+ *   array of theme names to be provided as
+ *   options in the select form
+ *
+ * @param $add_default
+ *   boolean, TRUE if 'System default' should be
+ *   be provided as options in the select form
+ */
+function themekey_ui_theme_build_select_form(&$form, $title, $description, $default, $weight, $collapsed, $element_key, $themes, $add_default) {
   $theme_options = themekey_theme_options();
 
   $form['themekey_ui_themes'] = array(
@@ -140,14 +199,15 @@ function themekey_ui_theme_select_form(&$form, $title, $description, $default = 
     '#themekey_ui_theme_select_form_element_key' => $element_key,
   );
 
+  if ($add_default) {
+    $form['themekey_ui_themes']['default']['screenshot'] = array();
+    $form['themekey_ui_themes']['default']['description'] = array(
+      '#type' => 'item',
+      '#markup' => t("don't switch the theme"),
+    );
 
-  $form['themekey_ui_themes']['default']['screenshot'] = array();
-  $form['themekey_ui_themes']['default']['description'] = array(
-    '#type' => 'item',
-    '#markup' => t("don't switch the theme"),
-  );
-
-  $options = array('default' => '');
+    $options = array('default' => '');
+  }
 
   foreach ($themes as $info) {
     if (!array_key_exists($info->name, $theme_options)) {
