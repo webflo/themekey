@@ -113,7 +113,11 @@ function themekey_taxonomy_tid2vid($tids) {
   // Using taxonomy API will require to load the node using node_load() which is not allowed in this stage.
   $tids = is_array($tids) ? $tids : array($tids);
   foreach ($tids as $tid) {
-    $vid[] = db_query('SELECT vid FROM {taxonomy_term_data} WHERE tid = :tid', array(':tid' => $tid))->fetchField();
+    $vid[] = db_select('taxonomy_term_data', 't')
+    ->fields('t', array('vid'))
+    ->condition('tid', $tid)
+    ->execute()
+    ->fetchField();
   }
 
   return count($vid) ? $vid : NULL;
@@ -148,15 +152,13 @@ function themekey_taxonomy_vid2vid($node_vid) {
 
     $entities = array();
 
-    $args = array();
-    $sql  = 'SELECT n.* ';
-    $sql .= 'FROM {node_revision} nr ';
-    $sql .= 'INNER JOIN {node} n ON n.nid = nr.nid ';
-    $sql .= 'WHERE nr.vid = :vid';
-    $args[':vid'] = $node_vid;
-    $result = db_query($sql, $args);
-
-    if (!empty($result)) {
+    $query = db_select('node_revision', 'nr');          
+    $query->join('node', 'n', 'n.nid = nr.nid');          
+    $query->fields('n');          
+    $query->condition('nr.vid', $node_vid);
+    $result = $query->execute(); 
+          
+    if ($result->rowCount()) {
       foreach ($result as $item) {
         $item->vid = $node_vid;
         $entities[$item->nid] = $item;
@@ -217,15 +219,13 @@ function themekey_taxonomy_vid2tid($node_vid) {
 
     $entities = array();
 
-    $args = array();
-    $sql  = 'SELECT n.* ';
-    $sql .= 'FROM {node_revision} nr ';
-    $sql .= 'INNER JOIN {node} n ON n.nid = nr.nid ';
-    $sql .= 'WHERE nr.vid = :vid';
-    $args[':vid'] = $node_vid;
-    $result = db_query($sql, $args);
+    $query = db_select('node_revision', 'nr');          
+    $query->join('node', 'n', 'n.nid = nr.nid');          
+    $query->fields('n');          
+    $query->condition('nr.vid', $node_vid);
+    $result = $query->execute(); 
 
-    if (!empty($result)) {
+    if ($result->rowCount()) {
       foreach ($result as $item) {
         $item->vid = $node_vid;
         $entities[$item->nid] = $item;

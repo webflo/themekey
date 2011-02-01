@@ -19,7 +19,11 @@ function themekey_cron_clear_page_cache() {
   $clear_page_cache = FALSE;
   $rules_processed_new = array();
 
-  if ($result = db_query("SELECT * FROM {themekey_properties} WHERE enabled = :enabled", array(':enabled' => 1))) {
+  if ($result = db_select('themekey_properties', 'tp')
+      ->fields('tp')
+      ->condition('enabled', 1)
+      ->execute()
+  ) {
     module_load_include('inc', 'themekey', 'themekey_base');
 
     $rules_processed = variable_get('themekey_cron_rules_processed', array());

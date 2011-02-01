@@ -118,7 +118,12 @@ function themekey_features_load_rule_childs($parent = 0) {
 
   $rules = array();
 
-  if ($result = db_query("SELECT id FROM {themekey_properties} WHERE parent = :parent ORDER BY weight", array(':parent' => $parent))) {
+  if ($result = db_select('themekey_properties', 'tp')
+      ->fields('tp', array('id'))
+      ->condition('parent', $parent)
+      ->orderBy('weight', 'ASC')
+      ->execute()
+  ) {
 
     foreach ($result as $record) {
 

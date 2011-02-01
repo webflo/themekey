@@ -74,6 +74,10 @@ function themekey_comment_themekey_paths() {
  *   or NULL if no value could be mapped
  */
 function themekey_comment_cid2nid($cid) {
-  $nid = db_query('SELECT nid FROM {comments} WHERE cid = :cid', array(':cid' => $cid))->fetchField();
+  $nid = db_select('comments', 'c')
+  ->fields('c', array('nid'))
+  ->condition('cid', $cid)
+  ->execute()
+  ->fetchField();
   return $nid ? $nid : NULL;
 }

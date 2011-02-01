@@ -33,10 +33,21 @@ require_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'themekey') . '/theme
  */
 function themekey_ui_get_path_theme($path) {
   $serialized_empty_array = serialize(array());
-  if ($result = db_query("SELECT id, theme FROM {themekey_properties} WHERE property = :property AND operator = :operator AND value = :value AND wildcards = :wildcards AND parent = :parent", array(':property' => 'drupal:path', ':operator' => '=', ':value' => $path, ':wildcards' => $serialized_empty_array, ':parent' => 0))) {
-
+  if ($result = db_select('themekey_properties', 'tp')
+      ->fields('tp', array('id', 'theme'))
+      ->condition('property', 'drupal:path')
+      ->condition('operator', '=')
+      ->condition('value', $path)
+      ->condition('wildcards', $serialized_empty_array)
+      ->condition('parent', 0)
+      ->execute()
+  ) {
+  
     foreach ($result as $row) {
-      if (!db_query("SELECT COUNT(*) FROM {themekey_properties} WHERE parent = :parent", array(':parent' => $row->id))->fetchField()) {
+      $query = db_select('themekey_properties', 'tp')
+      ->condition('parent', $row->id);
+      $query->addExpression('COUNT(*)');
+      if (!$query->execute()->fetchField()) {
         return array($row->id, $row->theme);
       }
     }

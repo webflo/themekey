@@ -123,7 +123,12 @@ function themekey_ui_author2theme($nid) {
 
   // node_load() must not be called from hook_init().
   // Therefore, we have to execute SQL here.
-  if ($theme = db_query("SELECT theme FROM {node} JOIN {themekey_ui_author_theme} USING (uid) WHERE nid = :nid", array(':nid' => $nid))->fetchField()) {
+  $query = db_select('node', 'n')
+  ->fields('tuat', array('theme'))
+  ->condition('n.nid', $nid);
+  $query->join('themekey_ui_author_theme', 'tuat', 'n.uid = tuat.uid');
+
+  if ($theme = $query->execute()->fetchField()) {
     if ('default' != $theme) {
       $custom_theme = $theme;
       return 'static';
@@ -221,7 +226,11 @@ function themekey_ui_form_alter(&$form, $form_state, $form_id) {
       // to avoid a sql query to load his/her nodes' themes, every time a user is loaded, we do this query here
       $theme = FALSE;
       if (!empty($form['#user']->uid)) {
-        $theme = db_query("SELECT theme FROM {themekey_ui_author_theme} WHERE uid = :uid", array(':uid' => $form['#user']->uid))->fetchField();
+        $theme = db_select('themekey_ui_author_theme', 'tuat')
+        ->fields('tuat', array('theme'))
+        ->condition('uid', $form['#user']->uid)
+        ->execute()
+        ->fetchField();
       }
 
       themekey_ui_theme_select_form($form, t('Theme configuration for my nodes'), t('Every node I create will be shown to other users using this theme.'), $theme ? $theme : 'default');
@@ -261,7 +270,14 @@ function themekey_ui_node_load($nodes, $types) {
 
       if (variable_get('themekey_ui_nodeform', 0) && variable_get('themekey_ui_nodeform|' . $node->type, 1)) {
         if (!empty($node->vid)) {
-          $theme = db_query('SELECT theme FROM {themekey_ui_node_theme} WHERE nid = :nid AND vid = :vid', array(':nid' => $node->nid, ':vid' => $node->vid))->fetchField();
+
+          $theme = db_select('themekey_ui_node_theme', 't')
+          ->fields('t', array('theme'))
+          ->condition('nid', $node->nid)
+          ->condition('vid', $node->vid)
+          ->execute()
+          ->fetchField();
+
           if ($theme) {
             $node->themekey_ui_theme = $theme;
           }
@@ -302,7 +318,14 @@ function themekey_ui_node_update($node) {
 
   if (!empty($node->themekey_ui_theme)) {
 
-    if (!$node->revision && db_query("SELECT 1 FROM {themekey_ui_node_theme} WHERE nid = :nid AND vid = :vid", array(':nid' => $node->nid, ':vid' => $node->vid))->fetchField()) {
+    if (!$node->revision && 0 < db_select('themekey_ui_node_theme', 't')
+                                ->fields('t')
+                                ->condition('nid', $node->nid)
+                                ->condition('vid', $node->vid)
+                                ->execute()
+                                ->rowCount()
+    ) {
+
       // UPDATE
       $query = db_update('themekey_ui_node_theme')
         ->fields(array(
@@ -344,7 +367,13 @@ function themekey_ui_node_delete($node) {
 function themekey_ui_user_insert(&$edit, $account, $category) {
   if (user_access('assign theme to own nodes') && variable_get('themekey_ui_author', 0) && !empty($edit['themekey_ui_theme'])) {
 
-    if (db_query("SELECT 1 FROM {themekey_ui_author_theme} WHERE uid = :uid", array(':uid' => $account->uid))->fetchField()) {
+    if (db_select('themekey_ui_author_theme', 't')
+        ->fields('t')
+        ->condition('uid', $account->uid)
+        ->execute()
+        ->rowCount()
+    ) {
+
       db_update('themekey_ui_author_theme')
         ->fields(array(
          'uid' => $account->uid,
