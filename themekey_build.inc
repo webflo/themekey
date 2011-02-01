@@ -289,10 +289,10 @@ function themekey_load_rules($parent = 0, $depth = 0) {
   }
 
   $result = db_select('themekey_properties', 'tp')
-	  ->fields('tp')
-	  ->condition('parent', $parent)
-	  ->orderBy('weight', 'asc')
-	  ->execute();
+    ->fields('tp')
+    ->condition('parent', $parent)
+    ->orderBy('weight', 'asc')
+    ->execute();
 
   foreach ($result as $item) {
     if ('drupal:path' == $item->property) {
@@ -370,7 +370,7 @@ function themekey_rule_del($id) {
   $txn = db_transaction();
 
   $result = db_select('themekey_properties', 'tp');
-  $result->condition('parent',$id);
+  $result->condition('parent', $id);
   $result->addExpression('COUNT(*)', 'num_childs');
   $num_childs = $result->execute()->fetchField();
 
@@ -406,10 +406,11 @@ function themekey_rule_del($id) {
  */
 function themekey_rule_get($id) {
 
-    if ($result = db_select('themekey_properties','tp')
-		->fields('tp')
-		->condition('id',$id)
-		->execute() ){
+  if ($result = db_select('themekey_properties', 'tp')
+    ->fields('tp')
+    ->condition('id', $id)
+    ->execute()
+  ) {
 
     foreach ($result as $item) {
       if ('drupal:path' == $item->property) {
@@ -441,7 +442,7 @@ function themekey_rule_get($id) {
 function themekey_update_static_rule($property, $state) {
 
   $id = db_select('themekey_properties', 'tp')
-    ->fields('tp',array('id'))
+    ->fields('tp', array('id'))
     ->condition('property', $property)
     ->execute()
     ->fetchField();

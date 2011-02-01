@@ -242,13 +242,13 @@ function themekey_match_rule_childs(&$parameters, $parent = 0) {
   }
 
   if ($result = db_select('themekey_properties', 'tp')
-  ->fields('tp')
-  ->condition('enabled', 1)
-  ->condition('parent', $parent)
-  ->condition('value', '', '<>')
-  ->orderBy('weight', 'asc')
-  ->execute()
-  ){
+    ->fields('tp')
+    ->condition('enabled', 1)
+    ->condition('parent', $parent)
+    ->condition('value', '', '<>')
+    ->orderBy('weight', 'asc')
+    ->execute()
+  ) {
 
     $num_childs = 0;
 
@@ -480,12 +480,12 @@ function themekey_check_theme_enabled($theme, $settings_page = FALSE) {
 
   if (empty($themes_enabled)) {
 
-    if($result = db_select('system', 's')
+    if ($result = db_select('system', 's')
       ->fields('s', array('name'))
       ->condition('type', 'theme')
       ->condition('status', '1')
       ->execute()
-    ){
+    ) {
       foreach ($result as $row) {
         $themes_enabled[] = $row->name;
       }
