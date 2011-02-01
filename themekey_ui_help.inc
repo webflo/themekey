@@ -11,7 +11,7 @@
 
 
 /**
- * Adds examples to themekey_help_form().
+ * Adds tutorials to themekey_help_form().
  *
  * @see themekey_help()
  * @see themekey_help_form()

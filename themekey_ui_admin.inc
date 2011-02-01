@@ -84,7 +84,7 @@ function themekey_ui_settings_form() {
 
   $form['themekey_ui']['themekey_ui_author'] = array(
     '#type' => 'checkbox',
-    '#title' => t('Show theme option in user profile'),
+    '#title' => t('Let the user select a theme for her nodes in her user profile'),
     '#default_value' => variable_get('themekey_ui_author', 0),
     '#description' => t('Assign themes from user profile. All nodes created by a user will be shown to all visitors using the theme she selected in her profile.'),
   );
