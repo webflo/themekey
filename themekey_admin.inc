@@ -465,9 +465,7 @@ function themekey_settings_form($form, &$form_state) {
     '#type' => 'checkbox',
     '#title' => t('Retain the theme until a new theme is set for anonymous users'),
     '#default_value' => variable_get('themekey_theme_maintain_anonymous', 0),
-    '#description' => t('Select this option to have anonymous users stay in the same theme until they browse to a new page with an explicit theme set.
-<br /><b>Warning: This feature is only working correctly if you turn off page caching or use a Drupal core that supports lazy session initialization like !cdclink or !pflink.</b>',
-      array('!cdclink' => l(t('!path', array('!path' => 'Cocomore Drupal Core')), 'http://drupal.cocomore.com/node/175', array('attributes' => array('target' => '_blank'))), '!pflink' => l(t('!path', array('!path' => 'Pressflow')), 'https://launchpad.net/pressflow/6.x/', array('attributes' => array('target' => '_blank'))))),
+    '#description' => t('Select this option to have anonymous users stay in the same theme until they browse to a new page with an explicit theme set.'),
   );
 
   if (module_exists('forum')) {
