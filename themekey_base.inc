@@ -432,7 +432,21 @@ function themekey_property_value(&$parameters, $property) {
     if ($map['dst'] == $property) {
       if (!empty($parameters[$map['src']])) {
         $map_func = $map['callback'];
-        $parameters[$property] = $map_func($parameters[$map['src']], $parameters);
+
+        if (!function_exists($map_func) && isset($map['file'])) {
+          themekey_load_function(
+            $map_func,
+            $map['file'],
+            isset($map['path']) ? $map['path'] : '');
+        }
+
+        if (function_exists($map_func)) {
+          $parameters[$property] = $map_func($parameters[$map['src']], $parameters);
+        }
+        else {
+          themekey_set_debug_message('Map function %map_function does not exists', array('%map_function' => $map_func));
+          watchdog('php', 'ThemeKey map function %map_function does not exists', array('%map_function' => $map_func), 'error');
+        }
         break;
       }
       $src_candidates[$pos] = $map['src'];
@@ -545,4 +559,43 @@ function themekey_format_rule_as_string($themekey_property_id) {
   }
 
   return $title;
+}
+
+/**
+ * Magic loading of validation and callback functions.
+ * @see _theme_process_registry()
+ *
+ * @return
+ *   TRUE if the function has been loaded, otherwise FALSE
+ */
+function themekey_load_function($function, $file, $path = '') {
+  if (!empty($file)) {
+    if (empty($path)) {
+      $filename = './'. $file;
+      if (file_exists($filename)) {
+        require_once $filename;
+        if (function_exists($function)) {
+          return TRUE;
+        }
+      }
+      foreach (module_implements('themekey_properties') as $module) {
+        if (themekey_load_function($function, $file, drupal_get_path('module', $module))) {
+          if (function_exists($function)) {
+            return TRUE;
+          }
+        }
+      }
+    }
+    else {
+      $filename = './'. $path .'/'. $file;
+      if (file_exists($filename)) {
+        require_once $filename;
+        if (function_exists($function)) {
+          return TRUE;
+        }
+      }
+    }
+  }
+
+  return FALSE;
 }

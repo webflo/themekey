@@ -190,14 +190,6 @@ function themekey_custom_theme() {
 
 
 /**
- * Implements hook_themekey_load_validators().
- */
-function themekey_themekey_load_validators() {
-  module_load_include('inc', 'themekey', 'themekey_validators');
-}
-
-
-/**
  * Implements hook_help().
  */
 function themekey_help($path, $arg) {

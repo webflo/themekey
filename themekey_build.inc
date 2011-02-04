@@ -471,4 +471,3 @@ function themekey_update_static_rule($property, $state) {
     themekey_rule_del($id);
   }
 }
-

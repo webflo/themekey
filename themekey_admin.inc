@@ -235,7 +235,8 @@ function themekey_rule_chain_form($form, &$form_state) {
  * @see themekey_rule_chain_form()
  */
 function themekey_rule_chain_form_validate(&$form, $form_state) {
-  module_invoke_all('themekey_load_validators');
+  module_load_include('inc', 'themekey', 'themekey_validators');
+
   $attributes = variable_get('themekey_attributes', array());
 
   $values = $form_state['values'];
@@ -256,6 +257,14 @@ function themekey_rule_chain_form_validate(&$form, $form_state) {
         elseif (!empty($attributes[$value_1['property']]['validator'])) {
           //validate rule with custom validator
           $validator = $attributes[$value_1['property']]['validator'];
+
+          if (!function_exists($validator) && isset($attributes[$value_1['property']]['file'])) {
+            themekey_load_function(
+              $validator,
+              $attributes[$value_1['property']]['file'],
+              isset($attributes[$value_1['property']]['path']) ? $attributes[$value_1['property']]['path'] : '');
+          }
+
           if (function_exists($validator)) {
             $rule = array(
               'property' => $value_1['property'],
@@ -352,6 +361,14 @@ function themekey_rule_chain_form_validate(&$form, $form_state) {
       if (!empty($attributes[$values['new_item']['property']]['validator'])) {
         //validate rule with custom validator
         $validator = $attributes[$values['new_item']['property']]['validator'];
+
+        if (!function_exists($validator) && isset($attributes[$values['new_item']['property']]['file'])) {
+          themekey_load_function(
+            $validator,
+            $attributes[$values['new_item']['property']]['file'],
+            isset($attributes[$values['new_item']['property']]['path']) ? $attributes[$values['new_item']['property']]['path'] : '');
+        }
+
         if (function_exists($validator)) {
           $rule = array(
             'property' => $values['new_item']['property'],

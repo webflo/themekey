@@ -59,8 +59,15 @@ HOOK_themekey_properties()
             - description => Readable name of property (required)
             - validator   => Callback function to validate a rule starting with that property (optional)
                              TODO: describe validator arguments and return value 
-              static      => true/false, static properties don't occur in properties drop down
+            - file        => File that provides the validator function (optional)
+            - path        => Alternative path relative to dupal's doc root to load the file (optional)
+            - static      => true/false, static properties don't occur in properties drop down
                              and have fixed operator and value (optional)
+            - page cache  => Level of page caching support:
+                             - THEMEKEY_PAGECACHE_SUPPORTED
+                             - THEMEKEY_PAGECACHE_UNSUPPORTED
+                             - THEMEKEY_PAGECACHE_TIMEBASED
+                             Default is THEMEKEY_PAGECACHE_UNSUPPORTED (optional)
 
   Maps
     Key:    none (indexed)
@@ -68,6 +75,8 @@ HOOK_themekey_properties()
             - src       => Source property path (required)
             - dst       => Destination property path (required)
             - callback  => Mapping callback (required)
+            - file      => File that provides the callback function (optional)
+            - path      => Alternative path relative to dupal's doc root to load the file (optional)
 
 HOOK_themekey_global()
   Global properties
@@ -85,6 +94,3 @@ HOOK_themekey_paths()
               - $item:    array of elements associated with the path/callback
               - $params:  array of parameters available for load callback
 
-HOOK_themekey_load_validators()
-  include files containing validators
-  

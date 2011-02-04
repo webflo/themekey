@@ -1,0 +1,11 @@
+; $Id$
+
+name = "ThemeKey Example"
+description = "Implements parts of the ThemeKey API as an example for Developers."
+core = 7.x
+dependencies[]= themekey
+package = ThemeKey
+
+files[] = themekey_example.module
+files[] = themekey_example_validators.inc
+files[] = themekey_example_mappers.inc
