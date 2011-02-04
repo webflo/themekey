@@ -121,8 +121,14 @@ function themekey_custom_theme() {
 
   $custom_theme = &drupal_static('themekey_custom_theme', '');
 
-  // don't change theme when administer blocks or during cron run executed by cron.php or drush
-  if (strpos($_GET['q'], 'admin/structure/block') !== 0 && strpos($_SERVER['SCRIPT_FILENAME'], 'cron.php') === FALSE && strpos($_SERVER['SCRIPT_FILENAME'], 'drush.php') === FALSE) {
+  // don't change theme when ...
+  if (!(strpos($_GET['q'], 'admin/') === 0 && variable_get('admin_theme', '0')) // ... admin area and admin theme set
+    && !((strpos($_GET['q'], 'node/add') === 0 || (strpos($_GET['q'], 'node/') === 0 && preg_match("@^node/%d+/[edit|delete|outline]$@", $_GET['q']))) && variable_get('node_admin_theme', '0'))
+    && strpos($_GET['q'], 'admin/structure/block') !== 0 // ... administer blocks
+    && strpos($_SERVER['SCRIPT_FILENAME'], 'cron.php') === FALSE // ... during cron run executed by cron.php
+    && strpos($_SERVER['SCRIPT_FILENAME'], 'drush.php') === FALSE // ... during cron run executed by drush
+    ) {
+
     if (!$custom_theme) {
       require_once DRUPAL_ROOT . '/' . drupal_get_path('module', 'themekey') . '/themekey_base.inc';
 
