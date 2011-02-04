@@ -571,7 +571,7 @@ function themekey_format_rule_as_string($themekey_property_id) {
 function themekey_load_function($function, $file, $path = '') {
   if (!empty($file)) {
     if (empty($path)) {
-      $filename = './'. $file;
+      $filename = './' . $file;
       if (file_exists($filename)) {
         require_once $filename;
         if (function_exists($function)) {
@@ -587,7 +587,7 @@ function themekey_load_function($function, $file, $path = '') {
       }
     }
     else {
-      $filename = './'. $path .'/'. $file;
+      $filename = './' . $path . '/' . $file;
       if (file_exists($filename)) {
         require_once $filename;
         if (function_exists($function)) {
