@@ -3,6 +3,12 @@
 // $Id$
 
 /**
+ * @file
+ *   Validating functions of ThemeKey Example.
+ */
+
+
+/**
  * Validates a Theme Switching Rule.
  * Allowed Operators: "=", "!", "<", "<=", ">", ">="
  * Allowed values: string of digits (numbers)
