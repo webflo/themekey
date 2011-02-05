@@ -122,8 +122,7 @@ function themekey_custom_theme() {
   $custom_theme = &drupal_static('themekey_custom_theme', '');
 
   // don't change theme when ...
-  if (!(strpos($_GET['q'], 'admin/') === 0 && variable_get('admin_theme', '0')) // ... admin area and admin theme set
-    && !((strpos($_GET['q'], 'node/add') === 0 || (strpos($_GET['q'], 'node/') === 0 && preg_match("@^node/%d+/[edit|delete|outline]$@", $_GET['q']))) && variable_get('node_admin_theme', '0'))
+  if (!(variable_get('admin_theme', '0') && path_is_admin($_GET['q'])) // ... admin area and admin theme set
     && strpos($_GET['q'], 'admin/structure/block') !== 0 // ... administer blocks
     && strpos($_SERVER['SCRIPT_FILENAME'], 'cron.php') === FALSE // ... during cron run executed by cron.php
     && strpos($_SERVER['SCRIPT_FILENAME'], 'drush.php') === FALSE // ... during cron run executed by drush
