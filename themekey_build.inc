@@ -65,6 +65,8 @@ function themekey_rebuild() {
   // includes all modules in the themekey/modules subfolder (internal modules)
   themekey_scan_modules();
 
+  module_load_include('inc', 'themekey', 'themekey_base');
+
   // Get property definitions (from internal and other modules)
   $properties = array_merge_recursive(themekey_invoke_modules('themekey_properties'), module_invoke_all('themekey_properties'));
 
