@@ -1,7 +1,7 @@
 // $Id$
 
-ThemeKey 7.x-1.0-beta4, 2011-xx-xx
-----------------------------------
+ThemeKey 7.x-1.0-rc1, 2011-02-11
+--------------------------------
 [        ] mkalkbrenner: fixed admin theme and node admin theme in overlay again in a better way
 [#1046214] mkalkbrenner: fixed fatal error during installation
 
